@@ -4,12 +4,13 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="theme-color" content="#2f4a37">
-<title>UZU Club · Padel & Football · El Nido</title>
-<meta name="description" content="Book padel and football sessions and courts at UZU Club, El Nido.">
+<title>UZU Club · Padel, Bistro & Bar, Football, Recovery · El Nido</title>
+<meta name="description" content="PADEL + BISTRO & BAR + FOOTBALL + RECOVERY. One of Asia's most beautiful social clubs, in El Nido, Palawan, Philippines.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;1,500;1,600&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="assets.js"></script>
 <style>
 :root{--green:#2f4a37;--green2:#3d5a45;--green3:#4a6b52;--cream:#f4efe3;--paper:#fbf8f1;--ink:#1c2a20;--muted:#6b7468;--line:#e3dccb;--gold:#d6b25e;--gold2:#b8923a;--ok:#2e7d4f;--okbg:#e5f2e8;--warn:#9a6a12;--warnbg:#fbf0d9;--bad:#b13e2c;--badbg:#f8e3df;--r:16px}
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
@@ -23,6 +24,7 @@ a{color:inherit}
 .nav{background:var(--green);color:var(--cream);position:sticky;top:0;z-index:20;box-shadow:0 1px 0 rgba(255,255,255,.06)}
 .nav .wrap{display:flex;align-items:center;gap:18px;height:62px}
 .logo{display:flex;flex-direction:column;align-items:center;text-decoration:none;line-height:1}
+.logo img{height:34px;width:auto;display:block}
 .logo b{font-weight:800;font-size:22px;letter-spacing:.12em}
 .logo small{font-size:8px;letter-spacing:.42em;margin-top:3px;display:flex;align-items:center;gap:5px}
 .logo small:before,.logo small:after{content:"";width:12px;height:1px;background:currentColor;opacity:.7}
@@ -33,8 +35,10 @@ a{color:inherit}
 .burger{display:none;margin-left:auto;background:none;border:0;color:var(--cream);font-size:24px}
 @media(max-width:760px){.links{display:none;position:absolute;top:62px;left:0;right:0;background:var(--green);flex-direction:column;align-items:stretch;padding:8px 14px 14px}.links.open{display:flex}.burger{display:block}}
 /* hero */
-.hero{background:radial-gradient(1200px 400px at 80% -10%,rgba(255,255,255,.08),transparent),linear-gradient(180deg,var(--green),#2a4232);color:var(--cream);padding:56px 0 64px;position:relative;overflow:hidden}
-.hero:after{content:"";position:absolute;inset:0;background-image:repeating-linear-gradient(90deg,rgba(255,255,255,.025) 0 1px,transparent 1px 7px);pointer-events:none}
+.hero{background:linear-gradient(90deg,rgba(28,44,33,.92) 0%,rgba(28,44,33,.72) 45%,rgba(28,44,33,.25) 100%),var(--heroimg,none) center/cover no-repeat,var(--green);color:var(--cream);padding:72px 0 80px;position:relative;overflow:hidden}
+.hero .logo-big{height:64px;width:auto;margin-bottom:18px;display:block}
+.hero .pillars{font-size:13px;letter-spacing:.22em;font-weight:700;color:var(--gold);margin-bottom:6px}
+
 .hero .kick{font-size:12px;letter-spacing:.24em;text-transform:uppercase;color:var(--gold);font-weight:700}
 .hero h1{font-family:'Cormorant Garamond',serif;font-weight:500;font-size:clamp(40px,7vw,76px);line-height:.98;margin:12px 0 14px}
 .hero h1 i{color:var(--gold)}
@@ -143,6 +147,19 @@ footer a{opacity:.9}
 .toast.show{opacity:1;transform:translateX(-50%)}
 .toast.err{background:var(--bad)}
 .loader{padding:40px 0;text-align:center;color:var(--muted)}
+.roster{font-size:12px;color:var(--ink);margin-top:6px;line-height:1.45}
+.roster b{color:var(--muted);font-weight:600}
+.wk{width:100%;border-collapse:collapse;font-size:13px;min-width:760px}
+.wk th{background:var(--green);color:var(--cream);padding:8px;text-align:left;font-size:12px;letter-spacing:.04em}
+.wk td{border:1px solid var(--line);vertical-align:top;padding:6px;background:#fff;width:20%}
+.wk td.day{background:var(--paper);font-weight:700;white-space:nowrap;width:90px}
+.blk{border-left:3px solid var(--green3);background:#f3f6f1;border-radius:6px;padding:5px 7px;margin-bottom:5px}
+.blk.court{border-color:var(--gold2);background:#fbf5e6}
+.blk .bt{font-weight:700;font-size:12px}
+.blk .bn{font-size:12px;color:#3c463f}
+.mlist{display:grid;gap:8px}
+.famrow{display:grid;grid-template-columns:1.4fr 1fr 1.4fr;gap:6px;margin-bottom:6px}
+@media(max-width:600px){.famrow{grid-template-columns:1fr 1fr}.famrow .fam-email{grid-column:span 2}}
 .hide{display:none!important}
 </style>
 </head>
@@ -151,7 +168,7 @@ footer a{opacity:.9}
 <main id="app"><div class="loader">Loading…</div></main>
 <footer>
   <div class="wrap row between wrapx" style="gap:20px">
-    <div><div class="logo" style="align-items:flex-start"><b>UZU</b><small>CLUB</small></div><div style="margin-top:10px;opacity:.8">Padel · Football · El Nido, Palawan</div></div>
+    <div><div class="logo" id="footlogo" style="align-items:flex-start"><b>UZU</b><small>CLUB</small></div><div style="margin-top:10px;opacity:.8">Padel + Bistro &amp; Bar + Football + Recovery<br>El Nido, Palawan, Philippines</div></div>
     <div><b style="color:var(--gold);letter-spacing:.18em;font-size:11px">FOR BOOKINGS</b><br>0917 125 5048 · <a href="mailto:info@uzuclub.com">info@uzuclub.com</a><br><a href="https://www.facebook.com/uzu.club" target="_blank" rel="noopener">facebook.com/uzu.club</a> · @uzu.club</div>
   </div>
 </footer>
@@ -163,6 +180,10 @@ footer a{opacity:.9}
 const SB_URL = 'https://etlbiheeumhrmzwcvene.supabase.co';
 const SB_KEY = 'sb_publishable_boyoxlapZQQQFtUz6EjjoA_zlczwKQC';
 const sb = window.supabase.createClient(SB_URL, SB_KEY, { auth: { persistSession: true, autoRefreshToken: true } });
+const ASSETS = window.UZU_ASSETS || {};
+const LOGO = ASSETS.logo ? '<img src="' + ASSETS.logo + '" alt="UZU Club">' : '<b>UZU</b><small>CLUB</small>';
+if (ASSETS.bistro) document.documentElement.style.setProperty('--heroimg', 'url(' + ASSETS.bistro + ')');
+if (ASSETS.logo) { const f = document.getElementById('footlogo'); if (f) f.innerHTML = '<img src="' + ASSETS.logo + '" alt="UZU Club" style="height:40px">'; }
 
 /* ---------- utils ---------- */
 const $ = id => document.getElementById(id);
@@ -182,27 +203,30 @@ const tstr = m => pad(Math.floor(m / 60)) + ':' + pad(m % 60);
 function fmtT(t) { if (!t) return ''; let [h, m] = t.split(':').map(Number); const ap = h >= 12 ? 'PM' : 'AM'; h = h % 12 || 12; return h + ':' + pad(m || 0) + ' ' + ap; }
 const range = (a, b) => fmtT(a) + (b ? ' – ' + fmtT(b) : '');
 const peso = n => n == null ? '' : '₱' + Number(n).toLocaleString('en-PH', { maximumFractionDigits: 0 });
-function priceTxt(s) { if (s.price_regular == null) return 'Rate at the club'; return peso(s.price_regular) + (s.price_member != null ? ' · members ' + peso(s.price_member) : ''); }
+const memberPrice = r => r == null ? null : Math.max(0, r - 100);
+function priceTxt(s) { if (s.price_regular == null) return 'Rate at the club'; return peso(s.price_regular) + ' · members ' + peso(s.price_member != null ? s.price_member : memberPrice(s.price_regular)); }
+function memberActive(p) { return !!(p && p.is_member && (!p.member_until || p.member_until >= manilaToday())); }
 let toastT; function toast(m, err) { const t = $('toast'); t.textContent = m; t.className = 'toast show' + (err ? ' err' : ''); clearTimeout(toastT); toastT = setTimeout(() => t.className = 'toast', 3200); }
 const errMsg = e => (e && (e.message || e.error_description || e.msg)) || 'Something went wrong';
 const sportPill = s => '<span class="pill p-' + esc(s) + '">' + esc(s === 'football' ? 'FOOTBALL' : 'PADEL') + '</span>';
 const statusPill = s => '<span class="pill ' + ({ confirmed: 'p-ok', pending: 'p-warn', waitlist: 'p-warn', cancelled: 'p-mute' }[s] || '') + '">' + esc({ confirmed: 'Confirmed', pending: 'Awaiting confirmation', waitlist: 'Waitlist', cancelled: 'Cancelled' }[s] || s) + '</span>';
 
 /* ---------- state ---------- */
-const S = { user: null, profile: null, staff: false, route: 'home', sport: 'all', courtId: null, courtDate: null, courtStart: null, courtDur: 60, staffTab: 'today', staffDate: manilaToday(), bkFilter: 'pending', memberQ: '', after: null, busy: false };
+const S = { user: null, profile: null, staff: false, route: 'home', sport: 'all', courtId: null, courtDate: null, courtStart: null, courtDur: 60, staffTab: 'sheet', sheetMode: 'week', sheetDate: manilaToday(), staffDate: manilaToday(), bkFilter: 'pending', memberQ: '', after: null, busy: false };
 const cache = { programs: null, courts: null };
 
 /* ---------- auth ---------- */
 async function loadUser() {
   const { data } = await sb.auth.getSession();
   S.user = data.session ? data.session.user : null;
-  S.profile = null; S.staff = false;
+  S.profile = null; S.staff = false; S.membership = { active: false };
   if (S.user) {
     const [p, st] = await Promise.all([
       sb.from('uzu_profiles').select('*').eq('id', S.user.id).maybeSingle(),
       sb.from('uzu_staff').select('user_id').eq('user_id', S.user.id).maybeSingle()
     ]);
     S.profile = p.data; S.staff = !!st.data;
+    const mm = await sb.rpc('uzu_my_membership'); S.membership = mm.data || { active: false };
   }
 }
 sb.auth.onAuthStateChange((ev) => { if (ev === 'SIGNED_OUT' || ev === 'SIGNED_IN') loadUser().then(() => { renderNav(); }); });
@@ -213,9 +237,10 @@ async function courts() { if (!cache.courts) { const { data } = await sb.from('u
 async function sessionsBetween(a, b, all) {
   let q = sb.from('uzu_sessions').select('*').gte('date', a).lte('date', b).order('date').order('start_time');
   if (!all) q = q.neq('status', 'cancelled');
-  const [s, c] = await Promise.all([q, sb.rpc('uzu_session_counts', { p_from: a, p_to: b })]);
+  const [s, c, r] = await Promise.all([q, sb.rpc('uzu_session_counts', { p_from: a, p_to: b }), sb.rpc('uzu_public_roster', { p_from: a, p_to: b })]);
   const counts = {}; (c.data || []).forEach(x => counts[x.session_id] = x);
-  return (s.data || []).map(x => Object.assign(x, { booked: (counts[x.id] || {}).booked || 0, waiting: (counts[x.id] || {}).waitlist || 0 }));
+  const ros = {}; (r.data || []).forEach(x => ros[x.session_id] = x);
+  return (s.data || []).map(x => Object.assign(x, { booked: (counts[x.id] || {}).booked || 0, waiting: (counts[x.id] || {}).waitlist || 0, names: (ros[x.id] || {}).names || [], waitnames: (ros[x.id] || {}).waitlist || [] }));
 }
 async function myBookings() {
   if (!S.user) return [];
@@ -226,7 +251,7 @@ async function myBookings() {
 /* ---------- nav ---------- */
 function renderNav() {
   const r = S.route, L = (h, t, cls) => '<a href="#' + h + '" class="' + (r === h ? 'on ' : '') + (cls || '') + '">' + t + '</a>';
-  $('nav').innerHTML = '<div class="nav"><div class="wrap"><a class="logo" href="#"><b>UZU</b><small>CLUB</small></a>' +
+  $('nav').innerHTML = '<div class="nav"><div class="wrap"><a class="logo" href="#" aria-label="UZU Club home">' + LOGO + '</a>' +
     '<button class="burger" data-act="burger" aria-label="Menu">☰</button><div class="links" id="links">' +
     L('schedule', 'Schedule') + L('courts', 'Book a court') +
     (S.user ? L('account', 'My bookings') : '') + (S.staff ? L('staff', 'Staff') : '') +
@@ -264,12 +289,12 @@ async function viewHome() {
       items.map(p => '<div class="pitem"><div><div class="t">' + esc(fmtT(p.start_time)) + (p.sport === 'football' ? '–' + esc(fmtT(p.end_time)) : '') + '</div><div class="n">' + esc(p.title) + '</div>' + (p.audience && p.audience !== 'All levels' && p.audience !== 'Adults' ? '<div class="a">' + esc(p.audience) + '</div>' : '') + '</div><div class="s">' + esc(p.sport.toUpperCase()) + '</div></div>').join('') + '</div></div>';
   });
   const upcoming = sess.filter(s => !(s.date === t && mins(s.start_time) <= manilaNowMins())).slice(0, 4);
-  return '<section class="hero"><div class="wrap"><div class="kick">Padel · Football · El Nido</div><h1>Play at <i>UZU</i>.<br>Every day of the week.</h1><p>Americanos, kids’ clinics and football under the El Nido sky. Book a session or a court in a few taps — you’ll get a confirmation by email.</p><div class="btns"><a class="btn b-gold" href="#schedule">See this week’s sessions</a><a class="btn b-ghostl" href="#courts">Book a court</a></div></div></section>' +
+  return '<section class="hero"><div class="wrap">' + (ASSETS.logo ? '<img class="logo-big" src="' + ASSETS.logo + '" alt="UZU Club">' : '') + '<div class="pillars">PADEL + BISTRO &amp; BAR + FOOTBALL + RECOVERY</div><h1>One of Asia’s most <i>beautiful</i> social clubs.</h1><p>El Nido, Palawan, Philippines. Book Americanos, clinics, football and any of our three padel courts in a few taps — confirmations come straight to your email.</p><div class="btns"><a class="btn b-gold" href="#schedule">See this week’s sessions</a><a class="btn b-ghostl" href="#courts">Book a court</a></div></div></section>' +
     '<section class="sec"><div class="wrap grid g2" style="align-items:start">' +
     '<div class="poster"><h3><i>Weekly</i> Schedule</h3><div class="tag">PADEL / FOOTBALL · EL NIDO</div>' + rows + '<div class="foot"><div><b>FOR BOOKINGS</b>0917 125 5048 · info@uzuclub.com</div><div style="align-self:end">@uzu.club</div></div></div>' +
     '<div><h2>Coming up</h2><p class="sub">The next sessions on the schedule.</p>' + (upcoming.length ? upcoming.map(sessCard).join('') : '<div class="card muted">No sessions in the next few days.</div>') +
     '<a class="btn b-green b-full" href="#schedule" style="margin-top:6px">Full schedule</a>' +
-    '<div class="card" style="margin-top:16px"><b>New here?</b><div class="muted small" style="margin:4px 0 10px">Create a free account to book sessions and courts. Members get member rates on Americanos.</div>' + (S.user ? '<a class="btn b-ghost b-sm" href="#account">My bookings</a>' : '<a class="btn b-gold b-sm" href="#signin" data-act="regtab">Create an account</a>') + '</div></div>' +
+    '<div class="card" style="margin-top:16px"><b>Become a member</b><div class="serif" style="font-size:30px;font-weight:600;line-height:1.1;margin:4px 0">₱2,000 <span style="font-size:18px">for 6 months</span></div><div class="muted small" style="margin:0 0 10px">Covers you plus up to 2 family members (spouse/partner or child). Members save ₱100 on every session and court hour. Register, tick “I want to become a member”, then pay at the club or by GCash — our staff will activate it.</div>' + (S.user ? '<a class="btn b-ghost b-sm" href="#account">My bookings</a>' : '<a class="btn b-gold b-sm" href="#signin" data-act="regtab">Create an account</a>') + '</div></div>' +
     '</div></section>';
 }
 
@@ -286,7 +311,7 @@ function sessCard(s) {
   else act = '<button class="btn ' + (left > 0 ? 'b-green' : 'b-ghost') + ' b-sm" data-act="book" data-id="' + s.id + '">' + (left > 0 ? 'Book' : 'Join waitlist') + '</button>';
   return '<div class="sess"><div class="time">' + esc(fmtT(s.start_time)) + '<div class="muted small" style="font-weight:500">to ' + esc(fmtT(s.end_time)) + '</div></div>' +
     '<div class="info"><div class="ttl">' + esc(s.title) + '</div><div class="meta">' + esc(s.audience || '') + (s.audience ? ' · ' : '') + esc(priceTxt(s)) + '</div>' +
-    '<div class="row" style="margin-top:6px;gap:8px">' + sportPill(s.sport) + '<div class="bar"><i style="width:' + pct + '%"></i></div><span class="spots">' + (left > 0 ? left + ' of ' + s.capacity + ' spots left' : 'Full' + (s.waiting ? ' · ' + s.waiting + ' waiting' : '')) + '</span></div></div>' +
+    '<div class="row" style="margin-top:6px;gap:8px">' + sportPill(s.sport) + '<div class="bar"><i style="width:' + pct + '%"></i></div><span class="spots">' + (left > 0 ? left + ' of ' + s.capacity + ' spots left' : 'Full' + (s.waiting ? ' · ' + s.waiting + ' waiting' : '')) + '</span></div>' + (s.names && s.names.length ? '<div class="roster"><b>Playing:</b> ' + s.names.map(esc).join(', ') + (s.waitnames && s.waitnames.length ? ' <b>· Waitlist:</b> ' + s.waitnames.map(esc).join(', ') : '') + '</div>' : '') + '</div>' +
     '<div class="act">' + act + '</div></div>';
 }
 async function viewSchedule() {
@@ -305,8 +330,8 @@ async function viewSchedule() {
 function openBook(id) {
   const s = S._sess[id]; if (!s) return;
   if (!S.user) { S.after = 'schedule'; toast('Sign in or create an account to book'); go('signin'); return; }
-  const member = S.profile && S.profile.is_member;
-  const price = member && s.price_member != null ? s.price_member : s.price_regular;
+  const member = !!(S.membership && S.membership.active);
+  const price = member && s.price_regular != null ? (s.price_member != null ? s.price_member : memberPrice(s.price_regular)) : s.price_regular;
   const full = s.capacity - s.booked <= 0;
   openModal('<button class="x" data-act="close">✕</button><h3>' + esc(s.title) + '</h3><div class="muted">' + esc(fmtDay(s.date)) + ' · ' + esc(range(s.start_time, s.end_time)) + '</div>' +
     (s.description ? '<p class="small" style="margin:10px 0">' + esc(s.description) + '</p>' : '') +
@@ -329,7 +354,7 @@ async function viewCourts() {
   const blocks = (busy || []).filter(b => b.court_id === S.courtId);
   const isBusy = (a, z) => blocks.find(b => mins(b.start_time) < z && mins(b.end_time) > a);
   let h = '<section class="sec"><div class="wrap"><h2>Book a court</h2><p class="sub">Pick a court, a day and a start time. Court bookings are confirmed by our staff — you’ll get an email as soon as it’s locked in.</p>';
-  h += '<div class="chips">' + cs.map(x => '<button class="chip' + (x.id === S.courtId ? ' on' : '') + '" data-act="court" data-id="' + x.id + '">' + esc(x.name) + '<small>' + (x.hourly_rate != null ? esc(peso(x.hourly_rate)) + '/hr' : 'Rate at the club') + '</small></button>').join('') + '</div>';
+  h += '<div class="chips">' + cs.map(x => '<button class="chip' + (x.id === S.courtId ? ' on' : '') + '" data-act="court" data-id="' + x.id + '">' + esc(x.name) + '<small>' + (x.hourly_rate != null ? esc(peso(x.hourly_rate)) + '/hr · members ' + esc(peso(memberPrice(x.hourly_rate))) : 'Rate at the club') + '</small></button>').join('') + '</div>';
   h += '<div class="chips">' + Array.from({ length: 14 }, (_, i) => addDays(t, i)).map(d => '<button class="chip' + (d === S.courtDate ? ' on' : '') + '" data-act="cdate" data-v="' + d + '">' + esc(fmtShort(d).split(' ')[0]) + '<small>' + esc(fmtShort(d).split(' ').slice(1).join(' ')) + '</small></button>').join('') + '</div>';
   if (!c) return h + '<div class="card">No courts available.</div></div></section>';
   const open = mins(c.open_time), close = mins(c.close_time), now = S.courtDate === t ? manilaNowMins() : -1;
@@ -344,7 +369,8 @@ async function viewCourts() {
   else {
     const durs = [60, 90, 120, 180].filter(d => S.courtStart + d <= close && !isBusy(S.courtStart, S.courtStart + d));
     if (!durs.includes(S.courtDur)) S.courtDur = durs[0] || 60;
-    const amt = c.hourly_rate != null ? c.hourly_rate * S.courtDur / 60 : null;
+    const rate = c.hourly_rate == null ? null : (S.membership && S.membership.active ? memberPrice(c.hourly_rate) : c.hourly_rate);
+    const amt = rate != null ? rate * S.courtDur / 60 : null;
     h += '<b>' + esc(c.name) + '</b><div class="muted small">' + esc(fmtDay(S.courtDate)) + ' · ' + esc(range(tstr(S.courtStart), tstr(S.courtStart + S.courtDur))) + '</div>' +
       '<label class="field" style="margin-top:12px"><span>DURATION</span><select class="inp" id="c-dur" data-chg="cdur">' + durs.map(d => '<option value="' + d + '"' + (d === S.courtDur ? ' selected' : '') + '>' + (d / 60) + ' hour' + (d > 60 ? 's' : '') + '</option>').join('') + '</select></label>' +
       '<div class="field"><span>PAYMENT</span><div class="seg" id="bk-pay"><button data-act="pay" data-v="club" class="on">Pay at the club</button><button data-act="pay" data-v="gcash">GCash</button></div></div>' +
@@ -367,25 +393,39 @@ async function viewAccount() {
   const past = mine.filter(b => !(b.date >= t && b.status !== 'cancelled'));
   const item = b => '<div class="sess"><div class="time">' + esc(fmtShort(b.date)) + '<div class="muted small" style="font-weight:500">' + esc(fmtT(b.start_time)) + '</div></div><div class="info"><div class="ttl">' + esc(b.kind === 'session' ? (sm[b.session_id] || {}).title || 'Session' : ((cs.find(c => c.id === b.court_id) || {}).name || 'Court')) + '</div><div class="meta">Ref ' + esc(b.ref) + ' · ' + b.players + ' player' + (b.players > 1 ? 's' : '') + (b.amount != null ? ' · ' + esc(peso(b.amount)) : '') + ' · ' + (b.payment === 'paid' ? 'Paid' : b.pay_method === 'gcash' ? 'GCash' : 'Pay at club') + '</div></div><div class="act">' + statusPill(b.status) + (b.date >= t && b.status !== 'cancelled' ? '<button class="btn b-ghost b-sm" data-act="cancel" data-id="' + b.id + '">Cancel</button>' : '') + '</div></div>';
   const p = S.profile || {};
-  return '<section class="sec"><div class="wrap grid g2" style="align-items:start"><div><h2>My bookings</h2><p class="sub">Hi ' + esc(p.full_name || S.user.email) + (p.is_member ? ' · <span class="pill p-ok">Member</span>' : '') + '</p>' +
+  return '<section class="sec"><div class="wrap grid g2" style="align-items:start"><div><h2>My bookings</h2><p class="sub">Hi ' + esc(p.full_name || S.user.email) + (S.membership && S.membership.active ? ' · <span class="pill p-ok">Member' + (S.membership.until ? ' until ' + esc(fmtShort(S.membership.until)) : '') + '</span>' : '') + '</p>' +
     (up.length ? up.map(item).join('') : '<div class="card muted">No upcoming bookings. <a href="#schedule">Browse the schedule</a>.</div>') +
     (past.length ? '<h3 class="serif" style="font-size:24px;margin:24px 0 8px">Past & cancelled</h3>' + past.slice(0, 20).map(item).join('') : '') + '</div>' +
-    '<div class="card"><b>My details</b><label class="field" style="margin-top:12px"><span>FULL NAME</span><input id="pf-name" class="inp" value="' + esc(p.full_name || '') + '"></label><label class="field"><span>MOBILE</span><input id="pf-phone" class="inp" inputmode="tel" value="' + esc(p.phone || '') + '"></label><div class="muted small" style="margin-bottom:12px">Email: ' + esc(S.user.email) + '</div><button class="btn b-green" data-act="saveprofile">Save</button></div></div></section>';
+    '<div>' + (await membershipCard()) + '<div class="card"><b>My details</b><label class="field" style="margin-top:12px"><span>FULL NAME</span><input id="pf-name" class="inp" value="' + esc(p.full_name || '') + '"></label><label class="field"><span>NICKNAME (shown on public lists)</span><input id="pf-nick" class="inp" maxlength="24" value="' + esc(p.nickname || '') + '"></label><label class="field"><span>MOBILE</span><input id="pf-phone" class="inp" inputmode="tel" value="' + esc(p.phone || '') + '"></label><div class="muted small" style="margin-bottom:12px">Email: ' + esc(S.user.email) + '</div><button class="btn b-green" data-act="saveprofile">Save</button></div></div></div></section>';
 }
 
+function familyFields(list) {
+  return '<div class="small" style="font-weight:700;color:var(--muted);margin-bottom:6px">FAMILY MEMBERS (optional, up to 2)</div>' + [0, 1].map(i => { const f = list[i] || {}; return '<div class="famrow"><input class="mini fam-name" placeholder="Full name" value="' + esc(f.name || '') + '"><select class="mini fam-rel"><option value="spouse/partner"' + (f.relation === 'spouse/partner' ? ' selected' : '') + '>Spouse / partner</option><option value="child"' + (f.relation === 'child' ? ' selected' : '') + '>Child</option></select><input class="mini fam-email" type="email" placeholder="Their email (if they’ll book)" value="' + esc(f.email || '') + '"></div>'; }).join('') + '<div class="small muted">Family members who register with that email get member rates too.</div>';
+}
+function readFamily(root) { const r = root || document; const n = r.querySelectorAll('.fam-name'), rel = r.querySelectorAll('.fam-rel'), em = r.querySelectorAll('.fam-email'); const out = []; n.forEach((x, i) => { if (x.value.trim()) out.push({ name: x.value.trim(), relation: rel[i].value, email: em[i].value.trim() }); }); return out; }
+async function membershipCard() {
+  const m = S.membership || {}; const { data: fam } = await sb.from('uzu_family').select('*').eq('primary_id', S.user.id).order('created_at');
+  let h = '<div class="card" style="margin-bottom:14px"><b>Membership</b>';
+  if (m.active && m.via) h += '<div class="okbox" style="margin-top:8px">You’re covered as family of <b>' + esc(m.via) + '</b>' + (m.until ? ' until ' + esc(fmtDay(m.until)) : '') + '. Member rates apply.</div>';
+  else if (m.active) h += '<div class="okbox" style="margin-top:8px"><b>' + esc(m.plan || 'Member') + '</b>' + (m.until ? ' · valid until ' + esc(fmtDay(m.until)) : '') + '. You save ₱100 on every session and court hour.</div>';
+  else h += '<p class="small muted" style="margin:6px 0 10px">₱2,000 for 6 months, covering you plus up to 2 family members (spouse/partner or child). Members save ₱100 on every session and court hour.</p>' + (m.expired ? '<div class="note" style="margin-bottom:10px">Your membership ended ' + esc(fmtDay(m.last_until)) + '.</div>' : '') + (m.requested ? '<div class="note">Request received — pay at the club or by GCash (0917 125 5048) and our staff will activate it.</div>' : '<button class="btn b-gold b-sm" data-act="reqmember">' + (m.expired ? 'Renew my membership' : 'I want to become a member') + '</button>');
+  if (!m.via) h += '<div style="margin-top:14px" id="famwrap">' + familyFields(fam || []) + '<button class="btn b-ghost b-sm" style="margin-top:8px" data-act="savefamily">Save family members</button></div>';
+  return h + '</div>';
+}
 /* ---------- SIGN IN ---------- */
 let signTab = 'in';
 function viewSignin() {
   if (S.user) { setTimeout(() => go(S.after || 'account'), 0); return '<div class="loader">Signed in…</div>'; }
   return '<section class="sec"><div class="wrap" style="max-width:460px"><div class="card"><div class="seg" style="margin-bottom:16px"><button data-act="stab" data-v="in" class="' + (signTab === 'in' ? 'on' : '') + '">Sign in</button><button data-act="stab" data-v="up" class="' + (signTab === 'up' ? 'on' : '') + '">Create account</button></div>' +
-    (signTab === 'up' ? '<label class="field"><span>FULL NAME</span><input id="su-name" class="inp" autocomplete="name"></label><label class="field"><span>MOBILE</span><input id="su-phone" class="inp" inputmode="tel" autocomplete="tel" placeholder="09xx xxx xxxx"></label>' : '') +
+    (signTab === 'up' ? '<label class="field"><span>FULL NAME</span><input id="su-name" class="inp" autocomplete="name"></label><label class="field"><span>NICKNAME</span><input id="su-nick" class="inp" maxlength="24" placeholder="Shown on public booking lists"></label><label class="field"><span>MOBILE</span><input id="su-phone" class="inp" inputmode="tel" autocomplete="tel" placeholder="09xx xxx xxxx"></label>' : '') +
     '<label class="field"><span>EMAIL</span><input id="su-email" class="inp" type="email" autocomplete="email"></label><label class="field"><span>PASSWORD</span><input id="su-pass" class="inp" type="password" autocomplete="' + (signTab === 'up' ? 'new-password' : 'current-password') + '" placeholder="' + (signTab === 'up' ? 'At least 8 characters' : '') + '"></label>' +
+    (signTab === 'up' ? '<div class="card" style="background:#fff;margin:4px 0 14px"><label class="row" style="gap:8px;font-weight:700"><input type="checkbox" id="su-member">I want to become a member — ₱2,000 for 6 months</label><div class="small muted" style="margin:4px 0 8px">Includes up to 2 family members (spouse/partner or child). Pay at the club or by GCash; staff will activate your membership.</div>' + familyFields([]) + '</div>' : '') +
     '<button class="btn b-gold b-full" data-act="' + (signTab === 'up' ? 'signup' : 'signin') + '">' + (signTab === 'up' ? 'Create my account' : 'Sign in') + '</button>' +
     (signTab === 'in' ? '<p class="small muted" style="margin:12px 0 0">Forgot your password? Message us on <a href="https://www.facebook.com/uzu.club" target="_blank" rel="noopener">Facebook</a> or call 0917 125 5048.</p>' : '<p class="small muted" style="margin:12px 0 0">We’ll email you a welcome note and every booking confirmation.</p>') + '</div></div></section>';
 }
 
 /* ---------- STAFF ---------- */
-const STAFF_TABS = [['today', 'Day sheet'], ['bookings', 'Bookings'], ['sessions', 'Sessions'], ['weekly', 'Weekly schedule'], ['courts', 'Courts'], ['members', 'Members'], ['emails', 'Emails'], ['team', 'Staff']];
+const STAFF_TABS = [['sheet', 'Court sheet'], ['today', 'Day sheet'], ['bookings', 'Bookings'], ['sessions', 'Sessions'], ['weekly', 'Weekly schedule'], ['courts', 'Courts'], ['members', 'Members'], ['emails', 'Emails'], ['team', 'Staff']];
 async function viewStaff() {
   if (!S.user) { S.after = 'staff'; return viewSignin(); }
   if (!S.staff) return '<section class="sec"><div class="wrap"><div class="card">This area is for UZU staff. Ask a manager to add your account.</div></div></section>';
@@ -396,12 +436,13 @@ async function viewStaff() {
     '<div class="stat"><b>' + (s.today || 0) + '</b><span>Confirmed today</span></div><div class="stat"><b>' + (s.week || 0) + '</b><span>Next 7 days</span></div>' +
     '<div class="stat" style="' + (s.pending ? 'border-color:var(--gold)' : '') + '"><b>' + (s.pending || 0) + '</b><span>Awaiting confirmation</span></div><div class="stat"><b>' + (s.members || 0) + '</b><span>Registered players</span></div></div>' +
     '<div class="tabs">' + STAFF_TABS.map(t => '<button data-act="stafftab" data-v="' + t[0] + '" class="' + (S.staffTab === t[0] ? 'on' : '') + '">' + t[1] + (t[0] === 'bookings' && s.pending ? ' (' + s.pending + ')' : '') + '</button>').join('') + '</div><div id="stafftab">';
-  const fn = { today: stToday, bookings: stBookings, sessions: stSessions, weekly: stWeekly, courts: stCourts, members: stMembers, emails: () => stEmails(s), team: () => stTeam(s) }[S.staffTab];
+  const fn = { sheet: stSheet, today: stToday, bookings: stBookings, sessions: stSessions, weekly: stWeekly, courts: stCourts, members: stMembers, emails: () => stEmails(s), team: () => stTeam(s) }[S.staffTab];
   h += await fn();
   return h + '</div></div></section>';
 }
 async function profilesFor(ids) { ids = [...new Set(ids.filter(Boolean))]; const m = {}; if (!ids.length) return m; const { data } = await sb.from('uzu_profiles').select('*').in('id', ids); (data || []).forEach(p => m[p.id] = p); return m; }
-const who = (b, pm) => { const p = pm[b.user_id]; return p ? (p.full_name || p.email) : (b.guest_name || 'Guest'); };
+const who = (b, pm) => { const p = pm[b.user_id]; return p ? (p.full_name || p.email) + (p.nickname ? ' (' + p.nickname + ')' : '') + (memberActive(p) ? ' ★' : '') : (b.guest_name || 'Guest') + ' · guest'; };
+const nick = (b, pm) => { const p = pm[b.user_id]; return p ? (p.nickname || (p.full_name || '').split(' ')[0] || 'Player') : (b.guest_name || 'Guest'); };
 const contact = (b, pm) => { const p = pm[b.user_id]; return esc([p ? p.phone : b.guest_phone, p ? p.email : b.guest_email].filter(Boolean).join(' · ')); };
 function bkActions(b) {
   let h = '';
@@ -459,7 +500,7 @@ async function stMembers() {
   const { data } = await sb.from('uzu_profiles').select('*').order('created_at', { ascending: false }).limit(1000);
   const q = S.memberQ.toLowerCase();
   const list = (data || []).filter(p => !q || [p.full_name, p.email, p.phone].join(' ').toLowerCase().includes(q));
-  return '<input class="inp" style="max-width:360px;margin-bottom:12px" placeholder="Search name, email or mobile" id="mq" value="' + esc(S.memberQ) + '" data-chg="mq"><div class="card scroll"><table class="tbl"><tr><th>Name</th><th>Email</th><th>Mobile</th><th>Joined</th><th>Member rate</th></tr>' + list.map(p => '<tr><td><b>' + esc(p.full_name || '—') + '</b></td><td class="small">' + esc(p.email) + '</td><td class="small">' + esc(p.phone || '') + '</td><td class="small">' + esc(String(p.created_at).slice(0, 10)) + '</td><td><label class="row small" style="gap:5px"><input type="checkbox" data-chg="member" data-id="' + p.id + '"' + (p.is_member ? ' checked' : '') + '>Member</label></td></tr>').join('') + '</table>' + (list.length ? '' : '<div class="muted small" style="padding:10px">No players yet.</div>') + '</div>';
+  return '<input class="inp" style="max-width:360px;margin-bottom:12px" placeholder="Search name, email or mobile" id="mq" value="' + esc(S.memberQ) + '" data-chg="mq"><div class="card scroll"><table class="tbl"><tr><th>Name</th><th>Contact</th><th>Registered</th><th>Membership</th><th></th></tr>' + list.map(p => { const act = memberActive(p), exp = p.is_member && p.member_until && p.member_until < manilaToday(); return '<tr><td><b>' + esc(p.full_name || '—') + '</b>' + (p.nickname ? '<div class="small muted">“' + esc(p.nickname) + '”</div>' : '') + '</td><td class="small">' + esc(p.email) + '<br>' + esc(p.phone || '') + '</td><td class="small">' + esc(String(p.created_at).slice(0, 10)) + '</td><td>' + (act ? '<span class="pill p-ok">' + esc(p.member_plan || 'Member') + '</span><div class="small muted">' + (p.member_until ? 'until ' + esc(fmtShort(p.member_until)) : 'no end date') + '</div>' : exp ? '<span class="pill p-bad">Expired</span><div class="small muted">' + esc(fmtShort(p.member_until)) + '</div>' : (p.membership_requested ? '<span class="pill p-warn">Membership requested</span>' : '<span class="pill p-mute">Not a member</span>')) + '</td><td><button class="btn b-ghost b-sm" data-act="mmanage" data-id="' + p.id + '">Manage</button></td></tr>'; }).join('') + '</table>' + (list.length ? '' : '<div class="muted small" style="padding:10px">No players yet.</div>') + '</div>';
 }
 async function stEmails(s) {
   const { data } = await sb.from('uzu_outbox').select('*').order('id', { ascending: false }).limit(100);
@@ -473,6 +514,54 @@ async function stTeam(s) {
   const { data } = await sb.from('uzu_staff').select('*').order('added_at');
   return '<div class="grid g2" style="align-items:start"><div class="card"><b>Staff accounts</b><table class="tbl" style="margin-top:8px">' + (data || []).map(x => '<tr><td><b>' + esc(x.name || '') + '</b><div class="small muted">' + esc(x.email) + '</div></td><td style="text-align:right">' + (x.user_id === S.user.id ? '<span class="small muted">You</span>' : '<button class="btn b-danger b-sm" data-act="rmstaff" data-id="' + x.user_id + '">Remove</button>') + '</td></tr>').join('') + '</table><div class="row" style="margin-top:12px"><input class="mini" id="new-staff" placeholder="Email of a registered player"><button class="btn b-green b-sm" data-act="addstaff">Add</button></div><p class="small muted">They need to create an account on the site first.</p></div>' +
     '<div class="card"><b>New-booking alerts</b><p class="small muted">Every new booking is emailed to this inbox.</p><div class="row"><input class="mini" id="inbox" value="' + esc(s.staff_inbox || '') + '"><button class="btn b-green b-sm" data-act="saveinbox">Save</button></div></div></div>';
+}
+
+/* ---------- staff: court sheet (who plays when, where) ---------- */
+async function stSheet() {
+  const mode = S.sheetMode, d0 = S.sheetDate;
+  const start = mode === 'week' ? (() => { const d = parseD(d0); const k = (d.getDay() + 6) % 7; d.setDate(d.getDate() - k); return dstr(d); })() : d0;
+  const end = mode === 'week' ? addDays(start, 6) : d0;
+  const [cs, sess, bk] = await Promise.all([courts(), sessionsBetween(start, end, false), sb.from('uzu_bookings').select('*').gte('date', start).lte('date', end).in('status', ['confirmed', 'pending']).order('created_at')]);
+  const bookings = bk.data || []; const pm = await profilesFor(bookings.map(b => b.user_id));
+  const days = Array.from({ length: mode === 'week' ? 7 : 1 }, (_, i) => addDays(start, i));
+  const items = (day, court) => {
+    const out = [];
+    sess.filter(s => s.date === day && (s.court_ids || []).includes(court.id)).forEach(s => {
+      const ppl = bookings.filter(b => b.session_id === s.id && b.status === 'confirmed').map(b => nick(b, pm) + (b.players > 1 ? ' +' + (b.players - 1) : ''));
+      out.push({ t: mins(s.start_time), html: '<div class="blk"><div class="bt">' + esc(range(s.start_time, s.end_time)) + ' · ' + esc(s.title) + ' <span class="muted">(' + s.booked + '/' + s.capacity + ')</span></div><div class="bn">' + (ppl.length ? ppl.map(esc).join(', ') : '<span class="muted">No sign-ups yet</span>') + '</div></div>' });
+    });
+    bookings.filter(b => b.kind === 'court' && b.date === day && b.court_id === court.id).forEach(b => out.push({ t: mins(b.start_time), html: '<div class="blk court"><div class="bt">' + esc(range(b.start_time, b.end_time)) + ' · Court booking' + (b.status === 'pending' ? ' <span class="pill p-warn">to confirm</span>' : '') + '</div><div class="bn">' + esc(who(b, pm)) + '</div></div>' }));
+    return out.sort((a, b) => a.t - b.t).map(x => x.html).join('') || '<span class="muted small">—</span>';
+  };
+  let h = '<div class="row wrapx" style="margin-bottom:12px;gap:8px"><div class="seg" style="width:200px"><button data-act="smode" data-v="day" class="' + (mode === 'day' ? 'on' : '') + '">Day</button><button data-act="smode" data-v="week" class="' + (mode === 'week' ? 'on' : '') + '">Week</button></div><button class="btn b-ghost b-sm" data-act="sstep" data-v="-1">←</button><input type="date" class="mini" style="width:auto" data-chg="sheetdate" value="' + d0 + '"><button class="btn b-ghost b-sm" data-act="sstep" data-v="1">→</button><b>' + esc(mode === 'week' ? fmtShort(start) + ' – ' + fmtShort(end) : fmtDay(d0)) + '</b><button class="btn b-ghost b-sm" style="margin-left:auto" data-act="sheetcopy">Copy summary</button></div>';
+  h += '<div class="card scroll" style="padding:0"><table class="wk"><tr><th>' + (mode === 'week' ? 'Day' : 'Date') + '</th>' + cs.map(c => '<th>' + esc(c.name) + '</th>').join('') + '</tr>' +
+    days.map(d => '<tr><td class="day">' + esc(fmtShort(d)) + (d === manilaToday() ? '<div class="pill p-ok" style="margin-top:4px">Today</div>' : '') + '</td>' + cs.map(c => '<td>' + items(d, c) + '</td>').join('') + '</tr>').join('') + '</table></div>';
+  // players summary
+  const tally = {};
+  bookings.filter(b => b.status === 'confirmed').forEach(b => {
+    const k = b.user_id || ('g:' + (b.guest_name || '')); const s = sess.find(x => x.id === b.session_id);
+    const t = tally[k] || (tally[k] = { name: who(b, pm), n: 0, what: [] });
+    t.n++; t.what.push(fmtShort(b.date).split(' ')[0] + ' ' + fmtT(b.start_time).replace(':00', '') + ' ' + (s ? s.title : ((cs.find(c => c.id === b.court_id) || {}).name || 'Court')));
+  });
+  const rows = Object.values(tally).sort((a, b) => b.n - a.n || a.name.localeCompare(b.name));
+  h += '<div class="card" style="margin-top:14px"><b>Players ' + (mode === 'week' ? 'this week' : 'today') + ' (' + rows.length + ')</b><div class="scroll"><table class="tbl" style="margin-top:8px"><tr><th>Player</th><th>Bookings</th><th>When & where</th></tr>' + rows.map(r => '<tr><td><b>' + esc(r.name) + '</b></td><td>' + r.n + '</td><td class="small">' + r.what.map(esc).join(' · ') + '</td></tr>').join('') + '</table>' + (rows.length ? '' : '<div class="muted small" style="padding:8px">Nobody booked yet.</div>') + '</div></div>';
+  // staff quick court booking
+  h += '<div class="card" style="margin-top:14px"><b>Book a court for a walk-in or caller</b><div class="prog" style="margin-top:10px"><select class="mini" id="sc-court">' + cs.map(c => '<option value="' + c.id + '">' + esc(c.name) + '</option>').join('') + '</select><input type="date" class="mini" id="sc-date" value="' + d0 + '"><input type="time" class="mini" id="sc-start" value="08:00"><input type="time" class="mini" id="sc-end" value="09:00"><input class="mini" id="sc-name" placeholder="Name"><input class="mini" id="sc-phone" placeholder="Mobile (optional)"></div><button class="btn b-green b-sm" style="margin-top:10px" data-act="staffcourt">Add booking</button></div>';
+  S._sheetText = days.map(d => fmtDay(d) + '\n' + cs.map(c => { const t = items(d, c).replace(/<div class="blk[^"]*"><div class="bt">/g, '\n  • ').replace(/<\/div><div class="bn">/g, ': ').replace(/<[^>]+>/g, '').replace(/&amp;/g, '&').replace(/&#39;/g, "'").replace(/—/g, '').trim(); return t ? c.name + t : ''; }).filter(Boolean).join('\n')).join('\n\n');
+  return h;
+}
+
+/* ---------- staff: member detail (membership + payments + proofs) ---------- */
+async function openMember(id) {
+  const [{ data: p }, { data: pays }, { data: fam }] = await Promise.all([sb.from('uzu_profiles').select('*').eq('id', id).maybeSingle(), sb.from('uzu_member_payments').select('*').eq('user_id', id).order('paid_on', { ascending: false }), sb.from('uzu_family').select('*').eq('primary_id', id).order('created_at')]);
+  if (!p) return toast('Player not found', true);
+  const t = manilaToday(), yr = (() => { const d = parseD(t); d.setMonth(d.getMonth() + 6); d.setDate(d.getDate() - 1); return dstr(d); })();
+  openModal('<button class="x" data-act="close">✕</button><h3>' + esc(p.full_name || p.email) + '</h3><div class="muted small">' + esc(p.email) + (p.phone ? ' · ' + esc(p.phone) : '') + (p.nickname ? ' · “' + esc(p.nickname) + '”' : '') + '</div>' +
+    '<div class="card" style="margin-top:14px"><b>Membership</b><div class="prog" style="grid-template-columns:1fr 1fr;margin-top:10px"><label class="field"><span>PLAN</span><input class="mini" id="m-plan" value="' + esc(p.member_plan || '') + '" placeholder="e.g. Annual, Monthly, Family"></label><label class="field"><span>STATUS</span><select class="mini" id="m-active"><option value="1"' + (p.is_member ? ' selected' : '') + '>Member</option><option value="0"' + (!p.is_member ? ' selected' : '') + '>Not a member</option></select></label><label class="field"><span>MEMBER SINCE</span><input type="date" class="mini" id="m-since" value="' + esc(p.member_since || '') + '"></label><label class="field"><span>VALID UNTIL</span><input type="date" class="mini" id="m-until" value="' + esc(p.member_until || '') + '"></label></div><label class="field"><span>NOTES</span><textarea class="inp" id="m-notes" style="min-height:56px">' + esc(p.membership_notes || '') + '</textarea></label><button class="btn b-green b-sm" data-act="msave" data-id="' + p.id + '">Save membership</button> <span class="small muted">Members get ₱100 off the regular rate.</span></div>' +
+    (p.membership_requested ? '<div class="note" style="margin-top:12px">Asked to become a member — record their ₱2,000 payment below to activate.</div>' : '') +
+    '<div class="card" style="margin-top:12px" id="mfam"><b>Family members (up to 2)</b><div style="margin-top:8px">' + familyFields(fam || []) + '</div><button class="btn b-ghost b-sm" style="margin-top:8px" data-act="msavefam" data-id="' + p.id + '">Save family</button></div>' +
+    '<div class="card" style="margin-top:12px"><b>Record a payment</b><div class="prog" style="grid-template-columns:1fr 1fr;margin-top:10px"><input class="mini" id="mp-plan" placeholder="Plan" value="' + esc(p.member_plan || '6-month membership') + '"><input class="mini" id="mp-amount" inputmode="numeric" placeholder="Amount ₱" value="2000"><label class="field"><span>PAID ON</span><input type="date" class="mini" id="mp-paid" value="' + t + '"></label><label class="field"><span>METHOD</span><select class="mini" id="mp-method"><option>GCash</option><option>Bank transfer</option><option>Cash</option><option>Card</option></select></label><label class="field"><span>COVERS FROM</span><input type="date" class="mini" id="mp-start" value="' + t + '"></label><label class="field"><span>COVERS UNTIL</span><input type="date" class="mini" id="mp-end" value="' + yr + '"></label><input class="mini" id="mp-ref" placeholder="Reference no."><input class="mini" id="mp-notes" placeholder="Notes"></div><label class="field" style="margin-top:8px"><span>PROOF OF PAYMENT (photo or PDF)</span><input type="file" id="mp-file" accept="image/*,application/pdf" class="mini"></label><button class="btn b-gold b-sm" data-act="mpay" data-id="' + p.id + '">Save payment</button> <span class="small muted">Saving activates the membership until the “covers until” date.</span></div>' +
+    '<div class="card" style="margin-top:12px"><b>Payment history</b>' + ((pays || []).length ? '<table class="tbl" style="margin-top:6px"><tr><th>Paid</th><th>Plan</th><th>Amount</th><th>Covers</th><th>Proof</th></tr>' + pays.map(x => '<tr><td class="small">' + esc(x.paid_on) + '<div class="muted">' + esc(x.method || '') + (x.reference ? ' · ' + esc(x.reference) : '') + '</div></td><td class="small">' + esc(x.plan || '') + '</td><td>' + esc(peso(x.amount)) + '</td><td class="small">' + esc(x.period_start || '') + ' → ' + esc(x.period_end || '') + '</td><td>' + (x.proof_path ? '<button class="btn b-ghost b-sm" data-act="proof" data-v="' + esc(x.proof_path) + '">View</button>' : '<span class="small muted">—</span>') + '</td></tr>').join('') + '</table>' : '<div class="small muted" style="margin-top:6px">No payments recorded yet.</div>') + '</div>');
 }
 
 /* ---------- modal ---------- */
@@ -504,9 +593,9 @@ document.addEventListener('click', async ev => {
       must(await sb.auth.signInWithPassword({ email, password })); await loadUser(); go(S.after || 'account'); S.after = null;
     }, 'Welcome back!'); break;
     case 'signup': run(async () => {
-      const full_name = $('su-name').value.trim(), phone = $('su-phone').value.trim(), email = $('su-email').value.trim(), password = $('su-pass').value;
+      const full_name = $('su-name').value.trim(), nickname = $('su-nick').value.trim() || full_name.split(' ')[0], phone = $('su-phone').value.trim(), email = $('su-email').value.trim(), password = $('su-pass').value;
       if (!full_name) throw new Error('Please enter your name'); if (password.length < 8) throw new Error('Password must be at least 8 characters');
-      const r = must(await sb.auth.signUp({ email, password, options: { data: { full_name, phone }, emailRedirectTo: location.origin + location.pathname } }));
+      const r = must(await sb.auth.signUp({ email, password, options: { data: { full_name, nickname, phone, membership: !!$('su-member').checked, family: readFamily() }, emailRedirectTo: location.origin + location.pathname } }));
       if (!r.session) { toast('Check your email to confirm your account'); return; }
       await loadUser(); go(S.after || 'schedule'); S.after = null;
     }, 'Account created — welcome to UZU!'); break;
@@ -528,7 +617,7 @@ document.addEventListener('click', async ev => {
       const r = must(await sb.rpc('uzu_book_court', { p_court: S.courtId, p_date: S.courtDate, p_start: tstr(S.courtStart), p_end: tstr(S.courtStart + S.courtDur), p_pay_method: pay, p_gcash_ref: ($('bk-ref') || {}).value || '', p_notes: $('bk-notes').value }));
       S.courtStart = null; await route(); toast('Request sent (ref ' + r.ref + '). We’ll email you once staff confirm.');
     }); break;
-    case 'saveprofile': run(async () => { must(await sb.rpc('uzu_update_profile', { p_name: $('pf-name').value, p_phone: $('pf-phone').value })); await loadUser(); }, 'Saved'); break;
+    case 'saveprofile': run(async () => { must(await sb.rpc('uzu_update_profile', { p_name: $('pf-name').value, p_phone: $('pf-phone').value, p_nickname: $('pf-nick').value })); await loadUser(); }, 'Saved'); break;
     // staff
     case 'stafftab': S.staffTab = v; route(); break;
     case 'sday': S.staffDate = addDays(S.staffDate, +v); route(); break;
@@ -557,6 +646,22 @@ document.addEventListener('click', async ev => {
       must(await sb.from('uzu_courts').update({ name: f('name').value, hourly_rate: num(f('hourly_rate').value), open_time: f('open_time').value, close_time: f('close_time').value, active: f('active').checked }).eq('id', card.dataset.courtrow));
       cache.courts = null; await route();
     }, 'Court saved'); break;
+    case 'smode': S.sheetMode = v; route(); break;
+    case 'sstep': S.sheetDate = addDays(S.sheetDate, (+v) * (S.sheetMode === 'week' ? 7 : 1)); route(); break;
+    case 'sheetcopy': try { await navigator.clipboard.writeText(S._sheetText || ''); toast('Summary copied'); } catch (e) { openModal('<button class="x" data-act="close">✕</button><h3>Summary</h3><textarea class="inp" style="min-height:300px">' + esc(S._sheetText || '') + '</textarea>'); } break;
+    case 'staffcourt': run(async () => { must(await sb.rpc('uzu_staff_book_court', { p_court: $('sc-court').value, p_date: $('sc-date').value, p_start: $('sc-start').value, p_end: $('sc-end').value, p_name: $('sc-name').value, p_phone: $('sc-phone').value, p_user: null })); await route(); }, 'Court booked'); break;
+    case 'mmanage': openMember(id); break;
+    case 'reqmember': run(async () => { must(await sb.rpc('uzu_request_membership')); await loadUser(); await route(); }, 'Request sent — see you at the club!'); break;
+    case 'savefamily': run(async () => { must(await sb.rpc('uzu_set_family', { p_family: readFamily($('famwrap')) })); await route(); }, 'Family members saved'); break;
+    case 'msavefam': run(async () => { const list = readFamily($('mfam')); must(await sb.from('uzu_family').delete().eq('primary_id', id)); if (list.length) must(await sb.from('uzu_family').insert(list.map(f => ({ primary_id: id, name: f.name, relation: f.relation, email: f.email || null })))); }, 'Family saved'); break;
+    case 'msave': run(async () => { must(await sb.from('uzu_profiles').update({ member_plan: $('m-plan').value || null, is_member: $('m-active').value === '1', member_since: $('m-since').value || null, member_until: $('m-until').value || null, membership_notes: $('m-notes').value || null }).eq('id', id)); closeModal(); await route(); }, 'Membership saved'); break;
+    case 'mpay': run(async () => {
+      const f = $('mp-file').files[0]; let path = null;
+      if (f) { if (f.size > 8 * 1024 * 1024) throw new Error('File is over 8 MB'); path = id + '/' + Date.now() + '-' + f.name.replace(/[^A-Za-z0-9._-]+/g, '_'); must(await sb.storage.from('uzu-proofs').upload(path, f, { contentType: f.type || undefined })); }
+      must(await sb.from('uzu_member_payments').insert({ user_id: id, plan: $('mp-plan').value || null, amount: num($('mp-amount').value), paid_on: $('mp-paid').value, method: $('mp-method').value, period_start: $('mp-start').value || null, period_end: $('mp-end').value || null, reference: $('mp-ref').value || null, notes: $('mp-notes').value || null, proof_path: path }));
+      await openMember(id); route();
+    }, 'Payment saved — membership active'); break;
+    case 'proof': run(async () => { const r = must(await sb.storage.from('uzu-proofs').createSignedUrl(v, 600)); window.open(r.signedUrl, '_blank', 'noopener'); }); break;
     case 'retry': run(async () => { must(await sb.rpc('uzu_staff_retry_email', { p_id: +id })); await route(); }, 'Queued again'); break;
     case 'addstaff': run(async () => { must(await sb.rpc('uzu_staff_add', { p_email: $('new-staff').value })); await route(); }, 'Staff added'); break;
     case 'rmstaff': if (!confirmTwice(b)) return; run(async () => { must(await sb.from('uzu_staff').delete().eq('user_id', id)); await route(); }, 'Removed'); break;
@@ -568,6 +673,7 @@ document.addEventListener('change', ev => {
   const el = ev.target, k = el.dataset.chg; if (!k) return; const id = el.dataset.id;
   if (k === 'cdur') { S.courtDur = +el.value; route(); }
   else if (k === 'sdate') { S.staffDate = el.value; route(); }
+  else if (k === 'sheetdate') { S.sheetDate = el.value; route(); }
   else if (k === 'mq') { S.memberQ = el.value; route(); }
   else if (k === 'scap') run(async () => { must(await sb.from('uzu_sessions').update({ capacity: +el.value }).eq('id', id)); await route(); }, 'Capacity updated');
   else if (k === 'sstatus') run(async () => { must(await sb.from('uzu_sessions').update({ status: el.value }).eq('id', id)); await route(); }, 'Session ' + el.value);
