@@ -1,0 +1,587 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#2f4a37">
+<title>UZU Club · Padel & Football · El Nido</title>
+<meta name="description" content="Book padel and football sessions and courts at UZU Club, El Nido.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;1,500;1,600&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+:root{--green:#2f4a37;--green2:#3d5a45;--green3:#4a6b52;--cream:#f4efe3;--paper:#fbf8f1;--ink:#1c2a20;--muted:#6b7468;--line:#e3dccb;--gold:#d6b25e;--gold2:#b8923a;--ok:#2e7d4f;--okbg:#e5f2e8;--warn:#9a6a12;--warnbg:#fbf0d9;--bad:#b13e2c;--badbg:#f8e3df;--r:16px}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;background:var(--cream);color:var(--ink);font:15px/1.5 Inter,system-ui,sans-serif;-webkit-font-smoothing:antialiased}
+button,input,select,textarea{font:inherit;color:inherit}
+button{cursor:pointer}
+a{color:inherit}
+.serif{font-family:'Cormorant Garamond',Georgia,serif}
+.wrap{max-width:1040px;margin:0 auto;padding:0 18px}
+/* header */
+.nav{background:var(--green);color:var(--cream);position:sticky;top:0;z-index:20;box-shadow:0 1px 0 rgba(255,255,255,.06)}
+.nav .wrap{display:flex;align-items:center;gap:18px;height:62px}
+.logo{display:flex;flex-direction:column;align-items:center;text-decoration:none;line-height:1}
+.logo b{font-weight:800;font-size:22px;letter-spacing:.12em}
+.logo small{font-size:8px;letter-spacing:.42em;margin-top:3px;display:flex;align-items:center;gap:5px}
+.logo small:before,.logo small:after{content:"";width:12px;height:1px;background:currentColor;opacity:.7}
+.links{display:flex;gap:4px;margin-left:auto;align-items:center}
+.links a{text-decoration:none;padding:8px 12px;border-radius:10px;font-weight:600;font-size:14px;opacity:.85}
+.links a.on,.links a:hover{background:rgba(255,255,255,.1);opacity:1}
+.links a.cta{background:var(--gold);color:var(--green);opacity:1}
+.burger{display:none;margin-left:auto;background:none;border:0;color:var(--cream);font-size:24px}
+@media(max-width:760px){.links{display:none;position:absolute;top:62px;left:0;right:0;background:var(--green);flex-direction:column;align-items:stretch;padding:8px 14px 14px}.links.open{display:flex}.burger{display:block}}
+/* hero */
+.hero{background:radial-gradient(1200px 400px at 80% -10%,rgba(255,255,255,.08),transparent),linear-gradient(180deg,var(--green),#2a4232);color:var(--cream);padding:56px 0 64px;position:relative;overflow:hidden}
+.hero:after{content:"";position:absolute;inset:0;background-image:repeating-linear-gradient(90deg,rgba(255,255,255,.025) 0 1px,transparent 1px 7px);pointer-events:none}
+.hero .kick{font-size:12px;letter-spacing:.24em;text-transform:uppercase;color:var(--gold);font-weight:700}
+.hero h1{font-family:'Cormorant Garamond',serif;font-weight:500;font-size:clamp(40px,7vw,76px);line-height:.98;margin:12px 0 14px}
+.hero h1 i{color:var(--gold)}
+.hero p{max-width:540px;opacity:.85;font-size:17px;margin:0 0 24px}
+.btns{display:flex;gap:10px;flex-wrap:wrap}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;border:0;border-radius:12px;padding:13px 18px;font-weight:700;font-size:15px;text-decoration:none;transition:transform .08s}
+.btn:active{transform:scale(.98)}
+.btn[disabled]{opacity:.5;pointer-events:none}
+.b-gold{background:var(--gold);color:var(--green)}
+.b-green{background:var(--green);color:var(--cream)}
+.b-ghost{background:transparent;border:1.5px solid var(--line);color:var(--ink)}
+.b-ghostl{background:transparent;border:1.5px solid rgba(244,239,227,.35);color:var(--cream)}
+.b-danger{background:transparent;border:1.5px solid #ecc2b9;color:var(--bad)}
+.b-sm{padding:8px 12px;font-size:13px;border-radius:10px}
+.b-full{width:100%}
+/* sections */
+.sec{padding:40px 0}
+.sec h2{font-family:'Cormorant Garamond',serif;font-weight:600;font-size:36px;margin:0 0 4px;line-height:1.05}
+.sec .sub{color:var(--muted);margin:0 0 22px}
+.card{background:var(--paper);border:1px solid var(--line);border-radius:var(--r);padding:18px}
+.grid{display:grid;gap:14px}
+.g2{grid-template-columns:repeat(auto-fit,minmax(280px,1fr))}
+.g3{grid-template-columns:repeat(auto-fit,minmax(220px,1fr))}
+/* poster schedule */
+.poster{background:linear-gradient(180deg,#3a5742,#2f4a37);color:var(--cream);border-radius:20px;padding:28px 26px 18px;position:relative;overflow:hidden}
+.poster:before{content:"";position:absolute;inset:0;background-image:radial-gradient(rgba(255,255,255,.035) 1px,transparent 1px);background-size:4px 4px;pointer-events:none}
+.poster h3{font-family:'Cormorant Garamond',serif;font-size:42px;font-weight:500;margin:0;line-height:1}
+.poster h3 i{font-weight:600}
+.poster .tag{font-size:11px;letter-spacing:.22em;opacity:.75;margin:6px 0 18px}
+.prow{display:grid;grid-template-columns:42px 1fr;gap:6px 12px;padding:14px 0;border-top:1px solid rgba(244,239,227,.18);position:relative}
+.prow .no{font-family:'Cormorant Garamond',serif;font-style:italic;opacity:.75;padding-top:4px}
+.prow .day{font-family:'Cormorant Garamond',serif;font-size:24px;letter-spacing:.02em;text-transform:uppercase}
+.pitem{display:flex;justify-content:space-between;gap:10px;margin-top:6px}
+.pitem .t{color:var(--gold);font-size:14px;letter-spacing:.04em}
+.pitem .n{font-size:16px}
+.pitem .a{font-size:13px;opacity:.75}
+.pitem .s{font-size:11px;letter-spacing:.18em;opacity:.8;align-self:center}
+.poster .foot{border-top:1px solid rgba(244,239,227,.18);padding-top:12px;margin-top:4px;font-size:13px;display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px}
+.poster .foot b{color:var(--gold);letter-spacing:.18em;font-size:11px;display:block}
+/* session cards */
+.dayhead{display:flex;align-items:baseline;gap:10px;margin:22px 0 10px}
+.dayhead b{font-family:'Cormorant Garamond',serif;font-size:26px;font-weight:600}
+.dayhead span{color:var(--muted);font-size:14px}
+.sess{display:flex;gap:14px;align-items:center;background:var(--paper);border:1px solid var(--line);border-radius:14px;padding:14px 16px;margin-bottom:10px}
+.sess .time{min-width:86px;color:var(--gold2);font-weight:700;font-size:14px}
+.sess .info{flex:1;min-width:0}
+.sess .ttl{font-weight:700;font-size:16px}
+.sess .meta{color:var(--muted);font-size:13px}
+.sess .act{display:flex;flex-direction:column;align-items:flex-end;gap:6px;min-width:120px}
+@media(max-width:600px){.sess{flex-wrap:wrap}.sess .act{flex-direction:row;align-items:center;justify-content:space-between;width:100%;min-width:0}}
+.pill{display:inline-flex;align-items:center;gap:5px;font-size:11px;font-weight:700;padding:3px 9px;border-radius:999px;background:#ece6d6;color:var(--ink);letter-spacing:.02em;white-space:nowrap}
+.p-padel{background:#e3ecdf;color:#2f4a37}.p-football{background:#e8e4f3;color:#43386b}
+.p-ok{background:var(--okbg);color:var(--ok)}.p-warn{background:var(--warnbg);color:var(--warn)}.p-bad{background:var(--badbg);color:var(--bad)}.p-mute{background:#ece9e1;color:var(--muted)}
+.spots{font-size:12px;color:var(--muted)}
+.bar{height:5px;background:#ebe4d3;border-radius:5px;overflow:hidden;width:120px}
+.bar i{display:block;height:100%;background:var(--green3)}
+.chips{display:flex;gap:8px;overflow-x:auto;padding-bottom:6px;margin-bottom:6px}
+.chip{flex:none;border:1.5px solid var(--line);background:var(--paper);border-radius:12px;padding:8px 12px;font-weight:600;font-size:13px;text-align:center}
+.chip.on{background:var(--green);border-color:var(--green);color:var(--cream)}
+.chip small{display:block;font-size:11px;font-weight:500;opacity:.75}
+/* court grid */
+.slots{display:grid;grid-template-columns:repeat(auto-fill,minmax(92px,1fr));gap:8px}
+.slot{border:1.5px solid var(--line);background:var(--paper);border-radius:10px;padding:10px 6px;text-align:center;font-weight:600;font-size:14px}
+.slot.busy{background:#eee9dc;color:#a49d8c;text-decoration:line-through;border-style:dashed;cursor:not-allowed}
+.slot.sel{background:var(--green);color:var(--cream);border-color:var(--green)}
+.slot small{display:block;font-size:10px;font-weight:500;text-decoration:none;opacity:.8;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+/* forms */
+.field{display:block;margin-bottom:12px}
+.field>span{display:block;font-size:12px;font-weight:700;color:var(--muted);margin-bottom:5px;letter-spacing:.03em}
+.inp{width:100%;padding:12px 13px;border:1.5px solid var(--line);border-radius:11px;background:#fff;font-size:16px;outline:none}
+.inp:focus{border-color:var(--green3)}
+textarea.inp{min-height:70px;resize:vertical}
+.seg{display:flex;background:#ece6d6;border-radius:12px;padding:4px;gap:4px}
+.seg button{flex:1;border:0;background:transparent;padding:9px 6px;border-radius:9px;font-weight:600;font-size:14px}
+.seg button.on{background:#fff;box-shadow:0 1px 3px rgba(0,0,0,.1)}
+.row{display:flex;gap:10px;align-items:center}
+.between{justify-content:space-between}
+.wrapx{flex-wrap:wrap}
+.muted{color:var(--muted)}
+.small{font-size:13px}
+.note{background:var(--warnbg);color:#6d4e10;border-radius:12px;padding:10px 12px;font-size:13px}
+.okbox{background:var(--okbg);color:#1f5b39;border-radius:12px;padding:12px 14px}
+/* modal */
+.modal{position:fixed;inset:0;background:rgba(20,30,22,.55);z-index:50;display:flex;align-items:flex-end;justify-content:center;padding:0}
+.modal .box{background:var(--paper);width:100%;max-width:520px;border-radius:20px 20px 0 0;padding:22px 20px 26px;max-height:92vh;overflow:auto}
+@media(min-width:620px){.modal{align-items:center}.modal .box{border-radius:20px}}
+.modal h3{font-family:'Cormorant Garamond',serif;font-size:30px;margin:0 0 4px;font-weight:600}
+.x{float:right;border:0;background:#ece6d6;border-radius:10px;width:34px;height:34px;font-weight:800}
+/* tables & staff */
+.tabs{display:flex;gap:6px;overflow-x:auto;margin-bottom:16px;padding-bottom:4px}
+.tabs button{flex:none;border:0;background:transparent;padding:9px 13px;border-radius:10px;font-weight:700;color:var(--muted)}
+.tabs button.on{background:var(--green);color:var(--cream)}
+.tbl{width:100%;border-collapse:collapse;font-size:14px}
+.tbl th{text-align:left;font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);padding:8px 6px;border-bottom:1px solid var(--line)}
+.tbl td{padding:9px 6px;border-bottom:1px solid var(--line);vertical-align:middle}
+.scroll{overflow-x:auto}
+.stat{background:var(--paper);border:1px solid var(--line);border-radius:14px;padding:14px}
+.stat b{display:block;font-family:'Cormorant Garamond',serif;font-size:34px;line-height:1;font-weight:600}
+.stat span{font-size:12px;color:var(--muted);font-weight:600}
+.mini{padding:7px 9px;border:1.5px solid var(--line);border-radius:9px;background:#fff;font-size:14px;width:100%}
+.prog{display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:8px}
+@media(max-width:700px){.prog{grid-template-columns:1fr 1fr}}
+footer{background:var(--green);color:var(--cream);padding:30px 0 40px;margin-top:40px;font-size:14px}
+footer a{opacity:.9}
+.toast{position:fixed;left:50%;bottom:22px;transform:translateX(-50%) translateY(16px);background:var(--ink);color:#fff;padding:12px 18px;border-radius:12px;font-weight:600;font-size:14px;opacity:0;transition:.25s;pointer-events:none;z-index:80;max-width:92vw;text-align:center}
+.toast.show{opacity:1;transform:translateX(-50%)}
+.toast.err{background:var(--bad)}
+.loader{padding:40px 0;text-align:center;color:var(--muted)}
+.hide{display:none!important}
+</style>
+</head>
+<body>
+<div id="nav"></div>
+<main id="app"><div class="loader">Loading…</div></main>
+<footer>
+  <div class="wrap row between wrapx" style="gap:20px">
+    <div><div class="logo" style="align-items:flex-start"><b>UZU</b><small>CLUB</small></div><div style="margin-top:10px;opacity:.8">Padel · Football · El Nido, Palawan</div></div>
+    <div><b style="color:var(--gold);letter-spacing:.18em;font-size:11px">FOR BOOKINGS</b><br>0917 125 5048 · <a href="mailto:info@uzuclub.com">info@uzuclub.com</a><br><a href="https://www.facebook.com/uzu.club" target="_blank" rel="noopener">facebook.com/uzu.club</a> · @uzu.club</div>
+  </div>
+</footer>
+<div id="modal"></div>
+<div id="toast" class="toast"></div>
+<script>
+(function () {
+'use strict';
+const SB_URL = 'https://etlbiheeumhrmzwcvene.supabase.co';
+const SB_KEY = 'sb_publishable_boyoxlapZQQQFtUz6EjjoA_zlczwKQC';
+const sb = window.supabase.createClient(SB_URL, SB_KEY, { auth: { persistSession: true, autoRefreshToken: true } });
+
+/* ---------- utils ---------- */
+const $ = id => document.getElementById(id);
+const esc = s => String(s == null ? '' : s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+const pad = n => String(n).padStart(2, '0');
+function manilaToday() { const d = new Date(Date.now() + (8 * 60 + new Date().getTimezoneOffset()) * 60000); return d.getFullYear() + '-' + pad(d.getMonth() + 1) + '-' + pad(d.getDate()); }
+function manilaNowMins() { const d = new Date(Date.now() + (8 * 60 + new Date().getTimezoneOffset()) * 60000); return d.getHours() * 60 + d.getMinutes(); }
+const parseD = s => { const p = s.split('-').map(Number); return new Date(p[0], p[1] - 1, p[2]); };
+const dstr = d => d.getFullYear() + '-' + pad(d.getMonth() + 1) + '-' + pad(d.getDate());
+const addDays = (s, n) => { const d = parseD(s); d.setDate(d.getDate() + n); return dstr(d); };
+const DOW = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+const MON = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+const fmtDay = s => { const d = parseD(s); return DOW[d.getDay()] + ', ' + MON[d.getMonth()] + ' ' + d.getDate(); };
+const fmtShort = s => { const d = parseD(s); return DOW[d.getDay()].slice(0, 3) + ' ' + d.getDate() + ' ' + MON[d.getMonth()]; };
+const mins = t => { const p = String(t).split(':').map(Number); return p[0] * 60 + (p[1] || 0); };
+const tstr = m => pad(Math.floor(m / 60)) + ':' + pad(m % 60);
+function fmtT(t) { if (!t) return ''; let [h, m] = t.split(':').map(Number); const ap = h >= 12 ? 'PM' : 'AM'; h = h % 12 || 12; return h + ':' + pad(m || 0) + ' ' + ap; }
+const range = (a, b) => fmtT(a) + (b ? ' – ' + fmtT(b) : '');
+const peso = n => n == null ? '' : '₱' + Number(n).toLocaleString('en-PH', { maximumFractionDigits: 0 });
+function priceTxt(s) { if (s.price_regular == null) return 'Rate at the club'; return peso(s.price_regular) + (s.price_member != null ? ' · members ' + peso(s.price_member) : ''); }
+let toastT; function toast(m, err) { const t = $('toast'); t.textContent = m; t.className = 'toast show' + (err ? ' err' : ''); clearTimeout(toastT); toastT = setTimeout(() => t.className = 'toast', 3200); }
+const errMsg = e => (e && (e.message || e.error_description || e.msg)) || 'Something went wrong';
+const sportPill = s => '<span class="pill p-' + esc(s) + '">' + esc(s === 'football' ? 'FOOTBALL' : 'PADEL') + '</span>';
+const statusPill = s => '<span class="pill ' + ({ confirmed: 'p-ok', pending: 'p-warn', waitlist: 'p-warn', cancelled: 'p-mute' }[s] || '') + '">' + esc({ confirmed: 'Confirmed', pending: 'Awaiting confirmation', waitlist: 'Waitlist', cancelled: 'Cancelled' }[s] || s) + '</span>';
+
+/* ---------- state ---------- */
+const S = { user: null, profile: null, staff: false, route: 'home', sport: 'all', courtId: null, courtDate: null, courtStart: null, courtDur: 60, staffTab: 'today', staffDate: manilaToday(), bkFilter: 'pending', memberQ: '', after: null, busy: false };
+const cache = { programs: null, courts: null };
+
+/* ---------- auth ---------- */
+async function loadUser() {
+  const { data } = await sb.auth.getSession();
+  S.user = data.session ? data.session.user : null;
+  S.profile = null; S.staff = false;
+  if (S.user) {
+    const [p, st] = await Promise.all([
+      sb.from('uzu_profiles').select('*').eq('id', S.user.id).maybeSingle(),
+      sb.from('uzu_staff').select('user_id').eq('user_id', S.user.id).maybeSingle()
+    ]);
+    S.profile = p.data; S.staff = !!st.data;
+  }
+}
+sb.auth.onAuthStateChange((ev) => { if (ev === 'SIGNED_OUT' || ev === 'SIGNED_IN') loadUser().then(() => { renderNav(); }); });
+
+/* ---------- data ---------- */
+async function programs() { if (!cache.programs) { const { data } = await sb.from('uzu_programs').select('*').eq('active', true).order('sort'); cache.programs = data || []; } return cache.programs; }
+async function courts() { if (!cache.courts) { const { data } = await sb.from('uzu_courts').select('*').eq('active', true).order('sort'); cache.courts = data || []; } return cache.courts; }
+async function sessionsBetween(a, b, all) {
+  let q = sb.from('uzu_sessions').select('*').gte('date', a).lte('date', b).order('date').order('start_time');
+  if (!all) q = q.neq('status', 'cancelled');
+  const [s, c] = await Promise.all([q, sb.rpc('uzu_session_counts', { p_from: a, p_to: b })]);
+  const counts = {}; (c.data || []).forEach(x => counts[x.session_id] = x);
+  return (s.data || []).map(x => Object.assign(x, { booked: (counts[x.id] || {}).booked || 0, waiting: (counts[x.id] || {}).waitlist || 0 }));
+}
+async function myBookings() {
+  if (!S.user) return [];
+  const { data } = await sb.from('uzu_bookings').select('*').eq('user_id', S.user.id).order('date', { ascending: false }).limit(100);
+  return data || [];
+}
+
+/* ---------- nav ---------- */
+function renderNav() {
+  const r = S.route, L = (h, t, cls) => '<a href="#' + h + '" class="' + (r === h ? 'on ' : '') + (cls || '') + '">' + t + '</a>';
+  $('nav').innerHTML = '<div class="nav"><div class="wrap"><a class="logo" href="#"><b>UZU</b><small>CLUB</small></a>' +
+    '<button class="burger" data-act="burger" aria-label="Menu">☰</button><div class="links" id="links">' +
+    L('schedule', 'Schedule') + L('courts', 'Book a court') +
+    (S.user ? L('account', 'My bookings') : '') + (S.staff ? L('staff', 'Staff') : '') +
+    (S.user ? '<a href="#" data-act="signout">Sign out</a>' : L('signin', 'Sign in', 'cta')) + '</div></div></div>';
+}
+
+/* ---------- router ---------- */
+async function route() {
+  const h = (location.hash || '').replace('#', '');
+  S.route = ['schedule', 'courts', 'account', 'signin', 'staff'].includes(h) ? h : 'home';
+  renderNav(); closeModal();
+  const app = $('app');
+  try {
+    if (S.route === 'home') app.innerHTML = await viewHome();
+    else if (S.route === 'schedule') app.innerHTML = await viewSchedule();
+    else if (S.route === 'courts') app.innerHTML = await viewCourts();
+    else if (S.route === 'account') app.innerHTML = await viewAccount();
+    else if (S.route === 'signin') app.innerHTML = viewSignin();
+    else if (S.route === 'staff') app.innerHTML = await viewStaff();
+  } catch (e) { app.innerHTML = '<div class="wrap sec"><div class="card">Couldn’t load this page: ' + esc(errMsg(e)) + '</div></div>'; }
+}
+const rerender = () => route();
+function go(h) { if (location.hash === '#' + h) route(); else location.hash = h; }
+
+/* ---------- HOME ---------- */
+async function viewHome() {
+  const t = manilaToday();
+  const [progs, sess] = await Promise.all([programs(), sessionsBetween(t, addDays(t, 6))]);
+  const order = [1, 2, 3, 4, 5, 6, 0];
+  let n = 0, rows = '';
+  order.forEach(d => {
+    const items = progs.filter(p => p.dow === d).sort((a, b) => mins(a.start_time) - mins(b.start_time));
+    if (!items.length) return; n++;
+    rows += '<div class="prow"><div class="no">(' + pad(n) + ')</div><div><div class="day">' + DOW[d] + '</div>' +
+      items.map(p => '<div class="pitem"><div><div class="t">' + esc(fmtT(p.start_time)) + (p.sport === 'football' ? '–' + esc(fmtT(p.end_time)) : '') + '</div><div class="n">' + esc(p.title) + '</div>' + (p.audience && p.audience !== 'All levels' && p.audience !== 'Adults' ? '<div class="a">' + esc(p.audience) + '</div>' : '') + '</div><div class="s">' + esc(p.sport.toUpperCase()) + '</div></div>').join('') + '</div></div>';
+  });
+  const upcoming = sess.filter(s => !(s.date === t && mins(s.start_time) <= manilaNowMins())).slice(0, 4);
+  return '<section class="hero"><div class="wrap"><div class="kick">Padel · Football · El Nido</div><h1>Play at <i>UZU</i>.<br>Every day of the week.</h1><p>Americanos, kids’ clinics and football under the El Nido sky. Book a session or a court in a few taps — you’ll get a confirmation by email.</p><div class="btns"><a class="btn b-gold" href="#schedule">See this week’s sessions</a><a class="btn b-ghostl" href="#courts">Book a court</a></div></div></section>' +
+    '<section class="sec"><div class="wrap grid g2" style="align-items:start">' +
+    '<div class="poster"><h3><i>Weekly</i> Schedule</h3><div class="tag">PADEL / FOOTBALL · EL NIDO</div>' + rows + '<div class="foot"><div><b>FOR BOOKINGS</b>0917 125 5048 · info@uzuclub.com</div><div style="align-self:end">@uzu.club</div></div></div>' +
+    '<div><h2>Coming up</h2><p class="sub">The next sessions on the schedule.</p>' + (upcoming.length ? upcoming.map(sessCard).join('') : '<div class="card muted">No sessions in the next few days.</div>') +
+    '<a class="btn b-green b-full" href="#schedule" style="margin-top:6px">Full schedule</a>' +
+    '<div class="card" style="margin-top:16px"><b>New here?</b><div class="muted small" style="margin:4px 0 10px">Create a free account to book sessions and courts. Members get member rates on Americanos.</div>' + (S.user ? '<a class="btn b-ghost b-sm" href="#account">My bookings</a>' : '<a class="btn b-gold b-sm" href="#signin" data-act="regtab">Create an account</a>') + '</div></div>' +
+    '</div></section>';
+}
+
+/* ---------- SCHEDULE ---------- */
+let mineBySession = {};
+function sessCard(s) {
+  const left = s.capacity - s.booked, pct = Math.min(100, Math.round(s.booked / Math.max(1, s.capacity) * 100));
+  const mine = mineBySession[s.id];
+  const started = s.date === manilaToday() && mins(s.start_time) <= manilaNowMins();
+  let act;
+  if (mine) act = statusPill(mine.status) + '<button class="btn b-ghost b-sm" data-act="cancel" data-id="' + mine.id + '">Cancel</button>';
+  else if (s.status === 'closed') act = '<span class="pill p-mute">Bookings closed</span>';
+  else if (started) act = '<span class="pill p-mute">In progress</span>';
+  else act = '<button class="btn ' + (left > 0 ? 'b-green' : 'b-ghost') + ' b-sm" data-act="book" data-id="' + s.id + '">' + (left > 0 ? 'Book' : 'Join waitlist') + '</button>';
+  return '<div class="sess"><div class="time">' + esc(fmtT(s.start_time)) + '<div class="muted small" style="font-weight:500">to ' + esc(fmtT(s.end_time)) + '</div></div>' +
+    '<div class="info"><div class="ttl">' + esc(s.title) + '</div><div class="meta">' + esc(s.audience || '') + (s.audience ? ' · ' : '') + esc(priceTxt(s)) + '</div>' +
+    '<div class="row" style="margin-top:6px;gap:8px">' + sportPill(s.sport) + '<div class="bar"><i style="width:' + pct + '%"></i></div><span class="spots">' + (left > 0 ? left + ' of ' + s.capacity + ' spots left' : 'Full' + (s.waiting ? ' · ' + s.waiting + ' waiting' : '')) + '</span></div></div>' +
+    '<div class="act">' + act + '</div></div>';
+}
+async function viewSchedule() {
+  const t = manilaToday(), end = addDays(t, 13);
+  const [sess, mine] = await Promise.all([sessionsBetween(t, end), myBookings()]);
+  mineBySession = {}; mine.filter(b => b.status !== 'cancelled' && b.session_id).forEach(b => mineBySession[b.session_id] = b);
+  S._sess = {}; sess.forEach(s => S._sess[s.id] = s);
+  const list = sess.filter(s => S.sport === 'all' || s.sport === S.sport);
+  let h = '<section class="sec"><div class="wrap"><h2>Schedule</h2><p class="sub">The next two weeks at UZU. Tap Book to reserve your spot — if a session is full you can join the waitlist and we’ll email you if a spot opens.</p>' +
+    '<div class="seg" style="max-width:360px;margin-bottom:8px">' + [['all', 'All'], ['padel', 'Padel'], ['football', 'Football']].map(x => '<button data-act="sport" data-v="' + x[0] + '" class="' + (S.sport === x[0] ? 'on' : '') + '">' + x[1] + '</button>').join('') + '</div>';
+  let cur = '';
+  list.forEach(s => { if (s.date !== cur) { cur = s.date; h += '<div class="dayhead"><b>' + esc(fmtDay(s.date).split(',')[0]) + '</b><span>' + esc(fmtDay(s.date).split(', ')[1]) + (s.date === t ? ' · Today' : '') + '</span></div>'; } h += sessCard(s); });
+  if (!list.length) h += '<div class="card muted">Nothing scheduled.</div>';
+  return h + '</div></section>';
+}
+function openBook(id) {
+  const s = S._sess[id]; if (!s) return;
+  if (!S.user) { S.after = 'schedule'; toast('Sign in or create an account to book'); go('signin'); return; }
+  const member = S.profile && S.profile.is_member;
+  const price = member && s.price_member != null ? s.price_member : s.price_regular;
+  const full = s.capacity - s.booked <= 0;
+  openModal('<button class="x" data-act="close">✕</button><h3>' + esc(s.title) + '</h3><div class="muted">' + esc(fmtDay(s.date)) + ' · ' + esc(range(s.start_time, s.end_time)) + '</div>' +
+    (s.description ? '<p class="small" style="margin:10px 0">' + esc(s.description) + '</p>' : '') +
+    (full ? '<div class="note" style="margin:10px 0">This session is full — you’ll go on the waitlist and get an email if a spot opens.</div>' : '') +
+    '<label class="field" style="margin-top:12px"><span>PLAYERS</span><select id="bk-players" class="inp">' + [1, 2, 3, 4].map(n => '<option>' + n + '</option>').join('') + '</select></label>' +
+    '<div class="field"><span>PAYMENT</span><div class="seg" id="bk-pay"><button data-act="pay" data-v="club" class="on">Pay at the club</button><button data-act="pay" data-v="gcash">GCash</button></div></div>' +
+    '<label class="field hide" id="bk-gc"><span>GCASH REFERENCE NO.</span><input id="bk-ref" class="inp" placeholder="Send to 0917 125 5048, then enter the ref no."></label>' +
+    '<label class="field"><span>NOTES (optional)</span><textarea id="bk-notes" class="inp" placeholder="Level, names of friends you’re bringing, kid’s age…"></textarea></label>' +
+    '<div class="row between" style="margin:6px 0 14px"><span class="muted">' + (price != null ? 'Price per player' + (member ? ' (member)' : '') : 'Price') + '</span><b>' + (price != null ? esc(peso(price)) : 'Confirmed at the club') + '</b></div>' +
+    '<button class="btn b-gold b-full" data-act="dobook" data-id="' + s.id + '">' + (full ? 'Join waitlist' : 'Confirm booking') + '</button>');
+}
+
+/* ---------- COURTS ---------- */
+async function viewCourts() {
+  const cs = await courts(); const t = manilaToday();
+  if (!S.courtId || !cs.some(c => c.id === S.courtId)) S.courtId = (cs[0] || {}).id;
+  if (!S.courtDate || S.courtDate < t) S.courtDate = t;
+  const c = cs.find(x => x.id === S.courtId);
+  const { data: busy } = await sb.rpc('uzu_court_busy', { p_date: S.courtDate });
+  const blocks = (busy || []).filter(b => b.court_id === S.courtId);
+  const isBusy = (a, z) => blocks.find(b => mins(b.start_time) < z && mins(b.end_time) > a);
+  let h = '<section class="sec"><div class="wrap"><h2>Book a court</h2><p class="sub">Pick a court, a day and a start time. Court bookings are confirmed by our staff — you’ll get an email as soon as it’s locked in.</p>';
+  h += '<div class="chips">' + cs.map(x => '<button class="chip' + (x.id === S.courtId ? ' on' : '') + '" data-act="court" data-id="' + x.id + '">' + esc(x.name) + '<small>' + (x.hourly_rate != null ? esc(peso(x.hourly_rate)) + '/hr' : 'Rate at the club') + '</small></button>').join('') + '</div>';
+  h += '<div class="chips">' + Array.from({ length: 14 }, (_, i) => addDays(t, i)).map(d => '<button class="chip' + (d === S.courtDate ? ' on' : '') + '" data-act="cdate" data-v="' + d + '">' + esc(fmtShort(d).split(' ')[0]) + '<small>' + esc(fmtShort(d).split(' ').slice(1).join(' ')) + '</small></button>').join('') + '</div>';
+  if (!c) return h + '<div class="card">No courts available.</div></div></section>';
+  const open = mins(c.open_time), close = mins(c.close_time), now = S.courtDate === t ? manilaNowMins() : -1;
+  let slots = '';
+  for (let m = open; m + 60 <= close; m += 60) {
+    const b = isBusy(m, m + 60), past = m <= now, sel = S.courtStart === m;
+    slots += '<button class="slot' + (b || past ? ' busy' : '') + (sel ? ' sel' : '') + '" ' + (b || past ? 'disabled' : 'data-act="cslot" data-v="' + m + '"') + '>' + esc(fmtT(tstr(m)).replace(':00', '')) + (b ? '<small>' + esc(b.label) + '</small>' : past ? '<small>Passed</small>' : '') + '</button>';
+  }
+  h += '<div class="grid g2" style="align-items:start;margin-top:8px"><div class="card"><div class="row between" style="margin-bottom:10px"><b>' + esc(c.name) + ' · ' + esc(fmtDay(S.courtDate)) + '</b><span class="small muted">Open ' + esc(fmtT(c.open_time)) + '–' + esc(fmtT(c.close_time)) + '</span></div><div class="slots">' + slots + '</div></div>';
+  h += '<div class="card">';
+  if (S.courtStart == null) h += '<b>Choose a start time</b><p class="muted small">Greyed-out times are taken by another booking or a club session.</p>';
+  else {
+    const durs = [60, 90, 120, 180].filter(d => S.courtStart + d <= close && !isBusy(S.courtStart, S.courtStart + d));
+    if (!durs.includes(S.courtDur)) S.courtDur = durs[0] || 60;
+    const amt = c.hourly_rate != null ? c.hourly_rate * S.courtDur / 60 : null;
+    h += '<b>' + esc(c.name) + '</b><div class="muted small">' + esc(fmtDay(S.courtDate)) + ' · ' + esc(range(tstr(S.courtStart), tstr(S.courtStart + S.courtDur))) + '</div>' +
+      '<label class="field" style="margin-top:12px"><span>DURATION</span><select class="inp" id="c-dur" data-chg="cdur">' + durs.map(d => '<option value="' + d + '"' + (d === S.courtDur ? ' selected' : '') + '>' + (d / 60) + ' hour' + (d > 60 ? 's' : '') + '</option>').join('') + '</select></label>' +
+      '<div class="field"><span>PAYMENT</span><div class="seg" id="bk-pay"><button data-act="pay" data-v="club" class="on">Pay at the club</button><button data-act="pay" data-v="gcash">GCash</button></div></div>' +
+      '<label class="field hide" id="bk-gc"><span>GCASH REFERENCE NO.</span><input id="bk-ref" class="inp" placeholder="Send to 0917 125 5048, then enter the ref no."></label>' +
+      '<label class="field"><span>NOTES (optional)</span><textarea id="bk-notes" class="inp" placeholder="Number of players, racket rental, anything we should know"></textarea></label>' +
+      '<div class="row between" style="margin-bottom:12px"><span class="muted">Total</span><b>' + (amt != null ? esc(peso(amt)) : 'Confirmed by staff') + '</b></div>' +
+      '<button class="btn b-gold b-full" data-act="dobookcourt">' + (S.user ? 'Request this court' : 'Sign in to book') + '</button>';
+  }
+  return h + '</div></div></div></section>';
+}
+
+/* ---------- ACCOUNT ---------- */
+async function viewAccount() {
+  if (!S.user) { S.after = 'account'; return viewSignin(); }
+  const [mine, cs] = await Promise.all([myBookings(), courts()]);
+  const sids = [...new Set(mine.filter(b => b.session_id).map(b => b.session_id))];
+  const sm = {}; if (sids.length) { const { data } = await sb.from('uzu_sessions').select('id,title').in('id', sids); (data || []).forEach(s => sm[s.id] = s); }
+  const t = manilaToday();
+  const up = mine.filter(b => b.date >= t && b.status !== 'cancelled').sort((a, b) => (a.date + a.start_time).localeCompare(b.date + b.start_time));
+  const past = mine.filter(b => !(b.date >= t && b.status !== 'cancelled'));
+  const item = b => '<div class="sess"><div class="time">' + esc(fmtShort(b.date)) + '<div class="muted small" style="font-weight:500">' + esc(fmtT(b.start_time)) + '</div></div><div class="info"><div class="ttl">' + esc(b.kind === 'session' ? (sm[b.session_id] || {}).title || 'Session' : ((cs.find(c => c.id === b.court_id) || {}).name || 'Court')) + '</div><div class="meta">Ref ' + esc(b.ref) + ' · ' + b.players + ' player' + (b.players > 1 ? 's' : '') + (b.amount != null ? ' · ' + esc(peso(b.amount)) : '') + ' · ' + (b.payment === 'paid' ? 'Paid' : b.pay_method === 'gcash' ? 'GCash' : 'Pay at club') + '</div></div><div class="act">' + statusPill(b.status) + (b.date >= t && b.status !== 'cancelled' ? '<button class="btn b-ghost b-sm" data-act="cancel" data-id="' + b.id + '">Cancel</button>' : '') + '</div></div>';
+  const p = S.profile || {};
+  return '<section class="sec"><div class="wrap grid g2" style="align-items:start"><div><h2>My bookings</h2><p class="sub">Hi ' + esc(p.full_name || S.user.email) + (p.is_member ? ' · <span class="pill p-ok">Member</span>' : '') + '</p>' +
+    (up.length ? up.map(item).join('') : '<div class="card muted">No upcoming bookings. <a href="#schedule">Browse the schedule</a>.</div>') +
+    (past.length ? '<h3 class="serif" style="font-size:24px;margin:24px 0 8px">Past & cancelled</h3>' + past.slice(0, 20).map(item).join('') : '') + '</div>' +
+    '<div class="card"><b>My details</b><label class="field" style="margin-top:12px"><span>FULL NAME</span><input id="pf-name" class="inp" value="' + esc(p.full_name || '') + '"></label><label class="field"><span>MOBILE</span><input id="pf-phone" class="inp" inputmode="tel" value="' + esc(p.phone || '') + '"></label><div class="muted small" style="margin-bottom:12px">Email: ' + esc(S.user.email) + '</div><button class="btn b-green" data-act="saveprofile">Save</button></div></div></section>';
+}
+
+/* ---------- SIGN IN ---------- */
+let signTab = 'in';
+function viewSignin() {
+  if (S.user) { setTimeout(() => go(S.after || 'account'), 0); return '<div class="loader">Signed in…</div>'; }
+  return '<section class="sec"><div class="wrap" style="max-width:460px"><div class="card"><div class="seg" style="margin-bottom:16px"><button data-act="stab" data-v="in" class="' + (signTab === 'in' ? 'on' : '') + '">Sign in</button><button data-act="stab" data-v="up" class="' + (signTab === 'up' ? 'on' : '') + '">Create account</button></div>' +
+    (signTab === 'up' ? '<label class="field"><span>FULL NAME</span><input id="su-name" class="inp" autocomplete="name"></label><label class="field"><span>MOBILE</span><input id="su-phone" class="inp" inputmode="tel" autocomplete="tel" placeholder="09xx xxx xxxx"></label>' : '') +
+    '<label class="field"><span>EMAIL</span><input id="su-email" class="inp" type="email" autocomplete="email"></label><label class="field"><span>PASSWORD</span><input id="su-pass" class="inp" type="password" autocomplete="' + (signTab === 'up' ? 'new-password' : 'current-password') + '" placeholder="' + (signTab === 'up' ? 'At least 8 characters' : '') + '"></label>' +
+    '<button class="btn b-gold b-full" data-act="' + (signTab === 'up' ? 'signup' : 'signin') + '">' + (signTab === 'up' ? 'Create my account' : 'Sign in') + '</button>' +
+    (signTab === 'in' ? '<p class="small muted" style="margin:12px 0 0">Forgot your password? Message us on <a href="https://www.facebook.com/uzu.club" target="_blank" rel="noopener">Facebook</a> or call 0917 125 5048.</p>' : '<p class="small muted" style="margin:12px 0 0">We’ll email you a welcome note and every booking confirmation.</p>') + '</div></div></section>';
+}
+
+/* ---------- STAFF ---------- */
+const STAFF_TABS = [['today', 'Day sheet'], ['bookings', 'Bookings'], ['sessions', 'Sessions'], ['weekly', 'Weekly schedule'], ['courts', 'Courts'], ['members', 'Members'], ['emails', 'Emails'], ['team', 'Staff']];
+async function viewStaff() {
+  if (!S.user) { S.after = 'staff'; return viewSignin(); }
+  if (!S.staff) return '<section class="sec"><div class="wrap"><div class="card">This area is for UZU staff. Ask a manager to add your account.</div></div></section>';
+  const { data: st } = await sb.rpc('uzu_staff_stats');
+  const s = st || {};
+  let h = '<section class="sec" style="padding-top:26px"><div class="wrap"><div class="row between wrapx"><h2>Staff dashboard</h2><span class="muted small">' + esc(fmtDay(manilaToday())) + '</span></div>' +
+    '<div class="grid g3" style="grid-template-columns:repeat(auto-fit,minmax(150px,1fr));margin:14px 0 18px">' +
+    '<div class="stat"><b>' + (s.today || 0) + '</b><span>Confirmed today</span></div><div class="stat"><b>' + (s.week || 0) + '</b><span>Next 7 days</span></div>' +
+    '<div class="stat" style="' + (s.pending ? 'border-color:var(--gold)' : '') + '"><b>' + (s.pending || 0) + '</b><span>Awaiting confirmation</span></div><div class="stat"><b>' + (s.members || 0) + '</b><span>Registered players</span></div></div>' +
+    '<div class="tabs">' + STAFF_TABS.map(t => '<button data-act="stafftab" data-v="' + t[0] + '" class="' + (S.staffTab === t[0] ? 'on' : '') + '">' + t[1] + (t[0] === 'bookings' && s.pending ? ' (' + s.pending + ')' : '') + '</button>').join('') + '</div><div id="stafftab">';
+  const fn = { today: stToday, bookings: stBookings, sessions: stSessions, weekly: stWeekly, courts: stCourts, members: stMembers, emails: () => stEmails(s), team: () => stTeam(s) }[S.staffTab];
+  h += await fn();
+  return h + '</div></div></section>';
+}
+async function profilesFor(ids) { ids = [...new Set(ids.filter(Boolean))]; const m = {}; if (!ids.length) return m; const { data } = await sb.from('uzu_profiles').select('*').in('id', ids); (data || []).forEach(p => m[p.id] = p); return m; }
+const who = (b, pm) => { const p = pm[b.user_id]; return p ? (p.full_name || p.email) : (b.guest_name || 'Guest'); };
+const contact = (b, pm) => { const p = pm[b.user_id]; return esc([p ? p.phone : b.guest_phone, p ? p.email : b.guest_email].filter(Boolean).join(' · ')); };
+function bkActions(b) {
+  let h = '';
+  if (b.status === 'pending' || b.status === 'waitlist') h += '<button class="btn b-green b-sm" data-act="bset" data-id="' + b.id + '" data-v="confirmed">Confirm</button> ';
+  if (b.status !== 'cancelled') h += '<button class="btn b-sm ' + (b.payment === 'paid' ? 'b-ghost' : 'b-gold') + '" data-act="bpaid" data-id="' + b.id + '" data-v="' + (b.payment === 'paid' ? 'unpaid' : 'paid') + '">' + (b.payment === 'paid' ? 'Paid ✓' : 'Mark paid') + '</button> ' +
+    '<button class="btn b-danger b-sm" data-act="bset" data-id="' + b.id + '" data-v="cancelled">Cancel</button>';
+  return h;
+}
+async function stToday() {
+  const d = S.staffDate;
+  const [sess, bk, cs] = await Promise.all([sessionsBetween(d, d, true), sb.from('uzu_bookings').select('*').eq('date', d).neq('status', 'cancelled').order('created_at'), courts()]);
+  const bookings = bk.data || []; const pm = await profilesFor(bookings.map(b => b.user_id));
+  let h = '<div class="row wrapx" style="margin-bottom:14px"><button class="btn b-ghost b-sm" data-act="sday" data-v="-1">←</button><input type="date" class="mini" style="width:auto" id="st-date" data-chg="sdate" value="' + d + '"><button class="btn b-ghost b-sm" data-act="sday" data-v="1">→</button><b style="margin-left:6px">' + esc(fmtDay(d)) + '</b></div>';
+  if (!sess.length && !bookings.length) return h + '<div class="card muted">Nothing on this day.</div>';
+  sess.forEach(s => {
+    const list = bookings.filter(b => b.session_id === s.id);
+    h += '<div class="card" style="margin-bottom:12px"><div class="row between wrapx"><div><b style="font-size:17px">' + esc(s.title) + '</b> <span class="muted">' + esc(range(s.start_time, s.end_time)) + '</span> ' + sportPill(s.sport) + (s.status !== 'open' ? ' <span class="pill p-mute">' + esc(s.status) + '</span>' : '') + '</div><span class="small"><b>' + s.booked + '</b>/' + s.capacity + (s.waiting ? ' · ' + s.waiting + ' waiting' : '') + '</span></div>' +
+      (list.length ? '<div class="scroll"><table class="tbl" style="margin-top:8px"><tr><th>#</th><th>Player</th><th>Contact</th><th>Pax</th><th>Status</th><th>Pay</th><th></th></tr>' + list.map((b, i) => '<tr><td>' + (i + 1) + '</td><td><b>' + esc(who(b, pm)) + '</b>' + (b.notes ? '<div class="small muted">' + esc(b.notes) + '</div>' : '') + '</td><td class="small">' + contact(b, pm) + '</td><td>' + b.players + '</td><td>' + statusPill(b.status) + '</td><td class="small">' + (b.amount != null ? esc(peso(b.amount)) + ' · ' : '') + (b.pay_method === 'gcash' ? 'GCash ' + esc(b.gcash_ref || '') : 'At club') + '</td><td style="white-space:nowrap">' + bkActions(b) + '</td></tr>').join('') + '</table></div>' : '<div class="muted small" style="margin-top:8px">No bookings yet.</div>') +
+      '<div class="row wrapx" style="margin-top:10px;gap:6px"><input class="mini" style="max-width:180px" placeholder="Walk-in name" id="g-n-' + s.id + '"><input class="mini" style="max-width:150px" placeholder="Mobile (optional)" id="g-p-' + s.id + '"><input class="mini" style="max-width:200px" placeholder="Email (optional)" id="g-e-' + s.id + '"><button class="btn b-ghost b-sm" data-act="addguest" data-id="' + s.id + '">+ Add player</button></div></div>';
+  });
+  const cb = bookings.filter(b => b.kind === 'court').sort((a, b) => mins(a.start_time) - mins(b.start_time));
+  if (cb.length) h += '<div class="card"><b>Court bookings</b><div class="scroll"><table class="tbl" style="margin-top:8px"><tr><th>Time</th><th>Court</th><th>Player</th><th>Status</th><th>Pay</th><th></th></tr>' + cb.map(b => '<tr><td>' + esc(range(b.start_time, b.end_time)) + '</td><td>' + esc((cs.find(c => c.id === b.court_id) || {}).name || b.court_id) + '</td><td><b>' + esc(who(b, pm)) + '</b><div class="small muted">' + contact(b, pm) + '</div></td><td>' + statusPill(b.status) + '</td><td class="small">' + (b.amount != null ? esc(peso(b.amount)) + ' · ' : '') + (b.pay_method === 'gcash' ? 'GCash ' + esc(b.gcash_ref || '') : 'At club') + '</td><td style="white-space:nowrap">' + bkActions(b) + '</td></tr>').join('') + '</table></div></div>';
+  return h;
+}
+async function stBookings() {
+  let q = sb.from('uzu_bookings').select('*').order('date').order('start_time').limit(300);
+  if (S.bkFilter !== 'all') q = q.eq('status', S.bkFilter);
+  if (S.bkFilter !== 'cancelled') q = q.gte('date', manilaToday());
+  const [{ data }, cs] = await Promise.all([q, courts()]);
+  const list = data || []; const pm = await profilesFor(list.map(b => b.user_id));
+  const sids = [...new Set(list.map(b => b.session_id).filter(Boolean))]; const sm = {};
+  if (sids.length) { const r = await sb.from('uzu_sessions').select('id,title').in('id', sids); (r.data || []).forEach(s => sm[s.id] = s); }
+  let h = '<div class="seg" style="max-width:560px;margin-bottom:12px">' + [['pending', 'Awaiting'], ['confirmed', 'Confirmed'], ['waitlist', 'Waitlist'], ['cancelled', 'Cancelled'], ['all', 'All upcoming']].map(x => '<button data-act="bkf" data-v="' + x[0] + '" class="' + (S.bkFilter === x[0] ? 'on' : '') + '">' + x[1] + '</button>').join('') + '</div>';
+  if (!list.length) return h + '<div class="card muted">No bookings here.</div>';
+  return h + '<div class="card scroll"><table class="tbl"><tr><th>When</th><th>What</th><th>Player</th><th>Pax</th><th>Status</th><th>Pay</th><th></th></tr>' + list.map(b => '<tr><td style="white-space:nowrap"><b>' + esc(fmtShort(b.date)) + '</b><div class="small muted">' + esc(range(b.start_time, b.end_time)) + '</div></td><td>' + esc(b.kind === 'session' ? (sm[b.session_id] || {}).title : (cs.find(c => c.id === b.court_id) || {}).name) + '<div class="small muted">Ref ' + esc(b.ref) + '</div></td><td><b>' + esc(who(b, pm)) + '</b><div class="small muted">' + contact(b, pm) + '</div>' + (b.notes ? '<div class="small">“' + esc(b.notes) + '”</div>' : '') + '</td><td>' + b.players + '</td><td>' + statusPill(b.status) + '</td><td class="small">' + (b.amount != null ? esc(peso(b.amount)) + '<br>' : '') + (b.pay_method === 'gcash' ? 'GCash ' + esc(b.gcash_ref || '') : 'At club') + '</td><td style="white-space:nowrap">' + bkActions(b) + '</td></tr>').join('') + '</table></div>';
+}
+async function stSessions() {
+  const t = manilaToday(); const [sess, cs] = await Promise.all([sessionsBetween(t, addDays(t, 41), true), courts()]);
+  let h = '<div class="card" style="margin-bottom:14px"><b>Add a one-off session</b><div class="prog" style="margin-top:10px"><input class="mini" id="os-title" placeholder="Title (e.g. Holiday Americano)"><select class="mini" id="os-sport"><option value="padel">Padel</option><option value="football">Football</option></select><input class="mini" type="date" id="os-date" value="' + t + '"><input class="mini" id="os-cap" inputmode="numeric" placeholder="Capacity" value="16"><input class="mini" type="time" id="os-start" value="15:00"><input class="mini" type="time" id="os-end" value="17:00"><input class="mini" id="os-price" inputmode="numeric" placeholder="Price ₱ (optional)"><input class="mini" id="os-aud" placeholder="Who it’s for (optional)"></div><div class="row wrapx small" style="margin:10px 0">' + cs.map(c => '<label class="row" style="gap:5px"><input type="checkbox" class="os-court" value="' + c.id + '">' + esc(c.name) + '</label>').join('') + '</div><button class="btn b-green b-sm" data-act="addsession">Add session</button> <button class="btn b-ghost b-sm" data-act="gensessions">Refresh next 6 weeks from weekly schedule</button></div>';
+  let cur = '';
+  h += '<div class="card scroll"><table class="tbl"><tr><th>Date</th><th>Session</th><th>Booked</th><th>Capacity</th><th>Status</th><th></th></tr>';
+  sess.forEach(s => { h += '<tr' + (s.date !== cur ? ' style="border-top:2px solid var(--line)"' : '') + '><td style="white-space:nowrap">' + (s.date !== cur ? '<b>' + esc(fmtShort(s.date)) + '</b>' : '') + '</td><td>' + esc(s.title) + ' <span class="small muted">' + esc(range(s.start_time, s.end_time)) + '</span></td><td>' + s.booked + (s.waiting ? ' <span class="small muted">+' + s.waiting + ' waiting</span>' : '') + '</td><td><input class="mini" style="width:70px" inputmode="numeric" data-chg="scap" data-id="' + s.id + '" value="' + s.capacity + '"></td><td><select class="mini" style="width:auto" data-chg="sstatus" data-id="' + s.id + '">' + ['open', 'closed', 'cancelled'].map(x => '<option' + (x === s.status ? ' selected' : '') + '>' + x + '</option>').join('') + '</select></td><td><button class="btn b-ghost b-sm" data-act="roster" data-v="' + s.date + '">Day sheet</button></td></tr>'; cur = s.date; });
+  return h + '</table></div>';
+}
+async function stWeekly() {
+  const [{ data }, cs] = await Promise.all([sb.from('uzu_programs').select('*').order('sort'), courts()]);
+  const row = p => '<div class="card" style="margin-bottom:10px" data-prog="' + esc(p.id || '') + '"><div class="prog"><input class="mini" data-f="title" value="' + esc(p.title || '') + '" placeholder="Title"><select class="mini" data-f="dow">' + [1, 2, 3, 4, 5, 6, 0].map(d => '<option value="' + d + '"' + (d === p.dow ? ' selected' : '') + '>' + DOW[d] + '</option>').join('') + '</select><input class="mini" type="time" data-f="start_time" value="' + esc(p.start_time || '') + '"><input class="mini" type="time" data-f="end_time" value="' + esc(p.end_time || '') + '"><input class="mini" data-f="audience" value="' + esc(p.audience || '') + '" placeholder="Who it’s for"><select class="mini" data-f="sport"><option value="padel"' + (p.sport === 'padel' ? ' selected' : '') + '>Padel</option><option value="football"' + (p.sport === 'football' ? ' selected' : '') + '>Football</option></select><input class="mini" data-f="capacity" inputmode="numeric" value="' + esc(p.capacity || '') + '" placeholder="Capacity"><input class="mini" data-f="price_regular" inputmode="numeric" value="' + esc(p.price_regular == null ? '' : p.price_regular) + '" placeholder="Price ₱"><input class="mini" data-f="price_member" inputmode="numeric" value="' + esc(p.price_member == null ? '' : p.price_member) + '" placeholder="Member ₱"><input class="mini" data-f="description" value="' + esc(p.description || '') + '" placeholder="Description" style="grid-column:span 3"></div><div class="row wrapx small" style="margin-top:8px">' + cs.map(c => '<label class="row" style="gap:5px"><input type="checkbox" data-court value="' + c.id + '"' + ((p.court_ids || []).includes(c.id) ? ' checked' : '') + '>' + esc(c.name) + '</label>').join('') + '<label class="row" style="gap:5px;margin-left:auto"><input type="checkbox" data-f="active"' + (p.active !== false ? ' checked' : '') + '>Active</label><button class="btn b-green b-sm" data-act="saveprog">Save</button></div></div>';
+  return '<p class="muted small">This is the repeating weekly timetable shown on the home page. Changes apply to sessions created from now on; already-listed dates can be edited in the Sessions tab.</p>' + (data || []).map(row).join('') + '<div class="muted small" style="margin:14px 0 6px"><b>Add a weekly slot</b></div>' + row({ dow: 1, sport: 'padel', capacity: 12, active: true, court_ids: [] });
+}
+async function stCourts() {
+  const { data } = await sb.from('uzu_courts').select('*').order('sort');
+  return '<p class="muted small">Leave the rate empty to show “Rate at the club”.</p>' + (data || []).map(c => '<div class="card" style="margin-bottom:10px" data-courtrow="' + esc(c.id) + '"><div class="prog"><input class="mini" data-f="name" value="' + esc(c.name) + '"><input class="mini" data-f="hourly_rate" inputmode="numeric" placeholder="₱ per hour" value="' + esc(c.hourly_rate == null ? '' : c.hourly_rate) + '"><input class="mini" type="time" data-f="open_time" value="' + esc(c.open_time) + '"><input class="mini" type="time" data-f="close_time" value="' + esc(c.close_time) + '"></div><div class="row" style="margin-top:8px"><label class="row small" style="gap:5px"><input type="checkbox" data-f="active"' + (c.active ? ' checked' : '') + '>Bookable</label><button class="btn b-green b-sm" style="margin-left:auto" data-act="savecourt">Save</button></div></div>').join('');
+}
+async function stMembers() {
+  const { data } = await sb.from('uzu_profiles').select('*').order('created_at', { ascending: false }).limit(1000);
+  const q = S.memberQ.toLowerCase();
+  const list = (data || []).filter(p => !q || [p.full_name, p.email, p.phone].join(' ').toLowerCase().includes(q));
+  return '<input class="inp" style="max-width:360px;margin-bottom:12px" placeholder="Search name, email or mobile" id="mq" value="' + esc(S.memberQ) + '" data-chg="mq"><div class="card scroll"><table class="tbl"><tr><th>Name</th><th>Email</th><th>Mobile</th><th>Joined</th><th>Member rate</th></tr>' + list.map(p => '<tr><td><b>' + esc(p.full_name || '—') + '</b></td><td class="small">' + esc(p.email) + '</td><td class="small">' + esc(p.phone || '') + '</td><td class="small">' + esc(String(p.created_at).slice(0, 10)) + '</td><td><label class="row small" style="gap:5px"><input type="checkbox" data-chg="member" data-id="' + p.id + '"' + (p.is_member ? ' checked' : '') + '>Member</label></td></tr>').join('') + '</table>' + (list.length ? '' : '<div class="muted small" style="padding:10px">No players yet.</div>') + '</div>';
+}
+async function stEmails(s) {
+  const { data } = await sb.from('uzu_outbox').select('*').order('id', { ascending: false }).limit(100);
+  const last = s.last_email_poll ? new Date(s.last_email_poll) : null;
+  const live = last && Date.now() - last.getTime() < 10 * 60000;
+  const K = { welcome: 'Welcome', booking_confirmed: 'Booking confirmed', booking_waitlist: 'Waitlisted', booking_received: 'Court request received', booking_promoted: 'Moved off waitlist', booking_cancelled: 'Cancelled', staff_new_booking: 'New booking (to staff)', reminder: 'Reminder' };
+  return '<div class="' + (live ? 'okbox' : 'note') + '" style="margin-bottom:12px">' + (live ? '<b>Email sender is running.</b> Last check ' + esc(last.toLocaleTimeString()) + '. Emails go out from uzu.elnido@gmail.com within about a minute.' : '<b>Email sender not connected yet.</b> Emails are queued below and will go out as soon as the Gmail sender (Google Apps Script on uzu.elnido@gmail.com) is switched on.' + (s.outbox_pending ? ' ' + s.outbox_pending + ' waiting.' : '')) + '</div>' +
+    '<div class="card scroll"><table class="tbl"><tr><th>When</th><th>To</th><th>Email</th><th>Status</th><th></th></tr>' + (data || []).map(o => '<tr><td class="small" style="white-space:nowrap">' + esc(new Date(o.created_at).toLocaleString()) + '</td><td class="small">' + esc(o.to_email) + '</td><td>' + esc(K[o.kind] || o.kind) + (o.payload && o.payload.title ? '<div class="small muted">' + esc(o.payload.title) + '</div>' : '') + '</td><td>' + '<span class="pill ' + ({ sent: 'p-ok', failed: 'p-bad', pending: 'p-warn', sending: 'p-warn' }[o.status]) + '">' + esc(o.status) + '</span>' + (o.error ? '<div class="small" style="color:var(--bad)">' + esc(o.error) + '</div>' : '') + '</td><td>' + (o.status === 'failed' ? '<button class="btn b-ghost b-sm" data-act="retry" data-id="' + o.id + '">Retry</button>' : '') + '</td></tr>').join('') + '</table></div>';
+}
+async function stTeam(s) {
+  const { data } = await sb.from('uzu_staff').select('*').order('added_at');
+  return '<div class="grid g2" style="align-items:start"><div class="card"><b>Staff accounts</b><table class="tbl" style="margin-top:8px">' + (data || []).map(x => '<tr><td><b>' + esc(x.name || '') + '</b><div class="small muted">' + esc(x.email) + '</div></td><td style="text-align:right">' + (x.user_id === S.user.id ? '<span class="small muted">You</span>' : '<button class="btn b-danger b-sm" data-act="rmstaff" data-id="' + x.user_id + '">Remove</button>') + '</td></tr>').join('') + '</table><div class="row" style="margin-top:12px"><input class="mini" id="new-staff" placeholder="Email of a registered player"><button class="btn b-green b-sm" data-act="addstaff">Add</button></div><p class="small muted">They need to create an account on the site first.</p></div>' +
+    '<div class="card"><b>New-booking alerts</b><p class="small muted">Every new booking is emailed to this inbox.</p><div class="row"><input class="mini" id="inbox" value="' + esc(s.staff_inbox || '') + '"><button class="btn b-green b-sm" data-act="saveinbox">Save</button></div></div></div>';
+}
+
+/* ---------- modal ---------- */
+function openModal(html) { $('modal').innerHTML = '<div class="modal" data-act="bg"><div class="box">' + html + '</div></div>'; }
+function closeModal() { $('modal').innerHTML = ''; }
+
+/* ---------- actions ---------- */
+async function run(fn, ok) {
+  if (S.busy) return; S.busy = true;
+  try { await fn(); if (ok) toast(ok); } catch (e) { toast(errMsg(e), true); }
+  S.busy = false;
+}
+const must = r => { if (r.error) throw r.error; return r.data; };
+const num = v => v === '' || v == null ? null : Number(v);
+
+document.addEventListener('click', async ev => {
+  const b = ev.target.closest('[data-act]'); if (!b) return;
+  const a = b.dataset.act, id = b.dataset.id, v = b.dataset.v;
+  if (a === 'bg' && ev.target !== b) return;
+  if (b.tagName === 'A' && a === 'signout') ev.preventDefault();
+  switch (a) {
+    case 'burger': $('links').classList.toggle('open'); break;
+    case 'bg': case 'close': closeModal(); break;
+    case 'signout': await sb.auth.signOut(); await loadUser(); toast('Signed out'); go(''); break;
+    case 'regtab': signTab = 'up'; break;
+    case 'stab': signTab = v; route(); break;
+    case 'signin': run(async () => {
+      const email = $('su-email').value.trim(), password = $('su-pass').value;
+      must(await sb.auth.signInWithPassword({ email, password })); await loadUser(); go(S.after || 'account'); S.after = null;
+    }, 'Welcome back!'); break;
+    case 'signup': run(async () => {
+      const full_name = $('su-name').value.trim(), phone = $('su-phone').value.trim(), email = $('su-email').value.trim(), password = $('su-pass').value;
+      if (!full_name) throw new Error('Please enter your name'); if (password.length < 8) throw new Error('Password must be at least 8 characters');
+      const r = must(await sb.auth.signUp({ email, password, options: { data: { full_name, phone }, emailRedirectTo: location.origin + location.pathname } }));
+      if (!r.session) { toast('Check your email to confirm your account'); return; }
+      await loadUser(); go(S.after || 'schedule'); S.after = null;
+    }, 'Account created — welcome to UZU!'); break;
+    case 'sport': S.sport = v; route(); break;
+    case 'book': openBook(id); break;
+    case 'pay': { b.parentElement.querySelectorAll('button').forEach(x => x.classList.toggle('on', x === b)); $('bk-gc').classList.toggle('hide', v !== 'gcash'); break; }
+    case 'dobook': run(async () => {
+      const pay = (document.querySelector('#bk-pay .on') || {}).dataset.v || 'club';
+      const r = must(await sb.rpc('uzu_book_session', { p_session: id, p_players: +$('bk-players').value, p_pay_method: pay, p_gcash_ref: ($('bk-ref') || {}).value || '', p_notes: $('bk-notes').value }));
+      closeModal(); await route();
+      toast(r.status === 'waitlist' ? 'You’re on the waitlist — we’ll email you if a spot opens' : 'Booked! Confirmation sent to your email (ref ' + r.ref + ')');
+    }); break;
+    case 'cancel': if (!confirmTwice(b)) return; run(async () => { must(await sb.rpc('uzu_cancel_my_booking', { p_id: id })); await route(); }, 'Booking cancelled'); break;
+    case 'court': S.courtId = id; S.courtStart = null; route(); break;
+    case 'cdate': S.courtDate = v; S.courtStart = null; route(); break;
+    case 'cslot': S.courtStart = +v; route(); break;
+    case 'dobookcourt': if (!S.user) { S.after = 'courts'; go('signin'); return; } run(async () => {
+      const pay = (document.querySelector('#bk-pay .on') || {}).dataset.v || 'club';
+      const r = must(await sb.rpc('uzu_book_court', { p_court: S.courtId, p_date: S.courtDate, p_start: tstr(S.courtStart), p_end: tstr(S.courtStart + S.courtDur), p_pay_method: pay, p_gcash_ref: ($('bk-ref') || {}).value || '', p_notes: $('bk-notes').value }));
+      S.courtStart = null; await route(); toast('Request sent (ref ' + r.ref + '). We’ll email you once staff confirm.');
+    }); break;
+    case 'saveprofile': run(async () => { must(await sb.rpc('uzu_update_profile', { p_name: $('pf-name').value, p_phone: $('pf-phone').value })); await loadUser(); }, 'Saved'); break;
+    // staff
+    case 'stafftab': S.staffTab = v; route(); break;
+    case 'sday': S.staffDate = addDays(S.staffDate, +v); route(); break;
+    case 'roster': S.staffTab = 'today'; S.staffDate = v; route(); window.scrollTo(0, 0); break;
+    case 'bkf': S.bkFilter = v; route(); break;
+    case 'bset': if (v === 'cancelled' && !confirmTwice(b)) return; run(async () => { must(await sb.from('uzu_bookings').update({ status: v, updated_at: new Date().toISOString() }).eq('id', id)); await route(); }, v === 'confirmed' ? 'Confirmed — player notified by email' : 'Cancelled — player notified'); break;
+    case 'bpaid': run(async () => { must(await sb.from('uzu_bookings').update({ payment: v, updated_at: new Date().toISOString() }).eq('id', id)); await route(); }, v === 'paid' ? 'Marked paid' : 'Marked unpaid'); break;
+    case 'addguest': run(async () => { must(await sb.rpc('uzu_staff_add_guest', { p_session: id, p_name: $('g-n-' + id).value, p_phone: $('g-p-' + id).value, p_email: $('g-e-' + id).value, p_players: 1 })); await route(); }, 'Player added'); break;
+    case 'addsession': run(async () => {
+      const courtsSel = [...document.querySelectorAll('.os-court:checked')].map(x => x.value);
+      const title = $('os-title').value.trim(); if (!title) throw new Error('Add a title');
+      must(await sb.from('uzu_sessions').insert({ title, sport: $('os-sport').value, date: $('os-date').value, start_time: $('os-start').value, end_time: $('os-end').value, capacity: +$('os-cap').value || 12, price_regular: num($('os-price').value), audience: $('os-aud').value || null, court_ids: courtsSel }));
+      await route();
+    }, 'Session added'); break;
+    case 'gensessions': run(async () => { const n = must(await sb.rpc('uzu_ensure_sessions', { p_weeks: 6 })); await route(); toast(n ? n + ' new sessions added' : 'Already up to date'); }); break;
+    case 'saveprog': run(async () => {
+      const card = b.closest('[data-prog]'); const pid = card.dataset.prog; const f = k => card.querySelector('[data-f="' + k + '"]');
+      const row = { title: f('title').value.trim(), dow: +f('dow').value, start_time: f('start_time').value, end_time: f('end_time').value, audience: f('audience').value || null, sport: f('sport').value, capacity: +f('capacity').value || 12, price_regular: num(f('price_regular').value), price_member: num(f('price_member').value), description: f('description').value || null, active: f('active').checked, court_ids: [...card.querySelectorAll('[data-court]:checked')].map(x => x.value) };
+      if (!row.title || !row.start_time || !row.end_time) throw new Error('Title, start and end are required');
+      if (pid) must(await sb.from('uzu_programs').update(row).eq('id', pid));
+      else must(await sb.from('uzu_programs').insert(Object.assign({ id: row.title.toLowerCase().replace(/[^a-z0-9]+/g, '-') + '-' + row.dow + '-' + Date.now().toString(36), sort: 99 }, row)));
+      cache.programs = null; await sb.rpc('uzu_ensure_sessions', { p_weeks: 6 }); await route();
+    }, 'Weekly schedule saved'); break;
+    case 'savecourt': run(async () => {
+      const card = b.closest('[data-courtrow]'); const f = k => card.querySelector('[data-f="' + k + '"]');
+      must(await sb.from('uzu_courts').update({ name: f('name').value, hourly_rate: num(f('hourly_rate').value), open_time: f('open_time').value, close_time: f('close_time').value, active: f('active').checked }).eq('id', card.dataset.courtrow));
+      cache.courts = null; await route();
+    }, 'Court saved'); break;
+    case 'retry': run(async () => { must(await sb.rpc('uzu_staff_retry_email', { p_id: +id })); await route(); }, 'Queued again'); break;
+    case 'addstaff': run(async () => { must(await sb.rpc('uzu_staff_add', { p_email: $('new-staff').value })); await route(); }, 'Staff added'); break;
+    case 'rmstaff': if (!confirmTwice(b)) return; run(async () => { must(await sb.from('uzu_staff').delete().eq('user_id', id)); await route(); }, 'Removed'); break;
+    case 'saveinbox': run(async () => { must(await sb.rpc('uzu_staff_set_inbox', { p_email: $('inbox').value })); }, 'Saved'); break;
+  }
+});
+function confirmTwice(b) { if (b.dataset.armed) return true; b.dataset.armed = '1'; const t = b.textContent; b.textContent = 'Tap again'; setTimeout(() => { if (b.isConnected) { delete b.dataset.armed; b.textContent = t; } }, 3000); return false; }
+document.addEventListener('change', ev => {
+  const el = ev.target, k = el.dataset.chg; if (!k) return; const id = el.dataset.id;
+  if (k === 'cdur') { S.courtDur = +el.value; route(); }
+  else if (k === 'sdate') { S.staffDate = el.value; route(); }
+  else if (k === 'mq') { S.memberQ = el.value; route(); }
+  else if (k === 'scap') run(async () => { must(await sb.from('uzu_sessions').update({ capacity: +el.value }).eq('id', id)); await route(); }, 'Capacity updated');
+  else if (k === 'sstatus') run(async () => { must(await sb.from('uzu_sessions').update({ status: el.value }).eq('id', id)); await route(); }, 'Session ' + el.value);
+  else if (k === 'member') run(async () => { must(await sb.from('uzu_profiles').update({ is_member: el.checked }).eq('id', id)); }, el.checked ? 'Member rate on' : 'Member rate off');
+});
+document.addEventListener('keydown', ev => { if (ev.key === 'Enter' && ev.target.id === 'su-pass') { const b = document.querySelector('[data-act="signin"],[data-act="signup"]'); if (b) b.click(); } if (ev.key === 'Escape') closeModal(); });
+window.addEventListener('hashchange', () => { route(); window.scrollTo(0, 0); });
+
+/* ---------- boot ---------- */
+(async () => {
+  sb.rpc('uzu_ensure_sessions', { p_weeks: 6 }).then(() => {}, () => {});
+  await loadUser(); route();
+})();
+})();
+</script>
+</body>
+</html>
