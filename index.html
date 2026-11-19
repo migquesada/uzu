@@ -252,6 +252,13 @@ footer a{opacity:.9}
 .cambox{background:var(--paper);border-radius:18px;padding:14px;width:100%;max-width:560px}
 .cambox video,.cambox img{display:block;width:100%;max-height:62vh;object-fit:contain;border-radius:12px;background:#000}
 .cambox .row{gap:8px;flex-wrap:wrap;margin-top:12px}
+.brief{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:12px;margin:14px 0 18px}
+.brief .card{margin:0;padding:14px 16px}.brief h4{margin:0 0 8px;font-size:12px;letter-spacing:.12em;color:var(--muted)}
+.todo{display:flex;align-items:center;gap:10px;padding:7px 0;border-bottom:1px solid var(--line);cursor:pointer;font-size:14px}.todo:last-child{border-bottom:0}
+.todo b{min-width:30px;text-align:center;background:var(--gold);color:#2f4a37;border-radius:999px;padding:2px 8px;font-size:13px}.todo.ok b{background:#e6efe6;color:var(--ok)}
+.tip{font-size:13.5px;padding:6px 0;border-bottom:1px solid var(--line)}.tip:last-child{border-bottom:0}.tip a{cursor:pointer;font-weight:700;text-decoration:underline}
+.cr{display:inline-block;background:#eaf3ea;color:#1f5a43;border:1px solid #cfe3cf;border-radius:999px;padding:1px 9px;font-size:12px;font-weight:800;white-space:nowrap}
+.promo .sl{display:flex;gap:10px;align-items:center;justify-content:space-between;flex-wrap:wrap;padding:10px 0;border-top:1px solid rgba(255,255,255,.18)}
 </style>
 </head>
 <body>
@@ -305,6 +312,7 @@ const statusPill = s => '<span class="pill ' + ({ confirmed: 'p-ok', pending: 'p
 
 /* ---------- state ---------- */
 const S = { user: null, profile: null, staff: false, route: 'home', sport: 'all', courtId: null, courtDate: null, courtStart: null, courtDur: 60, staffTab: 'sheet', sheetMode: 'week', sheetDate: manilaToday(), staffDate: manilaToday(), bkFilter: 'pending', memberQ: '', after: null, busy: false };
+try { S.hideBrief = localStorage.getItem('uzu_brief') === '0'; } catch (e) {}
 const cache = { programs: null, courts: null, trainers: null, extras: null };
 
 /* ---------- auth ---------- */
@@ -344,7 +352,7 @@ async function attachBookingProof(list) {
   for (const b of list) must(await sb.rpc('uzu_attach_proof', { p_booking: b.id, p_path: path }));
 }
 async function refreshWallet() { if (!S.user || S.staff) { S.wallet = null; return; } const { data } = await sb.rpc('uzu_my_wallet'); S.wallet = data || { balance: 0, packages: [], topups: [], ledger: [] }; }
-const payTxt = b => b.pay_method === 'credits' ? 'Credits' + (b.credits_charged > 0 ? ' ✓' : '') : b.pay_method === 'gcash' ? 'GCash ' + esc(b.gcash_ref || '') : 'At club';
+const payTxt = b => b.pay_method === 'credits' ? '<span class="cr">💳 ' + (b.credits_charged > 0 ? 'Paid with credits' : 'Credits') + '</span>' : b.pay_method === 'gcash' ? 'GCash ' + esc(b.gcash_ref || '') : 'At club';
 const addonTxt = b => [b.trainer_id ? 'Trainer: ' + esc(((cache.trainers || []).find(t => t.id === b.trainer_id) || {}).name || 'yes') : '', b.rackets ? b.rackets + ' racket' + (b.rackets > 1 ? 's' : '') : ''].filter(Boolean).join(' · ');
 function paySeg(amount) {
   const bal = S.wallet ? +S.wallet.balance : 0;
@@ -366,7 +374,8 @@ async function sessionsBetween(a, b, all) {
   const [s, c, r] = await Promise.all([q, sb.rpc('uzu_session_counts', { p_from: a, p_to: b }), sb.rpc('uzu_public_roster', { p_from: a, p_to: b })]);
   const counts = {}; (c.data || []).forEach(x => counts[x.session_id] = x);
   const ros = {}; (r.data || []).forEach(x => ros[x.session_id] = x);
-  return (s.data || []).map(x => Object.assign(x, { booked: (counts[x.id] || {}).booked || 0, waiting: (counts[x.id] || {}).waitlist || 0, names: (ros[x.id] || {}).names || [], waitnames: (ros[x.id] || {}).waitlist || [], by_level: (ros[x.id] || {}).by_level || {} }));
+  const me = S.user && S.user.id;
+  return (s.data || []).filter(x => !x.is_private || S.staff || x.host_id === me || all === 'withprivate').map(x => Object.assign(x, { booked: (counts[x.id] || {}).booked || 0, waiting: (counts[x.id] || {}).waitlist || 0, names: (ros[x.id] || {}).names || [], waitnames: (ros[x.id] || {}).waitlist || [], by_level: (ros[x.id] || {}).by_level || {} }));
 }
 async function myBookings() {
   if (!S.user) return [];
@@ -406,7 +415,7 @@ async function route() {
   S._lastRender = Date.now();
   const h = (location.hash || '').replace('#', ''); const [h0, arg] = h.split('/');
   if (h0 === 'staff' && S.isStaff && !S.staff) { try { localStorage.setItem('uzu_mode', 'staff'); } catch (e) {} S.staff = true; S.wallet = null; renderNav(); }
-  S.route = ['schedule', 'courts', 'account', 'signin', 'staff', 'verify', 'pay', 'play', 'wallet', 'reset'].includes(h0) ? h0 : 'home'; S.arg = arg || '';
+  S.route = ['schedule', 'courts', 'account', 'signin', 'staff', 'verify', 'pay', 'play', 'wallet', 'reset', 's'].includes(h0) ? h0 : 'home'; S.arg = arg || '';
   renderNav(); closeModal();
   const app = $('app');
   try {
@@ -419,6 +428,7 @@ async function route() {
     else if (S.route === 'verify') app.innerHTML = await viewVerify();
     else if (S.route === 'pay') app.innerHTML = await viewPay();
     else if (S.route === 'reset') app.innerHTML = await viewReset();
+    else if (S.route === 's') app.innerHTML = await viewOne();
     else if (S.route === 'play') app.innerHTML = await viewPlay();
     else if (S.route === 'wallet') app.innerHTML = await viewWallet();
   } catch (e) { app.innerHTML = '<div class="wrap sec"><div class="card">Couldn’t load this page: ' + esc(errMsg(e)) + '</div></div>'; }
@@ -468,14 +478,24 @@ function feedHTML(sess, days, t, opts) {
 }
 
 function highlightHTML(sess) {
-  const now = manilaNowMins(), t = manilaToday();
-  const s = sess.find(x => x.highlight && !(x.date === t && mins(x.end_time) <= now)); if (!s) return '';
-  const left = s.capacity - s.booked; const d = parseD(s.date);
-  return '<div class="hl"><div class="k">Friday plans? See you on court! 🎾</div><h3>' + esc(s.highlight) + '</h3><div>' + DOW[d.getDay()] + ', ' + ['January','February','March','April','May','June','July','August','September','October','November','December'][d.getMonth()] + ' ' + d.getDate() + ' · ' + esc(range(s.start_time, s.end_time)) + ' · UZU Club</div>' +
-    '<p style="margin:10px 0 0;opacity:.88">Expect good rallies, rotating partners, and a little friendly competition. Whether you’re finding your game or ready to bring the heat, everyone’s welcome!</p>' +
-    ((s.levels || []).length ? '<div class="lv"><span><b>Two levels. Two courts.</b></span>' + s.levels.map(l => '<span>' + esc(l) + '</span>').join('') + '</div>' : '') +
-    '<div class="pr"><b>' + esc(peso(s.price_regular)) + '</b> regular &nbsp;|&nbsp; <b>' + esc(peso(s.price_member != null ? s.price_member : memberPrice(s.price_regular))) + '</b> members</div>' +
-    '<div class="row wrapx" style="gap:10px"><button class="btn b-gold" data-act="' + (S.staff ? 'staffadd' : 'book') + '" data-id="' + s.id + '">' + (S.staff ? '+ Add player' : left > 0 ? 'Sign up now' : 'Join the waitlist') + '</button><span class="small" style="opacity:.85">' + (left > 0 ? left + ' of ' + s.capacity + ' spots left' : 'Full') + ' · Make it your Friday ritual — every Friday, 3–5 PM.</span></div></div>';
+  // promote the next day (after today) that has public activities — e.g. on Friday with nothing Saturday, promote Sunday
+  const t = manilaToday(); const days = [...new Set(sess.filter(x => x.date > t && !x.is_private && x.status === 'open').map(x => x.date))].sort();
+  if (!days.length) return '';
+  const d = days[0], list = sess.filter(x => x.date === d && !x.is_private && x.status === 'open'), dd = parseD(d);
+  const dayName = DOW[dd.getDay()], tomorrow = d === addDays(t, 1);
+  const hl = list.find(x => x.highlight);
+  const kidsOnly = list.every(x => /kid/i.test(x.title + ' ' + (x.audience || '')));
+  const lead = hl ? esc(hl.highlight) : list.length === 1 ? esc(list[0].title) : (kidsOnly ? 'Kids’ day at UZU' : 'Game day at UZU');
+  const blurb = list.some(x => /americano/i.test(x.title)) ? 'Expect good rallies, rotating partners, and a little friendly competition. Whether you’re finding your game or ready to bring the heat, everyone’s welcome!'
+    : kidsOnly ? 'Coached sessions, new skills and lots of fun — bring the little ones for a great afternoon on court.'
+    : list.some(x => x.sport === 'football') && !list.some(x => x.sport === 'padel') ? 'Lace up — football under the El Nido sky. All you need is your game face.'
+    : 'Grab your spot before it fills up — see you on court!';
+  const row = x => { const left = x.capacity - x.booked;
+    return '<div class="sl"><div><b>' + esc(x.title) + '</b> · ' + esc(range(x.start_time, x.end_time)) + (x.audience ? '<div class="small" style="opacity:.85">' + esc(x.audience) + '</div>' : '') +
+      '<div class="small" style="opacity:.85">' + (x.price_regular != null ? esc(peso(x.price_regular)) + ' regular' + (+x.price_member !== +x.price_regular ? ' | ' + esc(peso(x.price_member != null ? x.price_member : memberPrice(x.price_regular))) + ' members' : '') : 'Rate at the club') + ' · ' + (left > 0 ? left + ' of ' + x.capacity + ' spots left' : 'Full') + '</div></div>' +
+      '<button class="btn b-gold b-sm" data-act="' + (S.staff ? 'staffadd' : 'book') + '" data-id="' + x.id + '">' + (S.staff ? '+ Add player' : left > 0 ? 'Sign up now' : 'Join the waitlist') + '</button></div>'; };
+  return '<div class="hl promo"><div class="k">' + (tomorrow ? 'Tomorrow' : 'This ' + dayName) + ' · ' + dayName + ' plans? See you on court! 🎾</div><h3>' + lead + '</h3><div>' + dayName + ', ' + ['January','February','March','April','May','June','July','August','September','October','November','December'][dd.getMonth()] + ' ' + dd.getDate() + ' · UZU Club</div>' +
+    '<p style="margin:10px 0 6px;opacity:.88">' + blurb + '</p>' + list.map(row).join('') + '</div>';
 }
 
 /* ---------- HOME ---------- */
@@ -518,7 +538,7 @@ function sessCard(s, state, tag) {
   else if (started) act = '<span class="pill p-mute">In progress</span>';
   else act = '<button class="btn ' + (left > 0 ? 'b-green' : 'b-ghost') + ' b-sm" data-act="book" data-id="' + s.id + '">' + (left > 0 ? 'Book' : 'Join waitlist') + '</button>';
   return '<div class="sess' + (state ? ' ' + state : '') + '"><div class="time">' + esc(fmtT(s.start_time)) + '<div class="muted small" style="font-weight:500">to ' + esc(fmtT(s.end_time)) + '</div></div>' +
-    '<div class="info">' + (tag || '') + '<div class="ttl">' + esc(s.title) + (s.group_id ? ' <span class="pill p-gp">Group Play</span>' : '') + '</div><div class="meta">' + (s.group_id && s.host_name ? 'Hosted by <b>' + esc(s.host_name) + '</b> · ' : '') + esc(s.audience || '') + (s.audience ? ' · ' : '') + esc(priceTxt(s)) + '</div>' +
+    '<div class="info">' + (tag || '') + '<div class="ttl">' + esc(s.title) + (s.group_id ? ' <span class="pill p-gp">Group Play</span>' : '') + (s.is_private ? ' <span class="pill p-mute">🔒 Private</span>' : '') + '</div><div class="meta">' + (s.group_id && s.host_name ? 'Hosted by <b>' + esc(s.host_name) + '</b> · ' : '') + esc(s.audience || '') + (s.audience ? ' · ' : '') + esc(priceTxt(s)) + '</div>' +
     '<div class="row" style="margin-top:6px;gap:8px">' + sportPill(s.sport) + '<div class="bar"><i style="width:' + pct + '%"></i></div><span class="spots">' + (left > 0 ? left + ' of ' + s.capacity + ' spots left' : 'Full' + (s.waiting ? ' · ' + s.waiting + ' waiting' : '')) + '</span></div>' + (s.names && s.names.length ? '<div class="roster">' + rosterHTML(s) + (s.waitnames && s.waitnames.length ? ' <b>· Waitlist:</b> ' + s.waitnames.map(esc).join(', ') : '') + '</div>' : '') + '</div>' +
     '<div class="act">' + act + '</div></div>';
 }
@@ -667,6 +687,18 @@ function openTopup(pkgId) {
     '<p class="small muted">Credits are added after our staff check the payment. You’ll get an email when they’re ready.</p><button class="btn b-gold b-full" data-act="dotopup">Send top-up request</button>');
 }
 
+/* ---------- ONE SESSION (invite links) ---------- */
+async function viewOne() {
+  const { data: one } = await sb.from('uzu_sessions').select('id,date').eq('id', S.arg).maybeSingle();
+  const box = x => '<section class="sec"><div class="wrap" style="max-width:760px">' + x + '</div></section>';
+  if (!one) return box('<div class="card">This game isn’t available any more. <a href="#play">See open Group Play</a>.</div>');
+  const [sess, mine] = await Promise.all([sessionsBetween(one.date, one.date, 'withprivate'), myBookings()]);
+  const x = sess.find(z => z.id === S.arg); if (!x) return box('<div class="card">This game isn’t available any more.</div>');
+  mineBySession = {}; mine.filter(b => b.status !== 'cancelled' && b.session_id).forEach(b => (mineBySession[b.session_id] = mineBySession[b.session_id] || []).push(b));
+  S._sess = S._sess || {}; S._sess[x.id] = x;
+  return box('<div class="small" style="font-weight:700;letter-spacing:.06em;margin-bottom:8px">' + esc(fmtDay(x.date).toUpperCase()) + '</div>' + sessCard(x, '', '') + (x.description ? '<p class="muted">' + esc(x.description) + '</p>' : '') + (!S.user ? '<p class="small muted">Sign in or create an account to book your spot.</p>' : ''));
+}
+
 /* ---------- GROUP PLAY ---------- */
 const GP_LEVELS = ['All levels', 'Beginner', 'Intermediate', 'Advanced'];
 async function viewPlay() {
@@ -692,13 +724,14 @@ async function viewPlay() {
       '<div class="field"><span>COURTS</span><div class="ckrow" id="gp-courts">' + pc.map((c, i) => '<label data-c="' + c.id + '"><input type="checkbox" value="' + c.id + '" data-chg="gp"' + (i === 0 ? ' checked' : '') + '>' + esc(c.name) + '<small class="muted"></small></label>').join('') + '</div></div>' +
       '<div class="prog" style="grid-template-columns:1fr 1fr"><label class="field"><span>PLAYERS</span><select class="mini" id="gp-cap" data-chg="gp"></select></label><label class="field"><span>LEVEL</span><select class="mini" id="gp-level">' + GP_LEVELS.map(l => '<option>' + l + '</option>').join('') + '</select></label></div>' +
       '<div class="field"><span>TYPE</span><div class="seg" id="gp-type"><button data-act="pick" data-v="friendly" class="on">Friendly</button><button data-act="pick" data-v="competitive">Competitive</button></div></div>' +
+      '<div class="field"><span>LISTING</span><div class="seg" id="gp-vis"><button data-act="pick" data-v="public" class="on">Public<small>listed & promoted</small></button><button data-act="pick" data-v="private">Private<small>only people with the link</small></button></div></div>' +
       '<div class="field"><span>WHO CAN JOIN</span><div class="seg" id="gp-gender"><button data-act="pick" data-v="mixed" class="on">Everyone</button><button data-act="pick" data-v="men">Men</button><button data-act="pick" data-v="women">Women</button></div></div>' +
       '<label class="field"><span>DESCRIPTION (optional)</span><textarea class="inp" id="gp-desc" placeholder="Format, vibe, anything players should know"></textarea></label>' +
       '<div class="field"><span>YOUR OWN SPOT</span><div class="seg" id="gp-pay"><button data-act="pick" data-v="club" class="on">Pay at the club</button><button data-act="pick" data-v="credits">Credits<small>' + esc(peso((S.wallet || {}).balance || 0)) + '</small></button></div></div>' +
       '<div class="okbox" id="gp-est" style="margin:4px 0 12px"></div>' +
       '<button class="btn b-gold b-full" data-act="docreategroup">Send for approval</button></div>';
     const mg = (myg.data || []);
-    if (mg.length) h += '<div class="card" style="margin-top:14px"><b>My groups</b>' + mg.map(g => '<div style="padding:8px 0;border-bottom:1px solid var(--line)"><div class="row between"><span><b>' + esc(g.title) + '</b><br><span class="small muted">' + esc(fmtShort(g.date)) + ' · ' + esc(range(g.start_time, g.end_time)) + ' · ' + g.capacity + ' players</span></span><span class="pill ' + ({ pending: 'p-warn', approved: 'p-ok', rejected: 'p-bad', cancelled: 'p-mute' }[g.status]) + '">' + ({ pending: 'Waiting for approval', approved: 'Live', rejected: 'Not approved', cancelled: 'Withdrawn' }[g.status]) + '</span></div>' + (g.staff_note ? '<div class="small" style="margin-top:4px">Staff: ' + esc(g.staff_note) + '</div>' : '') + (g.status === 'pending' ? '<button class="btn b-ghost b-sm" style="margin-top:6px" data-act="cancelgroup" data-id="' + g.id + '">Withdraw</button>' : '') + '</div>').join('') + '</div>';
+    if (mg.length) h += '<div class="card" style="margin-top:14px"><b>My groups</b>' + mg.map(g => '<div style="padding:8px 0;border-bottom:1px solid var(--line)"><div class="row between"><span><b>' + esc(g.title) + '</b><br><span class="small muted">' + esc(fmtShort(g.date)) + ' · ' + esc(range(g.start_time, g.end_time)) + ' · ' + g.capacity + ' players</span></span><span class="pill ' + ({ pending: 'p-warn', approved: 'p-ok', rejected: 'p-bad', cancelled: 'p-mute' }[g.status]) + '">' + ({ pending: 'Waiting for approval', approved: 'Live', rejected: 'Not approved', cancelled: 'Withdrawn' }[g.status]) + '</span></div>' + (g.staff_note ? '<div class="small" style="margin-top:4px">Staff: ' + esc(g.staff_note) + '</div>' : '') + (g.is_private ? '<div class="small muted" style="margin-top:4px">🔒 Private — only people you send the link to can join</div>' : '') + (g.status === 'approved' && g.session_id ? '<button class="btn b-gold b-sm" style="margin-top:6px" data-act="sharegp" data-v="' + g.session_id + '">Copy invite link</button>' : '') + (g.status === 'pending' ? '<button class="btn b-ghost b-sm" style="margin-top:6px" data-act="cancelgroup" data-id="' + g.id + '">Withdraw</button>' : '') + '</div>').join('') + '</div>';
     setTimeout(gpUpdate, 0);
   }
   return h + '</div></div></div></section>';
@@ -831,22 +864,43 @@ const STAFF_TABS = [['sheet', 'Court sheet'], ['people', 'Players'], ['today', '
 async function viewStaff() {
   if (!S.user) { S.after = 'staff'; return viewSignin(); }
   if (!S.staff) return '<section class="sec"><div class="wrap"><div class="card">This area is for UZU staff. Ask a manager to add your account.</div></div></section>';
-  const { data: st } = await sb.rpc('uzu_staff_stats');
-  const s = st || {};
+  const [{ data: st }, { data: al }, ppl] = await Promise.all([sb.rpc('uzu_staff_stats'), sb.rpc('uzu_staff_alerts'), peopleData(true)]);
+  const s = st || {}; S._bal = {}; (ppl.accounts || []).forEach(p => { if (+p.credits > 0) S._bal[p.id] = +p.credits; });
   let h = '<section class="sec" style="padding-top:26px"><div class="wrap"><div class="row between wrapx"><h2>Staff dashboard</h2><span class="muted small">' + esc(fmtDay(manilaToday())) + '</span></div>' +
-    '<div class="grid g3" style="grid-template-columns:repeat(auto-fit,minmax(150px,1fr));margin:14px 0 18px">' +
-    '<div class="stat"><b>' + (s.today || 0) + '</b><span>Confirmed today</span></div><div class="stat"><b>' + (s.week || 0) + '</b><span>Next 7 days</span></div>' +
-    '<div class="stat" style="' + (s.pending ? 'border-color:var(--gold)' : '') + '"><b>' + (s.pending || 0) + '</b><span>Courts to confirm</span></div>' +
-    '<div class="stat" data-act="stafftab" data-v="people" style="cursor:pointer"><b>' + (s.members || 0) + '</b><span>Registered · ' + (s.active_members || 0) + ' member' + (s.active_members === 1 ? '' : 's') + (s.new_week ? ' · ' + s.new_week + ' new this week' : '') + '</span></div>' +
-    '<div class="stat" data-act="peoplef" data-v="action" style="cursor:pointer;' + ((s.to_review || s.requests) ? 'border-color:var(--gold)' : '') + '"><b>' + ((s.to_review || 0) + (s.requests || 0)) + '</b><span>' + (s.to_review || 0) + ' payment' + (s.to_review === 1 ? '' : 's') + ' to review · ' + (s.requests || 0) + ' requests</span></div>' +
-    '<div class="stat" data-act="stafftab" data-v="' + (s.groups && !s.topups ? 'groups' : 'credits') + '" style="cursor:pointer;' + ((s.topups || s.groups) ? 'border-color:var(--gold)' : '') + '"><b>' + ((s.topups || 0) + (s.groups || 0)) + '</b><span>' + (s.topups || 0) + ' top-up' + (s.topups === 1 ? '' : 's') + ' · ' + (s.groups || 0) + ' Group Play to approve</span></div></div>' +
+    staffBrief(al || {}, s) +
     '<div class="tabs">' + STAFF_TABS.map(t => '<button data-act="stafftab" data-v="' + t[0] + '" class="' + (S.staffTab === t[0] ? 'on' : '') + '">' + t[1] + (t[0] === 'bookings' && s.pending ? ' (' + s.pending + ')' : '') + (t[0] === 'people' && (s.to_review || s.requests) ? ' (' + ((s.to_review || 0) + (s.requests || 0)) + ')' : '') + (t[0] === 'groups' && s.groups ? ' (' + s.groups + ')' : '') + (t[0] === 'credits' && s.topups ? ' (' + s.topups + ')' : '') + '</button>').join('') + '</div><div id="stafftab">';
   const fn = { sheet: stSheet, today: stToday, bookings: stBookings, sessions: stSessions, weekly: stWeekly, courts: stCourts, groups: stGroups, credits: stCredits, extras: stExtras, people: stPeople, members: stPeople, emails: () => stEmails(s), team: () => stTeam(s) }[S.staffTab];
   h += await fn();
   return h + '</div></div></section>';
 }
+function staffBrief(A, s) {
+  if (S.hideBrief) return '<div class="row" style="margin:10px 0 14px"><button class="btn b-ghost b-sm" data-act="brief" data-v="show">Show today’s cheatsheet</button></div>';
+  const T = A.todo || {}, D = A.today || {}, nm = x => esc((x.name || '').split(' ')[0] || 'Player'), pl = (x, n) => '<a data-act="mmanage" data-id="' + x.id + '">' + nm(x) + '</a>' + (n || '');
+  const todo = [['courts', T.courts, 'court request', 'courts to confirm', 'stafftab', 'bookings'], ['receipts', T.receipts, 'receipt uploaded — check & mark paid', 'receipts uploaded — check & mark paid', 'stafftab', 'bookings'],
+    ['topups', T.topups, 'credit top-up to check', 'credit top-ups to check', 'stafftab', 'credits'], ['groups', T.groups, 'Group Play to approve', 'Group Plays to approve', 'stafftab', 'groups'],
+    ['payments', T.payments, 'membership payment to review', 'membership payments to review', 'peoplef', 'action'], ['requests', T.requests, 'player wants a membership', 'players want a membership', 'peoplef', 'action'],
+    ['unpaid', T.unpaid_today, 'booking today still unpaid', 'bookings today still unpaid', 'stafftab', 'today']].filter(x => +x[1] > 0);
+  let h = '<div class="brief"><div class="card"><div class="row between"><h4>NEEDS ATTENTION</h4><button class="btn b-ghost b-sm" data-act="brief" data-v="hide" style="padding:3px 10px">Hide</button></div>' +
+    (todo.length ? todo.map(x => '<div class="todo" data-act="' + x[4] + '" data-v="' + x[5] + '"><b>' + x[1] + '</b><span>' + (+x[1] === 1 ? x[2] : x[3]) + '</span></div>').join('') : '<div class="todo ok"><b>✓</b><span>All caught up</span></div>') + '</div>';
+  h += '<div class="card"><h4>TODAY · ' + esc(fmtShort(manilaToday()).toUpperCase()) + '</h4><div class="small" style="margin-bottom:6px"><b>' + (D.players || 0) + '</b> players booked · <b>' + (D.courts || 0) + '</b> court booking' + (D.courts === 1 ? '' : 's') + '</div>' +
+    ((D.sessions || []).length ? D.sessions.map(x => { const left = x.capacity - x.booked; return '<div class="tip"><b>' + esc(fmtT(x.start)) + '</b> ' + esc(x.title) + ' — ' + x.booked + '/' + x.capacity + (left <= 0 ? ' <span class="pill p-ok">Full' + (x.waiting ? ' · ' + x.waiting + ' waiting' : '') + '</span>' : left <= 3 ? ' <span class="pill p-warn">' + left + ' left</span>' : x.booked < x.capacity / 3 ? ' <span class="pill p-bad">Low — promote it</span>' : '') + '</div>'; }).join('') : '<div class="tip muted">No club sessions today — courts are open.</div>') + '</div>';
+  const tips = [];
+  (A.credit_bookings || []).slice(0, 4).forEach(x => tips.push('💳 ' + pl({ id: x.user_id, name: x.who }) + ' paid <b>' + esc(peso(x.amount)) + '</b> with credits for ' + esc(x.what) + ' (' + esc(fmtShort(x.date)) + ') · ' + esc(peso(x.balance)) + ' left'));
+  if ((A.low_credits || []).length) tips.push('🔋 Low credits: ' + A.low_credits.slice(0, 4).map(x => pl(x, ' (' + esc(peso(x.balance)) + ')')).join(', ') + ' — offer a top-up package');
+  if ((A.top_credits || []).length) tips.push('💰 Holding credits: ' + A.top_credits.map(x => pl(x, ' ' + esc(peso(x.balance)))).join(', '));
+  if ((A.expiring || []).length) tips.push('⏳ Membership ending in 2 weeks: ' + A.expiring.map(x => pl(x, ' (' + esc(fmtShort(x.until)) + ')')).join(', ') + ' — remind them to renew');
+  if ((A.expired || []).length) tips.push('⌛ Membership just lapsed: ' + A.expired.map(x => pl(x)).join(', '));
+  if ((A.regulars || []).length) { const nm2 = A.regulars.filter(x => !x.member); tips.push('🔥 Regulars this month: ' + A.regulars.map(x => pl(x, ' ×' + x.n)).join(', ') + (nm2.length ? ' — ' + nm2.map(x => nm(x)).join(', ') + ' isn’t a member yet, a good invite' : '')); }
+  if ((A.lapsed || []).length) tips.push('👋 Haven’t played in 3+ weeks: ' + A.lapsed.map(x => pl(x)).join(', '));
+  if ((A.new_players || []).length) tips.push('🆕 New this week: ' + A.new_players.map(x => pl(x, x.verified ? '' : ' (email not confirmed)')).join(', '));
+  if (A.guests_to_merge) tips.push('🔗 ' + A.guests_to_merge + ' guest record' + (A.guests_to_merge > 1 ? 's look' : ' looks') + ' like a registered player — <a data-act="peoplef" data-v="guests">review & merge</a>');
+  h += '<div class="card"><h4>PLAYER INSIGHTS</h4>' + (tips.length ? tips.map(x => '<div class="tip">' + x + '</div>').join('') : '<div class="tip muted">Insights appear as players book, top up and renew.</div>') + '</div></div>';
+  return h;
+}
 async function profilesFor(ids) { ids = [...new Set(ids.filter(Boolean))]; const m = {}; if (!ids.length) return m; const { data } = await sb.from('uzu_profiles').select('*').in('id', ids); (data || []).forEach(p => m[p.id] = p); return m; }
-const who = (b, pm) => { if (b.for_name) { const p = pm[b.user_id]; return b.for_name + (p ? ' (' + (p.nickname || (p.full_name || '').split(' ')[0]) + '’s ' + (b.family_id ? 'household' : '') + ')' : ''); } const p = pm[b.user_id]; return p ? (p.full_name || p.email) + (p.nickname ? ' (' + p.nickname + ')' : '') + (memberActive(p) ? ' ★' : '') : (b.guest_name || 'Guest') + ' · guest'; };
+const crTxt = uid => S._bal && S._bal[uid] ? ' · 💳 ' + peso(S._bal[uid]) + ' credits' : '';
+const who0 = (b, pm) => { if (b.for_name) { const p = pm[b.user_id]; return b.for_name + (p ? ' (' + (p.nickname || (p.full_name || '').split(' ')[0]) + '’s ' + (b.family_id ? 'household' : '') + ')' : ''); } const p = pm[b.user_id]; return p ? (p.full_name || p.email) + (p.nickname ? ' (' + p.nickname + ')' : '') + (memberActive(p) ? ' ★' : '') : (b.guest_name || 'Guest') + ' · guest'; };
+const who = (b, pm) => who0(b, pm) + (b.pay_method === 'credits' ? '' : crTxt(b.booked_by || b.user_id));
 const nick = (b, pm) => { if (b.for_name) return b.for_name.split(' ')[0]; const p = pm[b.user_id]; return p ? (p.nickname || (p.full_name || '').split(' ')[0] || 'Player') : (b.guest_name || 'Guest'); };
 const contact = (b, pm) => { const p = pm[b.user_id]; return esc([p ? p.phone : b.guest_phone, p ? p.email : b.guest_email].filter(Boolean).join(' · ')); };
 function bkActions(b) {
@@ -918,7 +972,7 @@ async function stPeople() {
   const rows = d.accounts.map(p => ({ kind: 'acct', p, t: personType(p), name: p.full_name || p.email, when: p.created_at, action: p.to_review > 0 || p.membership_requested }))
     .concat(d.guests.map(g => ({ kind: 'guest', g, t: ['Guest', 'p-mute'], name: g.name || g.email, when: g.first_seen, action: !!g.match_id })));
   const F = S.peopleF || 'all';
-  const tests = { all: () => true, action: r => r.action, new: r => new Date(r.when).getTime() > wk, registrants: r => r.kind === 'acct' && !r.p.active, members: r => r.kind === 'acct' && r.p.active, guests: r => r.kind === 'guest' };
+  const tests = { all: () => true, action: r => r.action, new: r => new Date(r.when).getTime() > wk, registrants: r => r.kind === 'acct' && !r.p.active, members: r => r.kind === 'acct' && r.p.active, credits: r => r.kind === 'acct' && +r.p.credits > 0, staff: r => r.kind === 'acct' && r.p.is_staff, guests: r => r.kind === 'guest' };
   const q = (S.memberQ || '').toLowerCase();
   const list = rows.filter(tests[F]).filter(r => !q || [r.name, r.kind === 'acct' ? r.p.email + ' ' + (r.p.phone || '') + ' ' + (r.p.nickname || '') : (r.g.email || '') + ' ' + (r.g.phone || '')].join(' ').toLowerCase().includes(q))
     .sort((a, b) => (b.action - a.action) || String(b.when).localeCompare(String(a.when)));
@@ -929,9 +983,9 @@ async function stPeople() {
       return '<tr class="click" data-act="mguest" data-v="' + esc(g.key) + '"><td><b>' + esc(g.name || '—') + '</b><div class="small muted">Booked by staff / WhatsApp list</div></td><td><span class="pill p-mute">Guest</span></td><td class="small">' + esc([g.phone, g.email].filter(Boolean).join(' · ') || '—') + '</td><td class="small">' + g.bookings + ' · last ' + esc(fmtShort(g.last_date)) + '</td><td class="small">' + (m ? 'Looks like <b>' + esc(m.full_name || m.email) + '</b>' : '<span class="muted">Not registered yet</span>') + '</td><td>' + (m ? '<button class="btn b-gold b-sm" data-act="linkguest" data-v="' + esc(g.key) + '" data-id="' + m.id + '">Merge</button>' : '<span class="btn b-ghost b-sm">Open</span>') + '</td></tr>'; }
     const p = r.p;
     const flags = [p.to_review ? '<span class="pill p-warn">Payment to review</span>' : '', p.membership_requested ? '<span class="pill p-warn">Wants membership</span>' : '', p.invite_status === 'sent' ? '<span class="pill p-mute">Invite sent</span>' : ''].filter(Boolean).join(' ');
-    return '<tr class="click" data-act="mmanage" data-id="' + p.id + '"><td><b>' + esc(p.full_name || '—') + '</b>' + (p.nickname ? ' <span class="small muted">“' + esc(p.nickname) + '”</span>' : '') + (flags ? '<div style="margin-top:4px">' + flags + '</div>' : '') + '</td><td><span class="pill ' + r.t[1] + '">' + r.t[0] + '</span></td><td class="small">' + esc(p.email) + '<br>' + esc(p.phone || '') + '</td><td class="small">' + p.bookings + (p.last_date ? ' · last ' + esc(fmtShort(p.last_date)) : '') + '</td><td class="small">' + (p.active ? (p.family_of && !p.is_member ? 'Family of ' + esc(p.family_of) : 'Until ' + (p.member_until ? esc(fmtShort(p.member_until)) : '—')) : 'Joined ' + esc(String(p.created_at).slice(0, 10))) + '</td><td><span class="btn b-ghost b-sm">Open</span></td></tr>';
+    return '<tr class="click" data-act="mmanage" data-id="' + p.id + '"><td><b>' + esc(p.full_name || '—') + '</b>' + (p.nickname ? ' <span class="small muted">“' + esc(p.nickname) + '”</span>' : '') + (p.is_staff ? ' <span class="pill p-gp">Staff</span>' : '') + (+p.credits > 0 ? ' <span class="cr">💳 ' + esc(peso(p.credits)) + '</span>' : '') + (flags ? '<div style="margin-top:4px">' + flags + '</div>' : '') + '</td><td><span class="pill ' + r.t[1] + '">' + r.t[0] + '</span></td><td class="small">' + esc(p.email) + '<br>' + esc(p.phone || '') + '</td><td class="small">' + p.bookings + (p.last_date ? ' · last ' + esc(fmtShort(p.last_date)) : '') + '</td><td class="small">' + (p.active ? (p.family_of && !p.is_member ? 'Family of ' + esc(p.family_of) : 'Until ' + (p.member_until ? esc(fmtShort(p.member_until)) : '—')) : 'Joined ' + esc(String(p.created_at).slice(0, 10))) + '</td><td><span class="btn b-ghost b-sm">Open</span></td></tr>';
   };
-  return '<div class="chips2">' + chip('all', 'Everyone') + chip('action', 'Needs action') + chip('new', 'New this week') + chip('registrants', 'Registrants') + chip('members', 'Members') + chip('guests', 'Guests') + '</div>' +
+  return '<div class="chips2">' + chip('all', 'Everyone') + chip('action', 'Needs action') + chip('new', 'New this week') + chip('registrants', 'Registrants') + chip('members', 'Members') + chip('credits', '💳 Has credits') + chip('staff', 'Staff') + chip('guests', 'Guests') + '</div>' +
     '<input class="inp" style="max-width:360px;margin-bottom:12px" placeholder="Search name, nickname, email or mobile" id="mq" value="' + esc(S.memberQ || '') + '" data-chg="mq">' +
     '<div class="card scroll"><table class="tbl"><tr><th>Name</th><th>Type</th><th>Contact</th><th>Bookings</th><th>Membership</th><th></th></tr>' + list.map(row).join('') + '</table>' + (list.length ? '' : '<div class="muted small" style="padding:10px">Nobody here yet.</div>') + '</div>' +
     '<p class="small muted" style="margin-top:10px">Registrants, members and guests are matched by email, full name or nickname. Guests booked by staff (or from the WhatsApp list) are merged into an account automatically when someone registers with the same email; name matches show a <b>Merge</b> button for you to confirm.</p>';
@@ -1125,7 +1179,7 @@ async function openMember(id) {
   const sids = [...new Set((bks || []).filter(x => x.session_id).map(x => x.session_id))]; const sm = {};
   if (sids.length) { const { data } = await sb.from('uzu_sessions').select('id,title').in('id', sids); (data || []).forEach(x => sm[x.id] = x.title); }
   const sec = (title, body, extra) => '<div class="card" style="margin-top:12px"' + (extra || '') + '><b>' + title + '</b>' + body + '</div>';
-  let h = '<button class="x" data-act="close">✕</button><div class="row wrapx" style="gap:8px"><h3 style="margin:0">' + esc(p.full_name || p.email) + '</h3><span class="pill ' + typ[1] + '">' + typ[0] + '</span>' + (p.email_verified ? '<span class="pill p-ok">Email verified</span>' : '<span class="pill p-mute">Email not verified</span> <button class="btn b-ghost b-sm" data-act="mverify" data-id="' + id + '">Mark verified</button>') + '</div>' +
+  let h = '<button class="x" data-act="close">✕</button><div class="row wrapx" style="gap:8px"><h3 style="margin:0">' + esc(p.full_name || p.email) + '</h3>' + (+((wal || {}).balance) > 0 ? '<span class="cr" style="font-size:14px;padding:4px 12px">💳 ' + esc(peso(wal.balance)) + ' credits</span>' : '') + (me.is_staff ? '<span class="pill p-gp">Staff</span>' : '') + '<span class="pill ' + typ[1] + '">' + typ[0] + '</span>' + (p.email_verified ? '<span class="pill p-ok">Email verified</span>' : '<span class="pill p-mute">Email not verified</span> <button class="btn b-ghost b-sm" data-act="mverify" data-id="' + id + '">Mark verified</button>') + '</div>' +
     '<div class="pgrid"><div><b>Full name</b>' + esc(p.full_name || '—') + '</div><div><b>Nickname (public)</b>' + esc(p.nickname || '—') + '</div><div><b>Email</b>' + esc(p.email) + '</div><div><b>Mobile</b>' + esc(p.phone || '—') + '</div><div><b>Registered</b>' + esc(new Date(p.created_at).toLocaleDateString('en-PH', { timeZone: 'Asia/Manila', dateStyle: 'medium' })) + '</div><div><b>Email verified</b>' + (p.email_verified ? esc(p.verified_at ? new Date(p.verified_at).toLocaleDateString('en-PH', { timeZone: 'Asia/Manila', dateStyle: 'medium' }) : 'Yes') : 'Not yet') + '</div><div><b>Bookings</b>' + (bks || []).filter(x => x.status !== 'cancelled').length + ((bks || []).length ? ' · last ' + esc(fmtShort((bks || [])[0].date)) : '') + '</div><div><b>Membership</b>' + esc(typ[0]) + (p.member_until ? ' · ' + esc(p.member_until) : '') + '</div><div><b>Household</b>' + ((fam || []).length ? (fam || []).filter(f => f.relation === 'child').length + ' kid(s)' + ((fam || []).some(f => f.relation === 'spouse/partner') ? ' · partner' : '') : '—') + '</div></div>';
   // membership switch
   h += sec('Membership', '<div class="' + (active ? 'okbox' : 'note') + '" style="margin:8px 0 10px">' + (active ? (me.family_of && !p.is_member ? 'Covered as family of <b>' + esc(me.family_of) + '</b>.' : '<b>ON</b> · ' + esc(p.member_plan || 'Member') + (p.member_until ? ' until <b>' + esc(fmtDay(p.member_until)) + ', ' + p.member_until.slice(0, 4) + '</b>' : '')) + '. Member prices (₱100 off) apply automatically.' : '<b>OFF</b>' + (p.member_until ? ' · last valid until ' + esc(fmtDay(p.member_until)) : '') + ' — regular prices.') + '</div>' +
@@ -1174,6 +1228,8 @@ document.addEventListener('click', async ev => {
   if (b.tagName === 'A' && (a === 'signout' || a === 'mode')) ev.preventDefault();
   switch (a) {
     case 'mode': setMode(v); break;
+    case 'brief': S.hideBrief = v === 'hide'; try { localStorage.setItem('uzu_brief', S.hideBrief ? '0' : '1'); } catch (e) {} route(); break;
+    case 'sharegp': try { await navigator.clipboard.writeText(SITE + '#s/' + v); toast('Link copied — send it to your players'); } catch (e) { prompt('Copy this link', SITE + '#s/' + v); } break;
     case 'histf': { b.parentElement.querySelectorAll('button').forEach(x => x.classList.toggle('on', x === b)); document.querySelectorAll('#phist .hrow2').forEach(r => r.style.display = v === 'all' || r.dataset.g === v ? '' : 'none'); break; }
     case 'attproof': { const f = await captureProof(); if (!f) return; const uid = b.dataset.u; const inModal = !!b.closest('#modal'); run(async () => { const path = await uploadProof('staff/' + (uid || 'walkin'), f); must(await sb.rpc('uzu_staff_set_proof', { p_src: v, p_id: id, p_path: path })); if (inModal && uid) await openMember(uid); else await route(); }, 'Proof saved'); break; }
     case 'camfor': { const f = await captureProof(); if (!f) return; S._cap[v] = f; const l = $('cap-' + v); if (l) { l.textContent = '✓ Photo ready — saved when you submit'; l.classList.remove('muted'); } break; }
@@ -1247,7 +1303,7 @@ document.addEventListener('click', async ev => {
     case 'docreategroup': run(async () => {
       const sel = [...document.querySelectorAll('#gp-courts input:checked')].map(x => x.value); if (!sel.length) throw new Error('Choose at least one free court');
       const pk = q => ((document.querySelector(q + ' .on') || {}).dataset || {}).v; const st = $('gp-start').value;
-      must(await sb.rpc('uzu_create_group', { p_title: $('gp-title').value, p_description: $('gp-desc').value, p_date: $('gp-date').value, p_start: st, p_end: tstr(mins(st) + (+$('gp-dur').value)), p_courts: sel, p_capacity: +$('gp-cap').value, p_level: $('gp-level').value === 'All levels' ? null : $('gp-level').value, p_type: pk('#gp-type'), p_gender: pk('#gp-gender'), p_pay: pk('#gp-pay') }));
+      must(await sb.rpc('uzu_create_group', { p_title: $('gp-title').value, p_description: $('gp-desc').value, p_date: $('gp-date').value, p_start: st, p_end: tstr(mins(st) + (+$('gp-dur').value)), p_courts: sel, p_capacity: +$('gp-cap').value, p_level: $('gp-level').value === 'All levels' ? null : $('gp-level').value, p_type: pk('#gp-type'), p_gender: pk('#gp-gender'), p_pay: pk('#gp-pay'), p_private: pk('#gp-vis') === 'private' }));
       S._gpBusy = {}; await route(); window.scrollTo(0, 0);
     }, 'Sent! Our staff will review it — you’ll get an email when it’s live'); break;
     case 'cancelgroup': if (!confirmTwice(b)) return; run(async () => { must(await sb.rpc('uzu_cancel_my_group', { p_id: id })); S._gpBusy = {}; await route(); }, 'Withdrawn'); break;
