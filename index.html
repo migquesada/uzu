@@ -305,14 +305,14 @@ const cache = { programs: null, courts: null, trainers: null, extras: null };
 async function loadUser() {
   const { data } = await sb.auth.getSession();
   S.user = data.session ? data.session.user : null;
-  S.profile = null; S.staff = false; S.membership = { active: false };
+  S.profile = null; S.staff = false; S.isStaff = false; S.membership = { active: false };
   if (S.user) {
     const [p, st] = await Promise.all([
       sb.from('uzu_profiles').select('*').eq('id', S.user.id).maybeSingle(),
       sb.from('uzu_staff').select('user_id').eq('user_id', S.user.id).maybeSingle()
     ]);
-    S.profile = p.data; S.staff = !!st.data;
-    const [mm, hh] = await Promise.all([sb.rpc('uzu_my_membership'), S.staff ? Promise.resolve({ data: null }) : sb.rpc('uzu_my_household')]);
+    S.profile = p.data; S.isStaff = !!st.data; S.staff = S.isStaff && getMode() !== 'player';
+    const [mm, hh] = await Promise.all([sb.rpc('uzu_my_membership'), sb.rpc('uzu_my_household')]);
     S.membership = mm.data || { active: false }; S.household = hh.data || { people: [] };
     if (!S.staff) await refreshWallet();
   }
@@ -325,6 +325,13 @@ async function courts() { if (!cache.courts) { const { data } = await sb.from('u
 async function trainers() { if (!cache.trainers) { const { data } = await sb.from('uzu_trainers').select('id,name,bio,rate_hour,sports,active,sort').order('sort').order('name'); cache.trainers = data || []; } return cache.trainers; }
 async function extras() { if (!cache.extras) { const { data } = await sb.from('uzu_extras').select('*').order('sort'); cache.extras = data || []; } return cache.extras; }
 const racket = () => (cache.extras || []).find(x => x.id === 'racket' && x.active);
+function getMode() { try { return localStorage.getItem('uzu_mode') || 'staff'; } catch (e) { return 'staff'; } }
+async function setMode(m) {
+  try { localStorage.setItem('uzu_mode', m); } catch (e) {}
+  S.staff = S.isStaff && m === 'staff';
+  await refreshWallet(); renderNav();
+  if (m === 'staff') go('staff'); else { go(''); toast('Player view — you can book for yourself now'); }
+}
 async function refreshWallet() { if (!S.user || S.staff) { S.wallet = null; return; } const { data } = await sb.rpc('uzu_my_wallet'); S.wallet = data || { balance: 0, packages: [], topups: [], ledger: [] }; }
 const payTxt = b => b.pay_method === 'credits' ? 'Credits' + (b.credits_charged > 0 ? ' ✓' : '') : b.pay_method === 'gcash' ? 'GCash ' + esc(b.gcash_ref || '') : 'At club';
 const addonTxt = b => [b.trainer_id ? 'Trainer: ' + esc(((cache.trainers || []).find(t => t.id === b.trainer_id) || {}).name || 'yes') : '', b.rackets ? b.rackets + ' racket' + (b.rackets > 1 ? 's' : '') : ''].filter(Boolean).join(' · ');
@@ -352,8 +359,11 @@ async function sessionsBetween(a, b, all) {
 }
 async function myBookings() {
   if (!S.user) return [];
-  const { data } = await sb.from('uzu_bookings').select('*').order('date', { ascending: false }).limit(200);
-  return data || [];
+  const { data } = await sb.from('uzu_bookings').select('*').order('date', { ascending: false }).limit(S.isStaff ? 1000 : 200);
+  if (!S.isStaff) return data || [];
+  // staff can read every booking; in player view keep only their own household's
+  const me = S.user.id, keys = ((S.household || {}).people || []).map(p => p.key);
+  return (data || []).filter(b => b.user_id === me || b.booked_by === me || keys.includes('u:' + b.user_id) || (b.family_id && keys.includes('f:' + b.family_id)));
 }
 
 /* ---------- nav ---------- */
@@ -365,15 +375,17 @@ function renderNav() {
       '<a href="#staff" data-act="stafftab" data-v="sheet" class="' + (r === 'staff' && S.staffTab === 'sheet' ? 'on' : '') + '">Court sheet</a>' +
       '<a href="#staff" data-act="stafftab" data-v="people" class="' + (r === 'staff' && S.staffTab === 'people' ? 'on' : '') + '">People</a>' +
       '<a href="#staff" data-act="stafftab" data-v="bookings" class="' + (r === 'staff' && S.staffTab === 'bookings' ? 'on' : '') + '">Bookings</a>' +
-      L('', 'Public site') + '<a href="#" data-act="signout">Sign out</a></div></div></div>' +
-      '<div class="staffbar"><div class="wrap">Signed in as staff · <b>' + esc(S.user.email) + '</b><span class="muted">Staff accounts can’t book for themselves — use your member email for personal bookings.</span></div></div>';
+      '<a href="#" data-act="mode" data-v="player">Switch to player view</a><a href="#" data-act="signout">Sign out</a></div></div></div>' +
+      '<div class="staffbar"><div class="wrap">Signed in as staff · <b>' + esc(S.user.email) + '</b><span class="muted">Want to book for yourself? <a href="#" data-act="mode" data-v="player">Switch to player view</a>.</span></div></div>';
     return;
   }
   $('nav').innerHTML = '<div class="nav"><div class="wrap"><a class="logo" href="#" aria-label="UZU Club home">' + LOGO + '</a>' +
     '<button class="burger" data-act="burger" aria-label="Menu">☰</button><div class="links" id="links">' +
     L('schedule', 'Schedule') + L('courts', 'Book a court') + L('play', 'Group Play') +
     (S.user ? L('wallet', 'Credits' + (S.wallet ? ' · ' + peso(S.wallet.balance) : '')) + L('account', 'My account') : '') +
+    (S.isStaff ? '<a href="#" data-act="mode" data-v="staff" class="cta">Staff mode</a>' : '') +
     (S.user ? '<a href="#" data-act="signout">Sign out</a>' : L('signin', 'Sign in', 'cta')) + '</div></div></div>' +
+    (S.isStaff ? '<div class="staffbar"><div class="wrap">Player view · bookings you make here are in your own name (' + esc(S.user.email) + '). <a href="#" data-act="mode" data-v="staff">Back to staff mode</a></div></div>' : '') +
     (S.user && S.profile && !S.profile.email_verified ? '<div class="staffbar"><div class="wrap">Please confirm your email to start booking — we sent a link to <b>' + esc(S.user.email) + '</b>. <button class="btn b-ghost b-sm" data-act="resendverify">Resend link</button></div></div>' : '');
 }
 
@@ -382,6 +394,7 @@ async function route() {
   if (!cache.extras || !cache.trainers) await Promise.all([extras(), trainers()]);
   S._lastRender = Date.now();
   const h = (location.hash || '').replace('#', ''); const [h0, arg] = h.split('/');
+  if (h0 === 'staff' && S.isStaff && !S.staff) { try { localStorage.setItem('uzu_mode', 'staff'); } catch (e) {} S.staff = true; S.wallet = null; renderNav(); }
   S.route = ['schedule', 'courts', 'account', 'signin', 'staff', 'verify', 'pay', 'play', 'wallet', 'reset'].includes(h0) ? h0 : 'home'; S.arg = arg || '';
   renderNav(); closeModal();
   const app = $('app');
@@ -569,7 +582,7 @@ async function viewCourts() {
   const [{ data: busy }, { data: tbusy }] = await Promise.all([sb.rpc('uzu_court_busy', { p_date: S.courtDate }), sb.rpc('uzu_trainer_busy', { p_date: S.courtDate })]);
   const blocks = (busy || []).filter(b => b.court_id === S.courtId);
   const isBusy = (a, z) => blocks.find(b => mins(b.start_time) < z && mins(b.end_time) > a);
-  if (S.staff) return '<section class="sec"><div class="wrap" style="max-width:620px"><div class="card"><div class="ptype" style="color:var(--gold2)">Staff account</div><h3 class="serif" style="font-size:28px;margin:6px 0">Booking a court for someone?</h3><p class="muted">Staff accounts don’t make personal bookings. Use the Court sheet to book a court for a walk-in or caller — and sign in with your member email if it’s for you.</p><a class="btn b-green" href="#staff" data-act="stafftab" data-v="sheet">Open the Court sheet</a></div></div></section>';
+  if (S.staff) return '<section class="sec"><div class="wrap" style="max-width:620px"><div class="card"><div class="ptype" style="color:var(--gold2)">Staff account</div><h3 class="serif" style="font-size:28px;margin:6px 0">Booking a court for someone?</h3><p class="muted">Use the Court sheet to book a court for a walk-in or caller. Booking for yourself? Switch to player view.</p><a class="btn b-green" href="#staff" data-act="stafftab" data-v="sheet">Open the Court sheet</a> <button class="btn b-ghost" data-act="mode" data-v="player">Switch to player view</button></div></div></section>';
   let h = '<section class="sec"><div class="wrap"><h2>Book a court</h2><p class="sub">Pick a court, a day and a start time. Court bookings are confirmed by our staff — you’ll get an email as soon as it’s locked in.</p>';
   h += '<div class="chips">' + cs.map(x => '<button class="chip' + (x.id === S.courtId ? ' on' : '') + '" data-act="court" data-id="' + x.id + '">' + esc(x.name) + '<small>' + (x.hourly_rate != null ? esc(peso(x.hourly_rate)) + '/hr · members ' + esc(peso(memberPrice(x.hourly_rate))) : 'Rate at the club') + '</small></button>').join('') + '</div>';
   h += '<div class="chips">' + Array.from({ length: 14 }, (_, i) => addDays(t, i)).map(d => '<button class="chip' + (d === S.courtDate ? ' on' : '') + '" data-act="cdate" data-v="' + d + '">' + esc(fmtShort(d).split(' ')[0]) + '<small>' + esc(fmtShort(d).split(' ').slice(1).join(' ')) + '</small></button>').join('') + '</div>';
@@ -618,7 +631,7 @@ function walletMini() {
 }
 async function viewWallet() {
   if (!S.user) { S.after = 'wallet'; return viewSignin(); }
-  if (S.staff) return '<section class="sec"><div class="wrap"><div class="card">Staff accounts don’t hold credits. Sell or review credits from the <a href="#staff" data-act="stafftab" data-v="credits">Credits tab</a>.</div></div></section>';
+  if (S.staff) return '<section class="sec"><div class="wrap"><div class="card">In staff mode, sell or review credits from the <a href="#staff" data-act="stafftab" data-v="credits">Credits tab</a>. To see and top up your own credits, <a href="#" data-act="mode" data-v="player">switch to player view</a>.</div></div></section>';
   await refreshWallet(); renderNav(); const w = S.wallet;
   const pend = (w.topups || []).filter(t => t.status === 'submitted');
   let h = '<section class="sec"><div class="wrap"><h2>Credits</h2><p class="sub">Prepay once, then pay for open play, court hours, trainers and racket rental in one tap. Buy a package in advance and we add bonus credits.</p>' +
@@ -647,7 +660,7 @@ function openTopup(pkgId) {
 const GP_LEVELS = ['All levels', 'Beginner', 'Intermediate', 'Advanced'];
 async function viewPlay() {
   const t = manilaToday(), end = addDays(t, 30);
-  const [sess, mine, cs, myg] = await Promise.all([sessionsBetween(t, end), myBookings(), courts(), S.user && !S.staff ? sb.from('uzu_groups').select('*').order('date', { ascending: false }).limit(20) : Promise.resolve({ data: [] })]);
+  const [sess, mine, cs, myg] = await Promise.all([sessionsBetween(t, end), myBookings(), courts(), S.user && !S.staff ? sb.from('uzu_groups').select('*').eq('created_by', S.user.id).order('date', { ascending: false }).limit(20) : Promise.resolve({ data: [] })]);
   mineBySession = {}; mine.filter(b => b.status !== 'cancelled' && b.session_id).forEach(b => (mineBySession[b.session_id] = mineBySession[b.session_id] || []).push(b));
   S._sess = S._sess || {}; sess.forEach(x => S._sess[x.id] = x);
   const groups = sess.filter(x => x.group_id); const now = manilaNowMins();
@@ -1089,8 +1102,9 @@ document.addEventListener('click', async ev => {
   const b = ev.target.closest('[data-act]'); if (!b) return;
   const a = b.dataset.act, id = b.dataset.id, v = b.dataset.v;
   if (a === 'bg' && ev.target !== b) return;
-  if (b.tagName === 'A' && a === 'signout') ev.preventDefault();
+  if (b.tagName === 'A' && (a === 'signout' || a === 'mode')) ev.preventDefault();
   switch (a) {
+    case 'mode': setMode(v); break;
     case 'burger': $('links').classList.toggle('open'); break;
     case 'bg': case 'close': closeModal(); break;
     case 'signout': await sb.auth.signOut(); await loadUser(); toast('Signed out'); go(''); break;
