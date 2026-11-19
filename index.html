@@ -61,6 +61,7 @@ a{color:inherit}
 .card{background:var(--paper);border:1px solid var(--line);border-radius:var(--r);padding:18px}
 .grid{display:grid;gap:14px}
 .g2{grid-template-columns:repeat(auto-fit,minmax(280px,1fr))}
+@media(max-width:860px){#homegrid{grid-template-columns:1fr!important}}
 .g3{grid-template-columns:repeat(auto-fit,minmax(220px,1fr))}
 /* poster schedule */
 .poster{background:linear-gradient(180deg,#3a5742,#2f4a37);color:var(--cream);border-radius:20px;padding:28px 26px 18px;position:relative;overflow:hidden}
@@ -153,6 +154,40 @@ footer a{opacity:.9}
 .wk th{background:var(--green);color:var(--cream);padding:8px;text-align:left;font-size:12px;letter-spacing:.04em}
 .wk td{border:1px solid var(--line);vertical-align:top;padding:6px;background:#fff;width:20%}
 .wk td.day{background:var(--paper);font-weight:700;white-space:nowrap;width:90px}
+/* rolling feed */
+.feed{display:flex;flex-direction:column;gap:14px}
+.fday{background:var(--paper);border:1px solid var(--line);border-radius:18px;padding:16px 16px 6px}
+.fday .fh{display:flex;align-items:baseline;gap:10px;flex-wrap:wrap;margin-bottom:10px}
+.fday .fh .d{font-family:'Cormorant Garamond',serif;font-size:28px;font-weight:600;line-height:1}
+.fday .fh .dt{color:var(--muted);font-size:14px}
+.fday .fh .rel{font-size:11px;font-weight:800;letter-spacing:.16em;text-transform:uppercase;color:var(--gold2)}
+.fday .fh .end{margin-left:auto;font-size:13px}
+.fday .fempty{color:var(--muted);font-size:14px;padding:4px 0 12px}
+.fday .sess{background:#fff}
+.fday.today{background:linear-gradient(180deg,#3a5742,#2f4a37);border:0;color:var(--cream);padding:20px 18px 10px;box-shadow:0 10px 30px rgba(47,74,55,.25)}
+.fday.today .fh .d{font-size:38px}
+.fday.today .fh .dt{color:rgba(244,239,227,.75)}
+.fday.today .fh .rel{color:var(--gold)}
+.fday.today .fempty{color:rgba(244,239,227,.75)}
+.fday.today .fh .end a{color:var(--gold)}
+.fday.today .sess{color:var(--ink)}
+.fday.later{opacity:.97}
+.sess.done{opacity:.5}
+.sess.now{box-shadow:0 0 0 2px var(--gold)}
+.live{display:inline-flex;align-items:center;gap:6px;font-size:11px;font-weight:800;letter-spacing:.12em;text-transform:uppercase;padding:3px 9px;border-radius:999px;background:var(--gold);color:var(--green);margin-bottom:4px}
+.live.nx{background:#e9e1c9;color:var(--warn)}
+.live.dn{background:#ece9e1;color:var(--muted)}
+.live i{width:7px;height:7px;border-radius:50%;background:var(--green);animation:pulse 1.4s infinite}
+@keyframes pulse{50%{opacity:.25}}
+.clock{font-variant-numeric:tabular-nums}
+.cgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:10px;margin-bottom:10px}
+.ccol{background:#fff;border:1px solid var(--line);border-radius:12px;padding:10px;color:var(--ink);min-height:60px}
+.ccol h5{margin:0 0 8px;font-size:12px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted)}
+.blk.done{opacity:.45}
+.blk.now{box-shadow:0 0 0 2px var(--gold);background:#fff8e3}
+.strip{display:flex;gap:10px;flex-wrap:wrap;margin:0 0 12px}
+.strip .chip{background:rgba(255,255,255,.1);border:1px solid rgba(244,239,227,.2);border-radius:12px;padding:8px 12px;font-size:13px}
+.strip .chip b{display:block;font-size:10px;letter-spacing:.16em;color:var(--gold);text-transform:uppercase}
 .blk{border-left:3px solid var(--green3);background:#f3f6f1;border-radius:6px;padding:5px 7px;margin-bottom:5px}
 .blk.court{border-color:var(--gold2);background:#fbf5e6}
 .blk .bt{font-weight:700;font-size:12px}
@@ -260,6 +295,7 @@ function renderNav() {
 
 /* ---------- router ---------- */
 async function route() {
+  S._lastRender = Date.now();
   const h = (location.hash || '').replace('#', '');
   S.route = ['schedule', 'courts', 'account', 'signin', 'staff'].includes(h) ? h : 'home';
   renderNav(); closeModal();
@@ -274,33 +310,68 @@ async function route() {
   } catch (e) { app.innerHTML = '<div class="wrap sec"><div class="card">Couldn’t load this page: ' + esc(errMsg(e)) + '</div></div>'; }
 }
 const rerender = () => route();
+let _lastDay = manilaToday();
+function idleUI() { const a = document.activeElement; return !$('modal').innerHTML && !(a && ['INPUT', 'SELECT', 'TEXTAREA'].includes(a.tagName)); }
+function liveView() { return S.route === 'home' || S.route === 'schedule' || (S.route === 'staff' && S.staffTab === 'sheet'); }
+function tick(force) {
+  const t = manilaToday();
+  if (t !== _lastDay) { if (S.sheetDate === _lastDay) S.sheetDate = t; if (S.staffDate === _lastDay) S.staffDate = t; if (S.courtDate === _lastDay) S.courtDate = t; _lastDay = t; force = true; }
+  document.querySelectorAll('.clock').forEach(e => e.textContent = nowClock());
+  if (liveView() && idleUI() && (force || Date.now() - (S._lastRender || 0) > 120000)) { const y = scrollY; route().then(() => scrollTo(0, y)); }
+}
+setInterval(() => tick(false), 30000);
+document.addEventListener('visibilitychange', () => { if (!document.hidden) tick(true); });
 function go(h) { if (location.hash === '#' + h) route(); else location.hash = h; }
+
+/* ---------- rolling feed helpers ---------- */
+function relDay(d, t) { const n = Math.round((parseD(d) - parseD(t)) / 864e5); return n === 0 ? 'Today' : n === 1 ? 'Tomorrow' : n < 7 ? 'This ' + DOW[parseD(d).getDay()] : 'Next ' + DOW[parseD(d).getDay()]; }
+function nowClock() { const m = manilaNowMins(); const h = Math.floor(m / 60), mm = m % 60; return ((h + 11) % 12 + 1) + ':' + pad(mm) + ' ' + (h < 12 ? 'AM' : 'PM'); }
+function sState(date, st, en, t, now, nextId, id) {
+  if (date !== t) return '';
+  if (mins(en) <= now) return 'done';
+  if (mins(st) <= now) return 'now';
+  return id === nextId ? 'next' : '';
+}
+function liveTag(state, st, now) {
+  if (state === 'now') return '<div class="live"><i></i>Happening now</div>';
+  if (state === 'next') { const m = mins(st) - now; return '<div class="live nx">Up next · in ' + (m >= 60 ? Math.floor(m / 60) + 'h ' + (m % 60 ? m % 60 + 'm' : '') : m + 'm') + '</div>'; }
+  if (state === 'done') return '<div class="live dn">Finished</div>';
+  return '';
+}
+function feedHTML(sess, days, t, opts) {
+  opts = opts || {};
+  const now = manilaNowMins();
+  const todays = sess.filter(s => s.date === t && mins(s.start_time) > now);
+  const nextId = todays.length ? todays[0].id : null;
+  return '<div class="feed">' + days.map((d, i) => {
+    const list = sess.filter(s => s.date === d);
+    const isT = d === t;
+    const dd = parseD(d);
+    let body = list.map(s => { const st = sState(s.date, s.start_time, s.end_time, t, now, nextId, s.id); return sessCard(s, st, liveTag(st, s.start_time, now)); }).join('');
+    if (!list.length) body = '<div class="fempty">No club sessions' + (opts.sport && opts.sport !== 'all' ? ' for ' + opts.sport : '') + ' — courts are open 7 AM–10 PM.</div>';
+    return '<div class="fday' + (isT ? ' today' : i > 0 ? ' later' : '') + '"><div class="fh"><span class="d">' + DOW[dd.getDay()] + '</span><span class="dt">' + esc(fmtShort(d).split(' ').slice(1).join(' ')) + '</span><span class="rel">' + (isT ? 'Today · <span class="clock">' + nowClock() + '</span>' : relDay(d, t)) + '</span><span class="end"><a href="#courts" data-act="courtday" data-v="' + d + '">Book a court →</a></span></div>' + body + '</div>';
+  }).join('') + '</div>';
+}
 
 /* ---------- HOME ---------- */
 async function viewHome() {
   const t = manilaToday();
-  const [progs, sess] = await Promise.all([programs(), sessionsBetween(t, addDays(t, 6))]);
-  const order = [1, 2, 3, 4, 5, 6, 0];
-  let n = 0, rows = '';
-  order.forEach(d => {
-    const items = progs.filter(p => p.dow === d).sort((a, b) => mins(a.start_time) - mins(b.start_time));
-    if (!items.length) return; n++;
-    rows += '<div class="prow"><div class="no">(' + pad(n) + ')</div><div><div class="day">' + DOW[d] + '</div>' +
-      items.map(p => '<div class="pitem"><div><div class="t">' + esc(fmtT(p.start_time)) + (p.sport === 'football' ? '–' + esc(fmtT(p.end_time)) : '') + '</div><div class="n">' + esc(p.title) + '</div>' + (p.audience && p.audience !== 'All levels' && p.audience !== 'Adults' ? '<div class="a">' + esc(p.audience) + '</div>' : '') + '</div><div class="s">' + esc(p.sport.toUpperCase()) + '</div></div>').join('') + '</div></div>';
-  });
-  const upcoming = sess.filter(s => !(s.date === t && mins(s.start_time) <= manilaNowMins())).slice(0, 4);
+  const days = Array.from({ length: 7 }, (_, i) => addDays(t, i));
+  const [sess, mine] = await Promise.all([sessionsBetween(t, days[6]), myBookings()]);
+  mineBySession = {}; mine.filter(b => b.status !== 'cancelled' && b.session_id).forEach(b => mineBySession[b.session_id] = b);
+  S._sess = S._sess || {}; sess.forEach(s => S._sess[s.id] = s);
   return '<section class="hero"><div class="wrap">' + (ASSETS.logo ? '<img class="logo-big" src="' + ASSETS.logo + '" alt="UZU Club">' : '') + '<div class="pillars">PADEL + BISTRO &amp; BAR + FOOTBALL + RECOVERY</div><h1>One of Asia’s most <i>beautiful</i> social clubs.</h1><p>El Nido, Palawan, Philippines. Book Americanos, clinics, football and any of our three padel courts in a few taps — confirmations come straight to your email.</p><div class="btns"><a class="btn b-gold" href="#schedule">See this week’s sessions</a><a class="btn b-ghostl" href="#courts">Book a court</a></div></div></section>' +
-    '<section class="sec"><div class="wrap grid g2" style="align-items:start">' +
-    '<div class="poster"><h3><i>Weekly</i> Schedule</h3><div class="tag">PADEL / FOOTBALL · EL NIDO</div>' + rows + '<div class="foot"><div><b>FOR BOOKINGS</b>0917 125 5048 · info@uzuclub.com</div><div style="align-self:end">@uzu.club</div></div></div>' +
-    '<div><h2>Coming up</h2><p class="sub">The next sessions on the schedule.</p>' + (upcoming.length ? upcoming.map(sessCard).join('') : '<div class="card muted">No sessions in the next few days.</div>') +
-    '<a class="btn b-green b-full" href="#schedule" style="margin-top:6px">Full schedule</a>' +
-    '<div class="card" style="margin-top:16px"><b>Become a member</b><div class="serif" style="font-size:30px;font-weight:600;line-height:1.1;margin:4px 0">₱2,000 <span style="font-size:18px">for 6 months</span></div><div class="muted small" style="margin:0 0 10px">Covers you plus up to 2 family members (spouse/partner or child). Members save ₱100 on every session and court hour. Register, tick “I want to become a member”, then pay at the club or by GCash — our staff will activate it.</div>' + (S.user ? '<a class="btn b-ghost b-sm" href="#account">My bookings</a>' : '<a class="btn b-gold b-sm" href="#signin" data-act="regtab">Create an account</a>') + '</div></div>' +
+        '<section class="sec"><div class="wrap" style="display:grid;grid-template-columns:minmax(0,1fr) 300px;gap:22px;align-items:start" id="homegrid">' +
+    '<div><h2>This week at UZU</h2><p class="sub">Today first, then the days ahead. Tap Book to grab a spot.</p>' + feedHTML(sess, days, t) +
+    '<a class="btn b-ghost b-full" href="#schedule" style="margin-top:14px">See the next two weeks</a></div>' +
+    '<div class="side">' + '<div class="card" style="margin-top:0"><b>Become a member</b><div class="serif" style="font-size:30px;font-weight:600;line-height:1.1;margin:4px 0">₱2,000 <span style="font-size:18px">for 6 months</span></div><div class="muted small" style="margin:0 0 10px">Covers you plus up to 2 family members (spouse/partner or child). Members save ₱100 on every session and court hour. Register, tick “I want to become a member”, then pay at the club or by GCash — our staff will activate it.</div>' + (S.user ? '<a class="btn b-ghost b-sm" href="#account">My bookings</a>' : '<a class="btn b-gold b-sm" href="#signin" data-act="regtab">Create an account</a>') + '</div>' +
+    '<div class="card" style="margin-top:14px"><b>For bookings</b><div class="small" style="margin-top:4px">0917 125 5048<br>info@uzuclub.com<br>@uzu.club</div></div></div>' +
     '</div></section>';
 }
 
 /* ---------- SCHEDULE ---------- */
 let mineBySession = {};
-function sessCard(s) {
+function sessCard(s, state, tag) {
   const left = s.capacity - s.booked, pct = Math.min(100, Math.round(s.booked / Math.max(1, s.capacity) * 100));
   const mine = mineBySession[s.id];
   const started = s.date === manilaToday() && mins(s.start_time) <= manilaNowMins();
@@ -309,8 +380,8 @@ function sessCard(s) {
   else if (s.status === 'closed') act = '<span class="pill p-mute">Bookings closed</span>';
   else if (started) act = '<span class="pill p-mute">In progress</span>';
   else act = '<button class="btn ' + (left > 0 ? 'b-green' : 'b-ghost') + ' b-sm" data-act="book" data-id="' + s.id + '">' + (left > 0 ? 'Book' : 'Join waitlist') + '</button>';
-  return '<div class="sess"><div class="time">' + esc(fmtT(s.start_time)) + '<div class="muted small" style="font-weight:500">to ' + esc(fmtT(s.end_time)) + '</div></div>' +
-    '<div class="info"><div class="ttl">' + esc(s.title) + '</div><div class="meta">' + esc(s.audience || '') + (s.audience ? ' · ' : '') + esc(priceTxt(s)) + '</div>' +
+  return '<div class="sess' + (state ? ' ' + state : '') + '"><div class="time">' + esc(fmtT(s.start_time)) + '<div class="muted small" style="font-weight:500">to ' + esc(fmtT(s.end_time)) + '</div></div>' +
+    '<div class="info">' + (tag || '') + '<div class="ttl">' + esc(s.title) + '</div><div class="meta">' + esc(s.audience || '') + (s.audience ? ' · ' : '') + esc(priceTxt(s)) + '</div>' +
     '<div class="row" style="margin-top:6px;gap:8px">' + sportPill(s.sport) + '<div class="bar"><i style="width:' + pct + '%"></i></div><span class="spots">' + (left > 0 ? left + ' of ' + s.capacity + ' spots left' : 'Full' + (s.waiting ? ' · ' + s.waiting + ' waiting' : '')) + '</span></div>' + (s.names && s.names.length ? '<div class="roster"><b>Playing:</b> ' + s.names.map(esc).join(', ') + (s.waitnames && s.waitnames.length ? ' <b>· Waitlist:</b> ' + s.waitnames.map(esc).join(', ') : '') + '</div>' : '') + '</div>' +
     '<div class="act">' + act + '</div></div>';
 }
@@ -320,11 +391,9 @@ async function viewSchedule() {
   mineBySession = {}; mine.filter(b => b.status !== 'cancelled' && b.session_id).forEach(b => mineBySession[b.session_id] = b);
   S._sess = {}; sess.forEach(s => S._sess[s.id] = s);
   const list = sess.filter(s => S.sport === 'all' || s.sport === S.sport);
-  let h = '<section class="sec"><div class="wrap"><h2>Schedule</h2><p class="sub">The next two weeks at UZU. Tap Book to reserve your spot — if a session is full you can join the waitlist and we’ll email you if a spot opens.</p>' +
+  let h = '<section class="sec"><div class="wrap"><h2>Schedule</h2><p class="sub">Today first, then the next two weeks. Tap Book to reserve your spot — if a session is full you can join the waitlist and we’ll email you if a spot opens.</p>' +
     '<div class="seg" style="max-width:360px;margin-bottom:8px">' + [['all', 'All'], ['padel', 'Padel'], ['football', 'Football']].map(x => '<button data-act="sport" data-v="' + x[0] + '" class="' + (S.sport === x[0] ? 'on' : '') + '">' + x[1] + '</button>').join('') + '</div>';
-  let cur = '';
-  list.forEach(s => { if (s.date !== cur) { cur = s.date; h += '<div class="dayhead"><b>' + esc(fmtDay(s.date).split(',')[0]) + '</b><span>' + esc(fmtDay(s.date).split(', ')[1]) + (s.date === t ? ' · Today' : '') + '</span></div>'; } h += sessCard(s); });
-  if (!list.length) h += '<div class="card muted">Nothing scheduled.</div>';
+  h += feedHTML(list, Array.from({ length: 14 }, (_, i) => addDays(t, i)), t, { sport: S.sport });
   return h + '</div></section>';
 }
 function openBook(id) {
@@ -519,23 +588,32 @@ async function stTeam(s) {
 /* ---------- staff: court sheet (who plays when, where) ---------- */
 async function stSheet() {
   const mode = S.sheetMode, d0 = S.sheetDate;
-  const start = mode === 'week' ? (() => { const d = parseD(d0); const k = (d.getDay() + 6) % 7; d.setDate(d.getDate() - k); return dstr(d); })() : d0;
+  const start = d0;
   const end = mode === 'week' ? addDays(start, 6) : d0;
   const [cs, sess, bk] = await Promise.all([courts(), sessionsBetween(start, end, false), sb.from('uzu_bookings').select('*').gte('date', start).lte('date', end).in('status', ['confirmed', 'pending']).order('created_at')]);
   const bookings = bk.data || []; const pm = await profilesFor(bookings.map(b => b.user_id));
   const days = Array.from({ length: mode === 'week' ? 7 : 1 }, (_, i) => addDays(start, i));
+  const T = manilaToday(), NOW = manilaNowMins();
+  const stOf = (day, a, b) => day !== T ? '' : mins(b) <= NOW ? 'done' : mins(a) <= NOW ? 'now' : '';
   const items = (day, court) => {
     const out = [];
     sess.filter(s => s.date === day && (s.court_ids || []).includes(court.id)).forEach(s => {
       const ppl = bookings.filter(b => b.session_id === s.id && b.status === 'confirmed').map(b => nick(b, pm) + (b.players > 1 ? ' +' + (b.players - 1) : ''));
-      out.push({ t: mins(s.start_time), html: '<div class="blk"><div class="bt">' + esc(range(s.start_time, s.end_time)) + ' · ' + esc(s.title) + ' <span class="muted">(' + s.booked + '/' + s.capacity + ')</span></div><div class="bn">' + (ppl.length ? ppl.map(esc).join(', ') : '<span class="muted">No sign-ups yet</span>') + '</div></div>' });
+      out.push({ t: mins(s.start_time), html: '<div class="blk ' + stOf(day, s.start_time, s.end_time) + '"><div class="bt">' + esc(range(s.start_time, s.end_time)) + ' · ' + esc(s.title) + ' <span class="muted">(' + s.booked + '/' + s.capacity + ')</span></div><div class="bn">' + (ppl.length ? ppl.map(esc).join(', ') : '<span class="muted">No sign-ups yet</span>') + '</div></div>' });
     });
-    bookings.filter(b => b.kind === 'court' && b.date === day && b.court_id === court.id).forEach(b => out.push({ t: mins(b.start_time), html: '<div class="blk court"><div class="bt">' + esc(range(b.start_time, b.end_time)) + ' · Court booking' + (b.status === 'pending' ? ' <span class="pill p-warn">to confirm</span>' : '') + '</div><div class="bn">' + esc(who(b, pm)) + '</div></div>' }));
+    bookings.filter(b => b.kind === 'court' && b.date === day && b.court_id === court.id).forEach(b => out.push({ t: mins(b.start_time), html: '<div class="blk court ' + stOf(day, b.start_time, b.end_time) + '"><div class="bt">' + esc(range(b.start_time, b.end_time)) + ' · Court booking' + (b.status === 'pending' ? ' <span class="pill p-warn">to confirm</span>' : '') + '</div><div class="bn">' + esc(who(b, pm)) + '</div></div>' }));
     return out.sort((a, b) => a.t - b.t).map(x => x.html).join('') || '<span class="muted small">—</span>';
   };
-  let h = '<div class="row wrapx" style="margin-bottom:12px;gap:8px"><div class="seg" style="width:200px"><button data-act="smode" data-v="day" class="' + (mode === 'day' ? 'on' : '') + '">Day</button><button data-act="smode" data-v="week" class="' + (mode === 'week' ? 'on' : '') + '">Week</button></div><button class="btn b-ghost b-sm" data-act="sstep" data-v="-1">←</button><input type="date" class="mini" style="width:auto" data-chg="sheetdate" value="' + d0 + '"><button class="btn b-ghost b-sm" data-act="sstep" data-v="1">→</button><b>' + esc(mode === 'week' ? fmtShort(start) + ' – ' + fmtShort(end) : fmtDay(d0)) + '</b><button class="btn b-ghost b-sm" style="margin-left:auto" data-act="sheetcopy">Copy summary</button></div>';
-  h += '<div class="card scroll" style="padding:0"><table class="wk"><tr><th>' + (mode === 'week' ? 'Day' : 'Date') + '</th>' + cs.map(c => '<th>' + esc(c.name) + '</th>').join('') + '</tr>' +
-    days.map(d => '<tr><td class="day">' + esc(fmtShort(d)) + (d === manilaToday() ? '<div class="pill p-ok" style="margin-top:4px">Today</div>' : '') + '</td>' + cs.map(c => '<td>' + items(d, c) + '</td>').join('') + '</tr>').join('') + '</table></div>';
+  let h = '<div class="row wrapx" style="margin-bottom:12px;gap:8px"><div class="seg" style="width:200px"><button data-act="smode" data-v="day" class="' + (mode === 'day' ? 'on' : '') + '">Day</button><button data-act="smode" data-v="week" class="' + (mode === 'week' ? 'on' : '') + '">7 days</button></div><button class="btn ' + (d0 === manilaToday() ? 'b-green' : 'b-ghost') + ' b-sm" data-act="stoday">Today</button><button class="btn b-ghost b-sm" data-act="sstep" data-v="-1">←</button><input type="date" class="mini" style="width:auto" data-chg="sheetdate" value="' + d0 + '"><button class="btn b-ghost b-sm" data-act="sstep" data-v="1">→</button><b>' + esc(mode === 'week' ? fmtShort(start) + ' – ' + fmtShort(end) : fmtDay(d0)) + '</b><button class="btn b-ghost b-sm" style="margin-left:auto" data-act="sheetcopy">Copy summary</button></div>';
+  const dayStats = d => { const bs = bookings.filter(b => b.date === d && b.status === 'confirmed'); const ppl = bs.reduce((n, b) => n + (b.players || 1), 0); const pend = bookings.filter(b => b.date === d && b.status === 'pending').length; return ppl + ' player' + (ppl === 1 ? '' : 's') + ' · ' + sess.filter(x => x.date === d).length + ' session' + (sess.filter(x => x.date === d).length === 1 ? '' : 's') + (pend ? ' · <span class="pill p-warn">' + pend + ' to confirm</span>' : ''); };
+  const nowStrip = () => {
+    const evs = sess.filter(x => x.date === T).map(x => ({ a: x.start_time, b: x.end_time, n: x.title + ' (' + x.booked + '/' + x.capacity + ')' }))
+      .concat(bookings.filter(b => b.kind === 'court' && b.date === T).map(b => ({ a: b.start_time, b: b.end_time, n: ((cs.find(c => c.id === b.court_id) || {}).name || 'Court') + ' · ' + who(b, pm) })));
+    const on = evs.filter(e => mins(e.a) <= NOW && mins(e.b) > NOW), nx = evs.filter(e => mins(e.a) > NOW).sort((x, y) => mins(x.a) - mins(y.a));
+    const nx1 = nx.length ? nx.filter(e => e.a === nx[0].a) : [];
+    return '<div class="strip"><div class="chip"><b>Now · <span class="clock">' + nowClock() + '</span></b>' + (on.length ? on.map(e => esc(e.n)).join('<br>') : 'Nothing on court') + '</div><div class="chip"><b>Up next' + (nx1.length ? ' · ' + esc(fmtT(nx1[0].a)) : '') + '</b>' + (nx1.length ? nx1.map(e => esc(e.n)).join('<br>') : 'Nothing else today') + '</div><div class="chip"><b>Rest of today</b>' + nx.length + ' more on the sheet</div></div>';
+  };
+  h += '<div class="feed">' + days.map(d => { const dd = parseD(d); const isT = d === T; return '<div class="fday' + (isT ? ' today' : '') + '"><div class="fh"><span class="d">' + DOW[dd.getDay()] + '</span><span class="dt">' + esc(fmtShort(d).split(' ').slice(1).join(' ')) + '</span><span class="rel">' + (isT ? 'Today' : relDay(d, T)) + '</span><span class="end small">' + dayStats(d) + '</span></div>' + (isT ? nowStrip() : '') + '<div class="cgrid">' + cs.map(c => '<div class="ccol"><h5>' + esc(c.name) + '</h5>' + items(d, c) + '</div>').join('') + '</div></div>'; }).join('') + '</div>';
   // players summary
   const tally = {};
   bookings.filter(b => b.status === 'confirmed').forEach(b => {
@@ -544,7 +622,7 @@ async function stSheet() {
     t.n++; t.what.push(fmtShort(b.date).split(' ')[0] + ' ' + fmtT(b.start_time).replace(':00', '') + ' ' + (s ? s.title : ((cs.find(c => c.id === b.court_id) || {}).name || 'Court')));
   });
   const rows = Object.values(tally).sort((a, b) => b.n - a.n || a.name.localeCompare(b.name));
-  h += '<div class="card" style="margin-top:14px"><b>Players ' + (mode === 'week' ? 'this week' : 'today') + ' (' + rows.length + ')</b><div class="scroll"><table class="tbl" style="margin-top:8px"><tr><th>Player</th><th>Bookings</th><th>When & where</th></tr>' + rows.map(r => '<tr><td><b>' + esc(r.name) + '</b></td><td>' + r.n + '</td><td class="small">' + r.what.map(esc).join(' · ') + '</td></tr>').join('') + '</table>' + (rows.length ? '' : '<div class="muted small" style="padding:8px">Nobody booked yet.</div>') + '</div></div>';
+  h += '<div class="card" style="margin-top:14px"><b>Players ' + (mode === 'week' ? 'in these 7 days' : 'on this day') + ' (' + rows.length + ')</b><div class="scroll"><table class="tbl" style="margin-top:8px"><tr><th>Player</th><th>Bookings</th><th>When & where</th></tr>' + rows.map(r => '<tr><td><b>' + esc(r.name) + '</b></td><td>' + r.n + '</td><td class="small">' + r.what.map(esc).join(' · ') + '</td></tr>').join('') + '</table>' + (rows.length ? '' : '<div class="muted small" style="padding:8px">Nobody booked yet.</div>') + '</div></div>';
   // staff quick court booking
   h += '<div class="card" style="margin-top:14px"><b>Book a court for a walk-in or caller</b><div class="prog" style="margin-top:10px"><select class="mini" id="sc-court">' + cs.map(c => '<option value="' + c.id + '">' + esc(c.name) + '</option>').join('') + '</select><input type="date" class="mini" id="sc-date" value="' + d0 + '"><input type="time" class="mini" id="sc-start" value="08:00"><input type="time" class="mini" id="sc-end" value="09:00"><input class="mini" id="sc-name" placeholder="Name"><input class="mini" id="sc-phone" placeholder="Mobile (optional)"></div><button class="btn b-green b-sm" style="margin-top:10px" data-act="staffcourt">Add booking</button></div>';
   S._sheetText = days.map(d => fmtDay(d) + '\n' + cs.map(c => { const t = items(d, c).replace(/<div class="blk[^"]*"><div class="bt">/g, '\n  • ').replace(/<\/div><div class="bn">/g, ': ').replace(/<[^>]+>/g, '').replace(/&amp;/g, '&').replace(/&#39;/g, "'").replace(/—/g, '').trim(); return t ? c.name + t : ''; }).filter(Boolean).join('\n')).join('\n\n');
@@ -647,6 +725,8 @@ document.addEventListener('click', async ev => {
       cache.courts = null; await route();
     }, 'Court saved'); break;
     case 'smode': S.sheetMode = v; route(); break;
+    case 'stoday': S.sheetDate = manilaToday(); route(); break;
+    case 'courtday': S.courtDate = v; break;
     case 'sstep': S.sheetDate = addDays(S.sheetDate, (+v) * (S.sheetMode === 'week' ? 7 : 1)); route(); break;
     case 'sheetcopy': try { await navigator.clipboard.writeText(S._sheetText || ''); toast('Summary copied'); } catch (e) { openModal('<button class="x" data-act="close">✕</button><h3>Summary</h3><textarea class="inp" style="min-height:300px">' + esc(S._sheetText || '') + '</textarea>'); } break;
     case 'staffcourt': run(async () => { must(await sb.rpc('uzu_staff_book_court', { p_court: $('sc-court').value, p_date: $('sc-date').value, p_start: $('sc-start').value, p_end: $('sc-end').value, p_name: $('sc-name').value, p_phone: $('sc-phone').value, p_user: null })); await route(); }, 'Court booked'); break;
