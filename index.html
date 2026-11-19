@@ -139,6 +139,8 @@ textarea.inp{min-height:70px;resize:vertical}
 .chips2 button.on{background:var(--green);color:var(--cream);border-color:var(--green)}
 .chips2 button i{font-style:normal;opacity:.7;margin-left:4px}
 .ptype{font-size:10px;font-weight:800;letter-spacing:.1em;text-transform:uppercase}
+tr.click{cursor:pointer}tr.click:hover td{background:#f3efe4}
+.pgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:8px;margin-top:12px}.pgrid div{background:#fff;border:1px solid var(--line);border-radius:10px;padding:8px 10px;font-size:13px}.pgrid b{display:block;font-size:10px;letter-spacing:.12em;color:var(--muted);text-transform:uppercase}
 .tl{border-left:2px solid var(--line);margin:8px 0 0 6px;padding-left:14px}
 .tl div{position:relative;padding:0 0 10px;font-size:13px}
 .tl div:before{content:"";position:absolute;left:-20px;top:5px;width:9px;height:9px;border-radius:50%;background:var(--green3)}
@@ -218,7 +220,16 @@ footer a{opacity:.9}
 .blk .bn{font-size:12px;color:#3c463f}
 .mlist{display:grid;gap:8px}
 .famrow{display:grid;grid-template-columns:1.4fr 1fr 1.4fr;gap:6px;margin-bottom:6px}
-@media(max-width:600px){.famrow{grid-template-columns:1fr 1fr}.famrow .fam-email{grid-column:span 2}}
+.hh .hrow{display:grid;grid-template-columns:1fr 1.2fr auto;gap:6px;margin-bottom:6px;align-items:center}
+.hh .hrow.kid{grid-template-columns:1fr auto}
+.hh .lbl{font-size:12px;font-weight:700;color:var(--muted);letter-spacing:.06em;margin:10px 0 6px}
+.hh .x{border:0;background:none;color:var(--muted);font-size:18px;padding:0 6px}
+.who{display:flex;flex-wrap:wrap;gap:8px}
+.who label{display:flex;align-items:center;gap:8px;border:1.5px solid var(--line);background:#fff;border-radius:12px;padding:9px 12px;font-weight:700;cursor:pointer}
+.who label small{font-weight:500;color:var(--muted)}
+.who input{accent-color:var(--green)}
+.who label:has(input:checked){border-color:var(--green);background:var(--okbg)}
+@media(max-width:600px){.famrow{grid-template-columns:1fr 1fr}.famrow .fam-email{grid-column:span 2}.hh .hrow{grid-template-columns:1fr auto}.hh .hrow .fam-email{grid-column:1}}
 .hide{display:none!important}
 </style>
 </head>
@@ -286,7 +297,8 @@ async function loadUser() {
       sb.from('uzu_staff').select('user_id').eq('user_id', S.user.id).maybeSingle()
     ]);
     S.profile = p.data; S.staff = !!st.data;
-    const mm = await sb.rpc('uzu_my_membership'); S.membership = mm.data || { active: false };
+    const [mm, hh] = await Promise.all([sb.rpc('uzu_my_membership'), S.staff ? Promise.resolve({ data: null }) : sb.rpc('uzu_my_household')]);
+    S.membership = mm.data || { active: false }; S.household = hh.data || { people: [] };
   }
 }
 sb.auth.onAuthStateChange((ev) => { if (ev === 'SIGNED_OUT' || ev === 'SIGNED_IN') loadUser().then(() => { renderNav(); }); });
@@ -304,7 +316,7 @@ async function sessionsBetween(a, b, all) {
 }
 async function myBookings() {
   if (!S.user) return [];
-  const { data } = await sb.from('uzu_bookings').select('*').eq('user_id', S.user.id).order('date', { ascending: false }).limit(100);
+  const { data } = await sb.from('uzu_bookings').select('*').order('date', { ascending: false }).limit(200);
   return data || [];
 }
 
@@ -407,7 +419,7 @@ async function viewHome() {
   const t = manilaToday();
   const days = Array.from({ length: 7 }, (_, i) => addDays(t, i));
   const [sess, mine] = await Promise.all([sessionsBetween(t, days[6]), myBookings()]);
-  mineBySession = {}; mine.filter(b => b.status !== 'cancelled' && b.session_id).forEach(b => mineBySession[b.session_id] = b);
+  mineBySession = {}; mine.filter(b => b.status !== 'cancelled' && b.session_id).forEach(b => (mineBySession[b.session_id] = mineBySession[b.session_id] || []).push(b));
   S._sess = S._sess || {}; sess.forEach(s => S._sess[s.id] = s);
   return '<section class="hero"><div class="wrap">' + (ASSETS.logo ? '<img class="logo-big" src="' + ASSETS.logo + '" alt="UZU Club">' : '') + '<div class="pillars">PADEL + BISTRO &amp; BAR + FOOTBALL + RECOVERY</div><h1>One of Asia’s most <i>beautiful</i> social clubs.</h1><p>El Nido, Palawan, Philippines. Book Americanos, clinics, football and any of our three padel courts in a few taps — confirmations come straight to your email.</p><div class="btns"><a class="btn b-gold" href="#schedule">See this week’s sessions</a><a class="btn b-ghostl" href="#courts">Book a court</a></div></div></section>' +
         '<section class="sec"><div class="wrap" style="display:grid;grid-template-columns:minmax(0,1fr) 300px;gap:22px;align-items:start" id="homegrid">' +
@@ -420,6 +432,12 @@ async function viewHome() {
 
 /* ---------- SCHEDULE ---------- */
 let mineBySession = {};
+function whoFor(b) {
+  const me = S.user && S.user.id;
+  if (b.for_name) return b.for_name.split(' ')[0];
+  if (b.user_id === me) return 'You';
+  const p = ((S.household || {}).people || []).find(x => x.key === 'u:' + b.user_id); return p ? p.name : 'Partner';
+}
 function rosterHTML(s) {
   const bl = s.by_level || {}, lv = (s.levels || []).filter(l => (bl[l] || []).length);
   if (!lv.length) return '<b>Playing:</b> ' + s.names.map(esc).join(', ');
@@ -431,7 +449,7 @@ function sessCard(s, state, tag) {
   const started = s.date === manilaToday() && mins(s.start_time) <= manilaNowMins();
   let act;
   if (S.staff) act = started ? '<span class="pill p-mute">In progress</span>' : '<button class="btn b-ghost b-sm" data-act="staffadd" data-id="' + s.id + '">+ Add player</button>';
-  else if (mine) act = statusPill(mine.status) + '<button class="btn b-ghost b-sm" data-act="cancel" data-id="' + mine.id + '">Cancel</button>';
+  else if (mine && mine.length) act = '<span class="pill p-ok">Booked: ' + mine.map(x => esc(whoFor(x))).join(', ') + '</span>' + (started || s.status !== 'open' ? '' : '<button class="btn b-ghost b-sm" data-act="book" data-id="' + s.id + '">+ Book someone else</button>');
   else if (s.status === 'closed') act = '<span class="pill p-mute">Bookings closed</span>';
   else if (started) act = '<span class="pill p-mute">In progress</span>';
   else act = '<button class="btn ' + (left > 0 ? 'b-green' : 'b-ghost') + ' b-sm" data-act="book" data-id="' + s.id + '">' + (left > 0 ? 'Book' : 'Join waitlist') + '</button>';
@@ -443,13 +461,22 @@ function sessCard(s, state, tag) {
 async function viewSchedule() {
   const t = manilaToday(), end = addDays(t, 13);
   const [sess, mine] = await Promise.all([sessionsBetween(t, end), myBookings()]);
-  mineBySession = {}; mine.filter(b => b.status !== 'cancelled' && b.session_id).forEach(b => mineBySession[b.session_id] = b);
+  mineBySession = {}; mine.filter(b => b.status !== 'cancelled' && b.session_id).forEach(b => (mineBySession[b.session_id] = mineBySession[b.session_id] || []).push(b));
   S._sess = {}; sess.forEach(s => S._sess[s.id] = s);
   const list = sess.filter(s => S.sport === 'all' || s.sport === S.sport);
   let h = '<section class="sec"><div class="wrap"><h2>Schedule</h2><p class="sub">Today first, then the next two weeks. Tap Book to reserve your spot — if a session is full you can join the waitlist and we’ll email you if a spot opens.</p>' +
     '<div class="seg" style="max-width:360px;margin-bottom:8px">' + [['all', 'All'], ['padel', 'Padel'], ['football', 'Football']].map(x => '<button data-act="sport" data-v="' + x[0] + '" class="' + (S.sport === x[0] ? 'on' : '') + '">' + x[1] + '</button>').join('') + '</div>';
   h += feedHTML(list, Array.from({ length: 14 }, (_, i) => addDays(t, i)), t, { sport: S.sport });
   return h + '</div></section>';
+}
+function whoPicker(s) {
+  const ppl = (S.household || {}).people || [{ key: 'self', name: 'Me', relation: 'me' }];
+  const already = (mineBySession[s.id] || []).map(b => b.family_id ? 'f:' + b.family_id : (b.user_id === S.user.id ? 'self' : 'u:' + b.user_id));
+  const kidsSession = /kid/i.test(s.title + ' ' + (s.audience || ''));
+  const avail = ppl.filter(p => !already.includes(p.key));
+  const pre = kidsSession ? (avail.find(p => p.relation === 'child') || {}).key : (avail.find(p => p.key === 'self') || avail[0] || {}).key;
+  return '<div class="field" style="margin-top:12px"><span>WHO’S PLAYING?</span><div class="who" id="bk-who">' + (avail.length ? avail.map(p => '<label><input type="checkbox" value="' + esc(p.key) + '"' + (p.key === pre ? ' checked' : '') + '>' + esc(p.key === 'self' ? 'Me' : p.name) + (p.relation !== 'me' ? ' <small>' + (p.relation === 'child' ? 'child' : 'partner' + (p.linked ? '' : ' · not linked')) + '</small>' : '') + '</label>').join('') : '<span class="small muted">Everyone in your household is already booked.</span>') + '</div>' +
+    (ppl.length < 2 ? '<div class="small muted" style="margin-top:6px">Booking for your kids or partner? Add them under <a href="#account">My account → My household</a>.</div>' : '') + '</div>';
 }
 function openBook(id) {
   const s = S._sess[id]; if (!s) return;
@@ -463,7 +490,8 @@ function openBook(id) {
     (s.description ? '<p class="small" style="margin:10px 0">' + esc(s.description) + '</p>' : '') +
     (full ? '<div class="note" style="margin:10px 0">This session is full — you’ll go on the waitlist and get an email if a spot opens.</div>' : '') +
     ((s.levels || []).length ? '<div class="field" style="margin-top:12px"><span>YOUR LEVEL</span><div class="lvseg" id="bk-level">' + s.levels.map(l => '<button data-act="pick" data-v="' + esc(l) + '">' + esc(l) + '</button>').join('') + '</div></div>' : '') +
-    '<label class="field" style="margin-top:12px"><span>PLAYERS</span><select id="bk-players" class="inp">' + [1, 2, 3, 4].map(n => '<option>' + n + '</option>').join('') + '</select></label>' +
+    whoPicker(s) +
+    '<label class="field" style="margin-top:12px"><span>FRIENDS NOT IN YOUR HOUSEHOLD (optional)</span><select id="bk-players" class="inp">' + [0, 1, 2, 3].map(n => '<option value="' + n + '">' + (n ? '+' + n + ' friend' + (n > 1 ? 's' : '') : 'None') + '</option>').join('') + '</select></label>' +
     '<div class="field"><span>PAYMENT</span><div class="seg" id="bk-pay"><button data-act="pay" data-v="club" class="on">Pay at the club</button><button data-act="pay" data-v="gcash">GCash</button></div></div>' +
     '<label class="field hide" id="bk-gc"><span>GCASH REFERENCE NO.</span><input id="bk-ref" class="inp" placeholder="Send to 0917 125 5048, then enter the ref no."></label>' +
     '<label class="field"><span>NOTES (optional)</span><textarea id="bk-notes" class="inp" placeholder="Level, names of friends you’re bringing, kid’s age…"></textarea></label>' +
@@ -531,7 +559,7 @@ async function viewAccount() {
   const t = manilaToday();
   const up = mine.filter(b => b.date >= t && b.status !== 'cancelled').sort((a, b) => (a.date + a.start_time).localeCompare(b.date + b.start_time));
   const past = mine.filter(b => !(b.date >= t && b.status !== 'cancelled'));
-  const item = b => '<div class="sess"><div class="time">' + esc(fmtShort(b.date)) + '<div class="muted small" style="font-weight:500">' + esc(fmtT(b.start_time)) + '</div></div><div class="info"><div class="ttl">' + esc(b.kind === 'session' ? (sm[b.session_id] || {}).title || 'Session' : ((cs.find(c => c.id === b.court_id) || {}).name || 'Court')) + '</div><div class="meta">Ref ' + esc(b.ref) + ' · ' + b.players + ' player' + (b.players > 1 ? 's' : '') + (b.amount != null ? ' · ' + esc(peso(b.amount)) : '') + ' · ' + (b.payment === 'paid' ? 'Paid' : b.pay_method === 'gcash' ? 'GCash' : 'Pay at club') + '</div></div><div class="act">' + statusPill(b.status) + (b.date >= t && b.status !== 'cancelled' ? '<button class="btn b-ghost b-sm" data-act="cancel" data-id="' + b.id + '">Cancel</button>' : '') + '</div></div>';
+  const item = b => '<div class="sess"><div class="time">' + esc(fmtShort(b.date)) + '<div class="muted small" style="font-weight:500">' + esc(fmtT(b.start_time)) + '</div></div><div class="info"><div class="ttl">' + esc(b.kind === 'session' ? (sm[b.session_id] || {}).title || 'Session' : ((cs.find(c => c.id === b.court_id) || {}).name || 'Court')) + '</div><div class="meta"><b>' + esc(whoFor(b)) + (b.booked_by && b.booked_by !== S.user.id && !b.for_name ? ' · booked by your partner' : '') + '</b>' + (b.level ? ' · ' + esc(b.level) : '') + ' · Ref ' + esc(b.ref) + (b.players > 1 ? ' · +' + (b.players - 1) + ' friend' + (b.players > 2 ? 's' : '') : '') + (b.amount != null ? ' · ' + esc(peso(b.amount)) : '') + ' · ' + (b.payment === 'paid' ? 'Paid' : b.pay_method === 'gcash' ? 'GCash' : 'Pay at club') + '</div></div><div class="act">' + statusPill(b.status) + (b.date >= t && b.status !== 'cancelled' ? '<button class="btn b-ghost b-sm" data-act="cancel" data-id="' + b.id + '">Cancel</button>' : '') + '</div></div>';
   const p = S.profile || {};
   return '<section class="sec"><div class="wrap grid g2" style="align-items:start"><div><h2>My account</h2><p class="sub">Hi ' + esc(p.full_name || S.user.email) + (S.membership && S.membership.active ? ' · <span class="pill p-ok">Member' + (S.membership.until ? ' until ' + esc(fmtShort(S.membership.until)) : '') + '</span>' : '') + '</p>' +
     (up.length ? up.map(item).join('') : '<div class="card muted">No upcoming bookings. <a href="#schedule">Browse the schedule</a>.</div>') +
@@ -539,20 +567,35 @@ async function viewAccount() {
     '<div>' + (await membershipCard()) + '<div class="card"><b>My details</b><label class="field" style="margin-top:12px"><span>FULL NAME</span><input id="pf-name" class="inp" value="' + esc(p.full_name || '') + '"></label><label class="field"><span>NICKNAME (shown on public lists)</span><input id="pf-nick" class="inp" maxlength="24" value="' + esc(p.nickname || '') + '"></label><label class="field"><span>MOBILE</span><input id="pf-phone" class="inp" inputmode="tel" value="' + esc(p.phone || '') + '"></label><div class="muted small" style="margin-bottom:12px">Email: ' + esc(S.user.email) + '</div><button class="btn b-green" data-act="saveprofile">Save</button></div></div></div></section>';
 }
 
-function familyFields(list) {
-  return '<div class="small" style="font-weight:700;color:var(--muted);margin-bottom:6px">FAMILY MEMBERS (optional, up to 2)</div>' + [0, 1].map(i => { const f = list[i] || {}; return '<div class="famrow"><input class="mini fam-name" placeholder="Full name" value="' + esc(f.name || '') + '"><select class="mini fam-rel"><option value="spouse/partner"' + (f.relation === 'spouse/partner' ? ' selected' : '') + '>Spouse / partner</option><option value="child"' + (f.relation === 'child' ? ' selected' : '') + '>Child</option></select><input class="mini fam-email" type="email" placeholder="Their email (if they’ll book)" value="' + esc(f.email || '') + '"></div>'; }).join('') + '<div class="small muted">Family members who register with that email get member rates too.</div>';
+function householdFields(list) {
+  list = list || []; const partner = list.find(f => f.relation === 'spouse/partner') || {}; const kids = list.filter(f => f.relation === 'child');
+  const kidRow = k => '<div class="hrow kid fam" data-rel="child" data-id="' + esc(k.id || '') + '"><input class="mini fam-name" placeholder="Child’s name" value="' + esc(k.name || '') + '"><button class="x" data-act="hhdel" title="Remove">×</button></div>';
+  return '<div class="hh"><div class="lbl">PARTNER</div><div class="hrow fam" data-rel="spouse/partner" data-id="' + esc(partner.id || '') + '"><input class="mini fam-name" placeholder="Partner’s full name" value="' + esc(partner.name || '') + '"><input class="mini fam-email" type="email" placeholder="Partner’s email (needed)" value="' + esc(partner.email || '') + '">' + (partner.status ? '<span class="pill ' + (partner.status === 'linked' ? 'p-ok' : 'p-mute') + '">' + ({ linked: 'Linked', waiting: 'Waiting for them to accept', not_registered: 'Not registered yet' }[partner.status]) + '</span>' : '<span></span>') + '</div>' +
+    '<div class="lbl">KIDS</div><div class="kids">' + kids.map(kidRow).join('') + '</div><button class="btn b-ghost b-sm" data-act="hhkid">+ Add a child</button>' +
+    '<div class="small muted" style="margin-top:8px">Kids don’t need an email. Your partner needs one so you can book for each other — once they register with it (or accept in their account), your accounts are linked and share the kids list.</div></div>';
 }
-function readFamily(root) { const r = root || document; const n = r.querySelectorAll('.fam-name'), rel = r.querySelectorAll('.fam-rel'), em = r.querySelectorAll('.fam-email'); const out = []; n.forEach((x, i) => { if (x.value.trim()) out.push({ name: x.value.trim(), relation: rel[i].value, email: em[i].value.trim() }); }); return out; }
+const familyFields = householdFields;
+function readFamily(root) {
+  const r = root || document; const out = [];
+  r.querySelectorAll('.fam').forEach(x => { const n = x.querySelector('.fam-name').value.trim(); if (!n) return; const e = x.querySelector('.fam-email'); out.push({ id: x.dataset.id || null, name: n, relation: x.dataset.rel, email: e ? e.value.trim() : null }); });
+  return out;
+}
+function householdCard() {
+  const H = S.household || {}; const rows = H.rows || [];
+  let h = '<div class="card" style="margin-bottom:14px"><b>My household</b><p class="small muted" style="margin:4px 0 0">Add your partner and kids so you can book for them.</p>';
+  (H.requests || []).forEach(q => { h += '<div class="okbox" style="margin-top:10px"><b>' + esc(q.name) + '</b> added you as their partner. Accept to book for each other and share your kids list. <div style="margin-top:8px"><button class="btn b-green b-sm" data-act="hhaccept" data-id="' + q.user_id + '">Accept</button> <button class="btn b-ghost b-sm" data-act="hhdecline" data-id="' + q.user_id + '">Not my partner</button></div></div>'; });
+  if ((H.partner_kids || []).length) h += '<div class="small" style="margin-top:10px">Kids shared by your partner: <b>' + H.partner_kids.map(k => esc(k.name)).join(', ') + '</b></div>';
+  return h + '<div id="famwrap" style="margin-top:6px">' + householdFields(rows) + '<button class="btn b-green b-sm" style="margin-top:10px" data-act="savefamily">Save household</button></div></div>';
+}
 async function membershipCard() {
-  const m = S.membership || {}; const { data: fam } = await sb.from('uzu_family').select('*').eq('primary_id', S.user.id).order('created_at');
+  const m = S.membership || {};
   let h = '<div class="card" style="margin-bottom:14px"><b>Membership</b>';
   if (S.profile && !S.profile.email_verified) h += '<div class="note" style="margin-top:8px">Confirm your email first — tap the link we sent to ' + esc(S.user.email) + '. <button class="btn b-ghost b-sm" data-act="resendverify">Resend</button></div>';
   if (m.invite && m.invite.status !== 'approved') h += '<div class="okbox" style="margin-top:8px">' + (m.invite.status === 'submitted' ? 'We have your proof of payment — our staff will confirm your membership soon.' : 'You’re invited to become a member: ' + esc(peso(m.invite.amount)) + ' for ' + m.invite.months + ' months. <a href="#pay/' + esc(m.invite.token) + '"><b>Pay & upload proof →</b></a>') + '</div>';
   if (m.active && m.via) h += '<div class="okbox" style="margin-top:8px">You’re covered as family of <b>' + esc(m.via) + '</b>' + (m.until ? ' until ' + esc(fmtDay(m.until)) : '') + '. Member rates apply.</div>';
   else if (m.active) h += '<div class="okbox" style="margin-top:8px"><b>' + esc(m.plan || 'Member') + '</b>' + (m.until ? ' · valid until ' + esc(fmtDay(m.until)) : '') + '. You save ₱100 on every session and court hour.</div>';
   else h += '<p class="small muted" style="margin:6px 0 10px">₱2,000 for 6 months, covering you plus up to 2 family members (spouse/partner or child). Members save ₱100 on every session and court hour.</p>' + (m.expired ? '<div class="note" style="margin-bottom:10px">Your membership ended ' + esc(fmtDay(m.last_until)) + '.</div>' : '') + (m.requested ? '<div class="note">Request received — pay at the club or by GCash (0917 125 5048) and our staff will activate it.</div>' : '<button class="btn b-gold b-sm" data-act="reqmember">' + (m.expired ? 'Renew my membership' : 'I want to become a member') + '</button>');
-  if (!m.via) h += '<div style="margin-top:14px" id="famwrap">' + familyFields(fam || []) + '<button class="btn b-ghost b-sm" style="margin-top:8px" data-act="savefamily">Save family members</button></div>';
-  return h + '</div>';
+  return h + '</div>' + householdCard();
 }
 /* ---------- SIGN IN ---------- */
 let signTab = 'in';
@@ -562,7 +605,7 @@ function viewSignin() {
   return '<section class="sec"><div class="wrap" style="max-width:460px"><div class="card"><div class="seg" style="margin-bottom:16px"><button data-act="stab" data-v="in" class="' + (signTab === 'in' ? 'on' : '') + '">Sign in</button><button data-act="stab" data-v="up" class="' + (signTab === 'up' ? 'on' : '') + '">Create account</button></div>' +
     (signTab === 'up' ? '<label class="field"><span>FULL NAME</span><input id="su-name" class="inp" autocomplete="name"></label><label class="field"><span>NICKNAME</span><input id="su-nick" class="inp" maxlength="24" placeholder="Shown on public booking lists"></label><label class="field"><span>MOBILE</span><input id="su-phone" class="inp" inputmode="tel" autocomplete="tel" placeholder="09xx xxx xxxx"></label>' : '') +
     '<label class="field"><span>EMAIL</span><input id="su-email" class="inp" type="email" autocomplete="email"></label><label class="field"><span>PASSWORD</span><input id="su-pass" class="inp" type="password" autocomplete="' + (signTab === 'up' ? 'new-password' : 'current-password') + '" placeholder="' + (signTab === 'up' ? 'At least 8 characters' : '') + '"></label>' +
-    (signTab === 'up' ? '<div class="card" style="background:#fff;margin:4px 0 14px"><label class="row" style="gap:8px;font-weight:700"><input type="checkbox" id="su-member">I want to become a member — ₱2,000 for 6 months</label><div class="small muted" style="margin:4px 0 8px">Includes up to 2 family members (spouse/partner or child). Pay at the club or by GCash; staff will activate your membership.</div>' + familyFields([]) + '</div>' : '') +
+    (signTab === 'up' ? '<div class="card" style="background:#fff;margin:4px 0 14px"><label class="row" style="gap:8px;font-weight:700"><input type="checkbox" id="su-member">I want to become a member — ₱2,000 for 6 months</label><div class="small muted" style="margin:4px 0 8px">Includes up to 2 family members (spouse/partner or child). Our staff will send you an invitation to pay and upload your proof of payment.</div></div><div class="card" style="background:#fff;margin:0 0 14px"><b>Your household (optional)</b><div class="small muted">Add your partner and kids so you can book for them.</div>' + householdFields([]) + '</div>' : '') +
     '<button class="btn b-gold b-full" data-act="' + (signTab === 'up' ? 'signup' : 'signin') + '">' + (signTab === 'up' ? 'Create my account' : 'Sign in') + '</button>' +
     (signTab === 'in' ? '<p class="small muted" style="margin:12px 0 0">Forgot your password? Message us on <a href="https://www.facebook.com/uzu.club" target="_blank" rel="noopener">Facebook</a> or call 0917 125 5048.</p>' : '<p class="small muted" style="margin:12px 0 0">We’ll email you a link to confirm your address. Once confirmed, you can book — and our staff can send you a membership invitation.</p>') + '</div></div></section>';
 }
@@ -613,8 +656,8 @@ async function viewStaff() {
   return h + '</div></div></section>';
 }
 async function profilesFor(ids) { ids = [...new Set(ids.filter(Boolean))]; const m = {}; if (!ids.length) return m; const { data } = await sb.from('uzu_profiles').select('*').in('id', ids); (data || []).forEach(p => m[p.id] = p); return m; }
-const who = (b, pm) => { const p = pm[b.user_id]; return p ? (p.full_name || p.email) + (p.nickname ? ' (' + p.nickname + ')' : '') + (memberActive(p) ? ' ★' : '') : (b.guest_name || 'Guest') + ' · guest'; };
-const nick = (b, pm) => { const p = pm[b.user_id]; return p ? (p.nickname || (p.full_name || '').split(' ')[0] || 'Player') : (b.guest_name || 'Guest'); };
+const who = (b, pm) => { if (b.for_name) { const p = pm[b.user_id]; return b.for_name + (p ? ' (' + (p.nickname || (p.full_name || '').split(' ')[0]) + '’s ' + (b.family_id ? 'household' : '') + ')' : ''); } const p = pm[b.user_id]; return p ? (p.full_name || p.email) + (p.nickname ? ' (' + p.nickname + ')' : '') + (memberActive(p) ? ' ★' : '') : (b.guest_name || 'Guest') + ' · guest'; };
+const nick = (b, pm) => { if (b.for_name) return b.for_name.split(' ')[0]; const p = pm[b.user_id]; return p ? (p.nickname || (p.full_name || '').split(' ')[0] || 'Player') : (b.guest_name || 'Guest'); };
 const contact = (b, pm) => { const p = pm[b.user_id]; return esc([p ? p.phone : b.guest_phone, p ? p.email : b.guest_email].filter(Boolean).join(' · ')); };
 function bkActions(b) {
   let h = '';
@@ -693,10 +736,10 @@ async function stPeople() {
   const chip = (k, l) => '<button data-act="peoplef" data-v="' + k + '" class="' + (F === k ? 'on' : '') + '">' + l + '<i>' + cnt(k) + '</i></button>';
   const row = r => {
     if (r.kind === 'guest') { const g = r.g, m = g.match_id && byId[g.match_id];
-      return '<tr><td><b>' + esc(g.name || '—') + '</b><div class="small muted">Booked by staff / WhatsApp list</div></td><td><span class="pill p-mute">Guest</span></td><td class="small">' + esc([g.phone, g.email].filter(Boolean).join(' · ') || '—') + '</td><td class="small">' + g.bookings + ' · last ' + esc(fmtShort(g.last_date)) + '</td><td class="small">' + (m ? 'Looks like <b>' + esc(m.full_name || m.email) + '</b>' : '<span class="muted">Not registered yet</span>') + '</td><td>' + (m ? '<button class="btn b-gold b-sm" data-act="linkguest" data-v="' + esc(g.key) + '" data-id="' + m.id + '">Merge</button>' : '') + '</td></tr>'; }
+      return '<tr class="click" data-act="mguest" data-v="' + esc(g.key) + '"><td><b>' + esc(g.name || '—') + '</b><div class="small muted">Booked by staff / WhatsApp list</div></td><td><span class="pill p-mute">Guest</span></td><td class="small">' + esc([g.phone, g.email].filter(Boolean).join(' · ') || '—') + '</td><td class="small">' + g.bookings + ' · last ' + esc(fmtShort(g.last_date)) + '</td><td class="small">' + (m ? 'Looks like <b>' + esc(m.full_name || m.email) + '</b>' : '<span class="muted">Not registered yet</span>') + '</td><td>' + (m ? '<button class="btn b-gold b-sm" data-act="linkguest" data-v="' + esc(g.key) + '" data-id="' + m.id + '">Merge</button>' : '<span class="btn b-ghost b-sm">Open</span>') + '</td></tr>'; }
     const p = r.p;
     const flags = [p.to_review ? '<span class="pill p-warn">Payment to review</span>' : '', p.membership_requested ? '<span class="pill p-warn">Wants membership</span>' : '', p.invite_status === 'sent' ? '<span class="pill p-mute">Invite sent</span>' : ''].filter(Boolean).join(' ');
-    return '<tr><td><b>' + esc(p.full_name || '—') + '</b>' + (p.nickname ? ' <span class="small muted">“' + esc(p.nickname) + '”</span>' : '') + (flags ? '<div style="margin-top:4px">' + flags + '</div>' : '') + '</td><td><span class="pill ' + r.t[1] + '">' + r.t[0] + '</span></td><td class="small">' + esc(p.email) + '<br>' + esc(p.phone || '') + '</td><td class="small">' + p.bookings + (p.last_date ? ' · last ' + esc(fmtShort(p.last_date)) : '') + '</td><td class="small">' + (p.active ? (p.family_of && !p.is_member ? 'Family of ' + esc(p.family_of) : 'Until ' + (p.member_until ? esc(fmtShort(p.member_until)) : '—')) : 'Joined ' + esc(String(p.created_at).slice(0, 10))) + '</td><td><button class="btn b-ghost b-sm" data-act="mmanage" data-id="' + p.id + '">Open</button></td></tr>';
+    return '<tr class="click" data-act="mmanage" data-id="' + p.id + '"><td><b>' + esc(p.full_name || '—') + '</b>' + (p.nickname ? ' <span class="small muted">“' + esc(p.nickname) + '”</span>' : '') + (flags ? '<div style="margin-top:4px">' + flags + '</div>' : '') + '</td><td><span class="pill ' + r.t[1] + '">' + r.t[0] + '</span></td><td class="small">' + esc(p.email) + '<br>' + esc(p.phone || '') + '</td><td class="small">' + p.bookings + (p.last_date ? ' · last ' + esc(fmtShort(p.last_date)) : '') + '</td><td class="small">' + (p.active ? (p.family_of && !p.is_member ? 'Family of ' + esc(p.family_of) : 'Until ' + (p.member_until ? esc(fmtShort(p.member_until)) : '—')) : 'Joined ' + esc(String(p.created_at).slice(0, 10))) + '</td><td><span class="btn b-ghost b-sm">Open</span></td></tr>';
   };
   return '<div class="chips2">' + chip('all', 'Everyone') + chip('action', 'Needs action') + chip('new', 'New this week') + chip('registrants', 'Registrants') + chip('members', 'Members') + chip('guests', 'Guests') + '</div>' +
     '<input class="inp" style="max-width:360px;margin-bottom:12px" placeholder="Search name, nickname, email or mobile" id="mq" value="' + esc(S.memberQ || '') + '" data-chg="mq">' +
@@ -768,6 +811,19 @@ async function stSheet() {
 }
 
 /* ---------- staff: member detail (membership + payments + proofs) ---------- */
+async function openGuest(key) {
+  const ppl = await peopleData(); const g = ppl.guests.find(x => x.key === key); if (!g) return toast('Not found', true);
+  let q = sb.from('uzu_bookings').select('*').is('user_id', null).neq('status', 'cancelled').order('date', { ascending: false }).limit(60);
+  const { data: all } = await q; const norm = t => String(t || '').toLowerCase().replace(/\s+/g, ' ').trim();
+  const bks = (all || []).filter(b => key.startsWith('n:') ? !b.guest_email && 'n:' + norm(b.guest_name) === key : (b.guest_email || '').toLowerCase() === key);
+  const sids = [...new Set(bks.filter(x => x.session_id).map(x => x.session_id))]; const sm = {};
+  if (sids.length) { const { data } = await sb.from('uzu_sessions').select('id,title').in('id', sids); (data || []).forEach(x => sm[x.id] = x.title); }
+  const m = g.match_id && ppl.accounts.find(a => a.id === g.match_id);
+  openModal('<button class="x" data-act="close">✕</button><div class="row wrapx" style="gap:8px"><h3 style="margin:0">' + esc(g.name || g.email) + '</h3><span class="pill p-mute">Guest · no account</span></div>' +
+    '<div class="pgrid"><div><b>Name</b>' + esc(g.name || '—') + '</div><div><b>Email</b>' + esc(g.email || '—') + '</div><div><b>Mobile</b>' + esc(g.phone || '—') + '</div><div><b>First seen</b>' + esc(String(g.first_seen).slice(0, 10)) + '</div><div><b>Bookings</b>' + g.bookings + ' · last ' + esc(fmtShort(g.last_date)) + '</div><div><b>Source</b>Added by staff / WhatsApp list</div></div>' +
+    '<div class="card" style="margin-top:12px"><b>Account</b>' + (m ? '<p class="small" style="margin:6px 0 10px">This looks like <b>' + esc(m.full_name || m.email) + '</b> (' + esc(m.email) + '). Merge to move these bookings into their account.</p><button class="btn b-gold b-sm" data-act="linkguest" data-v="' + esc(key) + '" data-id="' + m.id + '">Merge into ' + esc((m.full_name || m.email).split(' ')[0]) + '’s account</button> <button class="btn b-ghost b-sm" data-act="mmanage" data-id="' + m.id + '">Open their profile</button>' : '<p class="small muted" style="margin:6px 0 0">Not registered yet. When they sign up with ' + (g.email ? 'this email, their bookings move over automatically' : 'the same name, a Merge button appears here') + '.</p>') + '</div>' +
+    '<div class="card" style="margin-top:12px"><b>Bookings</b><div class="small" style="margin-top:6px">' + bks.map(x => '<div style="padding:4px 0;border-bottom:1px solid var(--line)">' + esc(fmtShort(x.date)) + ' ' + esc(fmtT(x.start_time)) + ' · ' + esc(x.kind === 'session' ? sm[x.session_id] || 'Session' : 'Court') + (x.level ? ' · ' + esc(x.level) : '') + ' · ' + statusPill(x.status) + (x.amount != null ? ' · ' + esc(peso(x.amount)) : '') + '</div>').join('') + '</div></div>');
+}
 async function openMember(id) {
   const [{ data: p }, { data: pays }, { data: fam }, { data: log }, { data: invs }, { data: bks }] = await Promise.all([
     sb.from('uzu_profiles').select('*').eq('id', id).maybeSingle(),
@@ -775,7 +831,7 @@ async function openMember(id) {
     sb.from('uzu_family').select('*').eq('primary_id', id).order('created_at'),
     sb.from('uzu_membership_log').select('*').eq('user_id', id).order('at', { ascending: false }).limit(60),
     sb.from('uzu_member_invites').select('*').eq('user_id', id).order('created_at', { ascending: false }).limit(5),
-    sb.from('uzu_bookings').select('*').eq('user_id', id).order('date', { ascending: false }).limit(30)]);
+    sb.from('uzu_bookings').select('*').or('user_id.eq.' + id + ',booked_by.eq.' + id).order('date', { ascending: false }).limit(60)]);
   if (!p) return toast('Player not found', true);
   const ppl = await peopleData(); const me = ppl.accounts.find(x => x.id === id) || p; const typ = personType(Object.assign({}, p, { active: me.active, family_of: me.family_of }));
   const t = manilaToday(), six = (() => { const d = parseD(t); d.setMonth(d.getMonth() + 6); d.setDate(d.getDate() - 1); return dstr(d); })();
@@ -785,7 +841,7 @@ async function openMember(id) {
   if (sids.length) { const { data } = await sb.from('uzu_sessions').select('id,title').in('id', sids); (data || []).forEach(x => sm[x.id] = x.title); }
   const sec = (title, body, extra) => '<div class="card" style="margin-top:12px"' + (extra || '') + '><b>' + title + '</b>' + body + '</div>';
   let h = '<button class="x" data-act="close">✕</button><div class="row wrapx" style="gap:8px"><h3 style="margin:0">' + esc(p.full_name || p.email) + '</h3><span class="pill ' + typ[1] + '">' + typ[0] + '</span>' + (p.email_verified ? '<span class="pill p-ok">Email verified</span>' : '<span class="pill p-mute">Email not verified</span> <button class="btn b-ghost b-sm" data-act="mverify" data-id="' + id + '">Mark verified</button>') + '</div>' +
-    '<div class="muted small" style="margin-top:4px">' + esc(p.email) + (p.phone ? ' · ' + esc(p.phone) : '') + (p.nickname ? ' · “' + esc(p.nickname) + '”' : '') + ' · registered ' + esc(String(p.created_at).slice(0, 10)) + '</div>';
+    '<div class="pgrid"><div><b>Full name</b>' + esc(p.full_name || '—') + '</div><div><b>Nickname (public)</b>' + esc(p.nickname || '—') + '</div><div><b>Email</b>' + esc(p.email) + '</div><div><b>Mobile</b>' + esc(p.phone || '—') + '</div><div><b>Registered</b>' + esc(new Date(p.created_at).toLocaleDateString('en-PH', { timeZone: 'Asia/Manila', dateStyle: 'medium' })) + '</div><div><b>Email verified</b>' + (p.email_verified ? esc(p.verified_at ? new Date(p.verified_at).toLocaleDateString('en-PH', { timeZone: 'Asia/Manila', dateStyle: 'medium' }) : 'Yes') : 'Not yet') + '</div><div><b>Bookings</b>' + (bks || []).filter(x => x.status !== 'cancelled').length + ((bks || []).length ? ' · last ' + esc(fmtShort((bks || [])[0].date)) : '') + '</div><div><b>Membership</b>' + esc(typ[0]) + (p.member_until ? ' · ' + esc(p.member_until) : '') + '</div><div><b>Household</b>' + ((fam || []).length ? (fam || []).filter(f => f.relation === 'child').length + ' kid(s)' + ((fam || []).some(f => f.relation === 'spouse/partner') ? ' · partner' : '') : '—') + '</div></div>';
   // membership switch
   h += sec('Membership', '<div class="' + (active ? 'okbox' : 'note') + '" style="margin:8px 0 10px">' + (active ? (me.family_of && !p.is_member ? 'Covered as family of <b>' + esc(me.family_of) + '</b>.' : '<b>ON</b> · ' + esc(p.member_plan || 'Member') + (p.member_until ? ' until <b>' + esc(fmtDay(p.member_until)) + ', ' + p.member_until.slice(0, 4) + '</b>' : '')) + '. Member prices (₱100 off) apply automatically.' : '<b>OFF</b>' + (p.member_until ? ' · last valid until ' + esc(fmtDay(p.member_until)) : '') + ' — regular prices.') + '</div>' +
     '<div class="prog" style="grid-template-columns:1fr 1fr"><label class="field"><span>' + (p.is_member ? 'VALID UNTIL' : 'TURN ON UNTIL') + '</span><input type="date" class="mini" id="mt-until" value="' + esc(p.is_member && p.member_until >= t ? p.member_until : six) + '"></label><label class="field"><span>PLAN</span><input class="mini" id="mt-plan" value="' + esc(p.member_plan || '6-month membership') + '"></label></div>' +
@@ -800,10 +856,10 @@ async function openMember(id) {
       (x.status === 'submitted' ? '<div style="margin-top:6px"><input class="mini" id="rv-' + x.id + '" placeholder="Note (optional)" style="max-width:170px"> <button class="btn b-gold b-sm" data-act="mreview" data-v="yes" data-id="' + x.id + '" data-u="' + id + '">Approve</button> <button class="btn b-danger b-sm" data-act="mreview" data-v="no" data-id="' + x.id + '" data-u="' + id + '">Not OK</button></div>' : '') + '</td></tr>').join('') + '</table>' : '<div class="small muted" style="margin-top:6px">No payments yet.</div>') +
     '<details style="margin-top:10px"><summary class="small" style="cursor:pointer;font-weight:700">Record a payment received at the desk</summary><div class="prog" style="grid-template-columns:1fr 1fr;margin-top:10px"><input class="mini" id="mp-plan" placeholder="Plan" value="' + esc(p.member_plan || '6-month membership') + '"><input class="mini" id="mp-amount" inputmode="numeric" placeholder="Amount ₱" value="2000"><label class="field"><span>PAID ON</span><input type="date" class="mini" id="mp-paid" value="' + t + '"></label><label class="field"><span>METHOD</span><select class="mini" id="mp-method"><option>GCash</option><option>Bank transfer</option><option>Cash</option><option>Card</option></select></label><label class="field"><span>COVERS FROM</span><input type="date" class="mini" id="mp-start" value="' + t + '"></label><label class="field"><span>COVERS UNTIL</span><input type="date" class="mini" id="mp-end" value="' + six + '"></label><input class="mini" id="mp-ref" placeholder="Reference no."><input class="mini" id="mp-notes" placeholder="Notes"></div><label class="field" style="margin-top:8px"><span>PROOF (photo or PDF)</span><input type="file" id="mp-file" accept="image/*,application/pdf" class="mini"></label><button class="btn b-green b-sm" data-act="mpay" data-id="' + id + '">Save payment & turn membership on</button></details>');
   // family
-  h += sec('Family members (up to 2)', '<div style="margin-top:8px">' + familyFields(fam || []) + '</div><button class="btn b-ghost b-sm" style="margin-top:8px" data-act="msavefam" data-id="' + id + '">Save family</button>', ' id="mfam"');
+  h += sec('Household (partner & kids)', '<div style="margin-top:8px">' + familyFields(fam || []) + '</div><button class="btn b-ghost b-sm" style="margin-top:8px" data-act="msavefam" data-id="' + id + '">Save family</button>', ' id="mfam"');
   // merged records + bookings
   if (guests.length) h += sec('Guest records that look like this person', guests.map(g => '<div class="row between" style="margin-top:8px"><span class="small"><b>' + esc(g.name) + '</b> · ' + g.bookings + ' booking(s) · last ' + esc(fmtShort(g.last_date)) + '</span><button class="btn b-gold b-sm" data-act="linkguest" data-v="' + esc(g.key) + '" data-id="' + id + '">Merge</button></div>').join(''));
-  h += sec('Bookings', (bks || []).length ? '<div class="small" style="margin-top:6px">' + bks.map(x => '<div style="padding:4px 0;border-bottom:1px solid var(--line)">' + esc(fmtShort(x.date)) + ' ' + esc(fmtT(x.start_time)) + ' · ' + esc(x.kind === 'session' ? sm[x.session_id] || 'Session' : 'Court') + (x.level ? ' · ' + esc(x.level) : '') + ' · ' + statusPill(x.status) + (x.amount != null ? ' · ' + esc(peso(x.amount)) : '') + '</div>').join('') + '</div>' : '<div class="small muted" style="margin-top:6px">No bookings yet.</div>');
+  h += sec('Bookings', (bks || []).length ? '<div class="small" style="margin-top:6px">' + bks.map(x => '<div style="padding:4px 0;border-bottom:1px solid var(--line)">' + esc(fmtShort(x.date)) + ' ' + esc(fmtT(x.start_time)) + ' · ' + esc(x.kind === 'session' ? sm[x.session_id] || 'Session' : 'Court') + ' · <b>' + esc(x.for_name ? x.for_name + ' (child)' : x.user_id !== id ? 'for partner' : x.booked_by && x.booked_by !== id ? 'booked by partner' : 'self') + '</b>' + (x.level ? ' · ' + esc(x.level) : '') + ' · ' + statusPill(x.status) + (x.amount != null ? ' · ' + esc(peso(x.amount)) : '') + '</div>').join('') + '</div>' : '<div class="small muted" style="margin-top:6px">No bookings yet.</div>');
   // history
   h += sec('Subscription history', (log || []).length ? '<div class="tl">' + log.map(l => '<div><b>' + esc(l.action[0].toUpperCase() + l.action.slice(1)) + '</b>' + (l.detail ? ' — ' + esc(l.detail) : '') + (l.until_before !== l.until_after && (l.until_before || l.until_after) ? ' <span class="small">(' + esc(l.until_before || '—') + ' → ' + esc(l.until_after || '—') + ')</span>' : '') + '<small>' + esc(new Date(l.at).toLocaleString('en-PH', { timeZone: 'Asia/Manila', dateStyle: 'medium', timeStyle: 'short' })) + (l.by_name ? ' · ' + esc(l.by_name) : '') + '</small></div>').join('') + '</div>' : '<div class="small muted" style="margin-top:6px">No history yet.</div>');
   openModal(h);
@@ -864,11 +920,14 @@ document.addEventListener('click', async ev => {
     }); break;
     case 'pick': b.parentElement.querySelectorAll('button').forEach(x => x.classList.toggle('on', x === b)); break;
     case 'dobook': run(async () => {
-      if (document.querySelector('#bk-level') && !document.querySelector('#bk-level .on')) throw new Error('Please choose your level');
-      const pay = (document.querySelector('#bk-pay .on') || {}).dataset.v || 'club';
-      const r = must(await sb.rpc('uzu_book_session', { p_session: id, p_players: +$('bk-players').value, p_pay_method: pay, p_gcash_ref: ($('bk-ref') || {}).value || '', p_notes: $('bk-notes').value, p_level: ((document.querySelector('#bk-level .on') || {}).dataset || {}).v || null }));
+      if (document.querySelector('#bk-level') && !document.querySelector('#bk-level .on')) throw new Error('Please choose a level');
+      const who = [...document.querySelectorAll('#bk-who input:checked')].map(x => x.value); if (!who.length) throw new Error('Choose who’s playing');
+      const pay = (document.querySelector('#bk-pay .on') || {}).dataset.v || 'club'; const extra = +$('bk-players').value || 0;
+      const lvl = ((document.querySelector('#bk-level .on') || {}).dataset || {}).v || null; const out = [];
+      for (let i = 0; i < who.length; i++) out.push(must(await sb.rpc('uzu_book_session', { p_session: id, p_players: 1 + (i === 0 ? extra : 0), p_pay_method: pay, p_gcash_ref: ($('bk-ref') || {}).value || '', p_notes: $('bk-notes').value, p_level: lvl, p_for: who[i] })));
       closeModal(); await route();
-      toast(r.status === 'waitlist' ? 'You’re on the waitlist — we’ll email you if a spot opens' : 'Booked! Confirmation sent to your email (ref ' + r.ref + ')');
+      const wl = out.filter(r => r.status === 'waitlist').length;
+      toast(out.length > 1 ? out.length + ' players booked' + (wl ? ' (' + wl + ' on the waitlist)' : '') + ' — confirmations sent to your email' : (out[0].status === 'waitlist' ? 'You’re on the waitlist — we’ll email you if a spot opens' : 'Booked! Confirmation sent to your email (ref ' + out[0].ref + ')'));
     }); break;
     case 'cancel': if (!confirmTwice(b)) return; run(async () => { must(await sb.rpc('uzu_cancel_my_booking', { p_id: id })); await route(); }, 'Booking cancelled'); break;
     case 'court': S.courtId = id; S.courtStart = null; route(); break;
@@ -915,6 +974,7 @@ document.addEventListener('click', async ev => {
     case 'sheetcopy': try { await navigator.clipboard.writeText(S._sheetText || ''); toast('Summary copied'); } catch (e) { openModal('<button class="x" data-act="close">✕</button><h3>Summary</h3><textarea class="inp" style="min-height:300px">' + esc(S._sheetText || '') + '</textarea>'); } break;
     case 'staffcourt': run(async () => { must(await sb.rpc('uzu_staff_book_court', { p_court: $('sc-court').value, p_date: $('sc-date').value, p_start: $('sc-start').value, p_end: $('sc-end').value, p_name: $('sc-name').value, p_phone: $('sc-phone').value, p_user: null })); await route(); }, 'Court booked'); break;
     case 'mmanage': openMember(id); break;
+    case 'mguest': openGuest(v); break;
     case 'peoplef': S.peopleF = v; S.staffTab = 'people'; if (S.route !== 'staff') go('staff'); else route(); break;
     case 'linkguest': run(async () => { const n = must(await sb.rpc('uzu_staff_link_guest', { p_key: v, p_user: id })); S._people = null; closeModal(); await route(); toast(n + ' booking' + (n === 1 ? '' : 's') + ' merged'); }); break;
     case 'mverify': run(async () => { must(await sb.rpc('uzu_staff_mark_verified', { p_user: id })); await openMember(id); }, 'Marked as verified'); break;
@@ -923,8 +983,12 @@ document.addEventListener('click', async ev => {
     case 'mtoggle': run(async () => { const on = v === 'on'; must(await sb.rpc('uzu_staff_set_membership', { p_user: id, p_on: on, p_until: on ? ($('mt-until').value || null) : null, p_plan: on ? ($('mt-plan').value || null) : null, p_note: $('mt-note').value || null })); await openMember(id); route(); }, v === 'on' ? 'Membership on' : 'Membership off'); break;
     case 'mreview': run(async () => { must(await sb.rpc('uzu_staff_review_payment', { p_id: id, p_approve: v === 'yes', p_note: ($('rv-' + id) || {}).value || null })); const uid = b.dataset.u; await openMember(uid); route(); }, v === 'yes' ? 'Approved — membership active' : 'Marked as not accepted — player emailed'); break;
     case 'reqmember': run(async () => { must(await sb.rpc('uzu_request_membership')); await loadUser(); await route(); }, 'Request sent — see you at the club!'); break;
-    case 'savefamily': run(async () => { must(await sb.rpc('uzu_set_family', { p_family: readFamily($('famwrap')) })); await route(); }, 'Family members saved'); break;
-    case 'msavefam': run(async () => { const list = readFamily($('mfam')); must(await sb.from('uzu_family').delete().eq('primary_id', id)); if (list.length) must(await sb.from('uzu_family').insert(list.map(f => ({ primary_id: id, name: f.name, relation: f.relation, email: f.email || null })))); }, 'Family saved'); break;
+    case 'savefamily': run(async () => { S.household = must(await sb.rpc('uzu_set_family', { p_family: readFamily($('famwrap')) })); await route(); }, 'Household saved'); break;
+    case 'hhkid': { const w = b.parentElement.querySelector('.kids'); const d = document.createElement('div'); d.className = 'hrow kid fam'; d.dataset.rel = 'child'; d.dataset.id = ''; d.innerHTML = '<input class="mini fam-name" placeholder="Child’s name"><button class="x" data-act="hhdel" title="Remove">×</button>'; w.appendChild(d); d.querySelector('input').focus(); break; }
+    case 'hhdel': b.closest('.fam').remove(); break;
+    case 'hhaccept': run(async () => { S.household = must(await sb.rpc('uzu_accept_partner', { p_user: id })); await route(); }, 'Linked — you can now book for each other'); break;
+    case 'hhdecline': run(async () => { must(await sb.rpc('uzu_decline_partner', { p_user: id })); await loadUser(); await route(); }, 'Removed'); break;
+    case 'msavefam': run(async () => { const list = readFamily($('mfam')); const keep = list.filter(f => f.id).map(f => f.id); const { data: cur } = await sb.from('uzu_family').select('id').eq('primary_id', id); for (const c of (cur || [])) if (!keep.includes(c.id)) must(await sb.from('uzu_family').delete().eq('id', c.id)); for (const f of list) { const row = { name: f.name, relation: f.relation, email: f.email || null }; if (f.id) must(await sb.from('uzu_family').update(row).eq('id', f.id)); else must(await sb.from('uzu_family').insert(Object.assign({ primary_id: id }, row))); } await openMember(id); }, 'Household saved'); break;
     case 'msave': run(async () => { must(await sb.from('uzu_profiles').update({ member_plan: $('m-plan').value || null, is_member: $('m-active').value === '1', member_since: $('m-since').value || null, member_until: $('m-until').value || null, membership_notes: $('m-notes').value || null }).eq('id', id)); closeModal(); await route(); }, 'Membership saved'); break;
     case 'mpay': run(async () => {
       const f = $('mp-file').files[0]; let path = null;
