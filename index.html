@@ -92,7 +92,7 @@ a{color:inherit}
 @media(max-width:600px){.sess{flex-wrap:wrap}.sess .act{flex-direction:row;align-items:center;justify-content:space-between;width:100%;min-width:0}}
 .pill{display:inline-flex;align-items:center;gap:5px;font-size:11px;font-weight:700;padding:3px 9px;border-radius:999px;background:#ece6d6;color:var(--ink);letter-spacing:.02em;white-space:nowrap}
 .p-padel{background:#e3ecdf;color:#2f4a37}.p-football{background:#e8e4f3;color:#43386b}
-.p-ok{background:var(--okbg);color:var(--ok)}.p-warn{background:var(--warnbg);color:var(--warn)}.p-bad{background:var(--badbg);color:var(--bad)}.p-mute{background:#ece9e1;color:var(--muted)}
+.p-ok{background:var(--okbg);color:var(--ok)}.p-gp{background:#f1e7cc;color:#7a5a12}.p-warn{background:var(--warnbg);color:var(--warn)}.p-bad{background:var(--badbg);color:var(--bad)}.p-mute{background:#ece9e1;color:var(--muted)}
 .spots{font-size:12px;color:var(--muted)}
 .bar{height:5px;background:#ebe4d3;border-radius:5px;overflow:hidden;width:120px}
 .bar i{display:block;height:100%;background:var(--green3)}
@@ -155,7 +155,7 @@ tr.click{cursor:pointer}tr.click:hover td{background:#f3efe4}
 .lvseg{display:grid;grid-template-columns:1fr 1fr;gap:8px}
 .lvseg button{border:1.5px solid var(--line);background:#fff;border-radius:12px;padding:12px;font-weight:700}
 .lvseg button.on{border-color:var(--green);background:var(--okbg)}
-.tabs{display:flex;gap:6px;overflow-x:auto;margin-bottom:16px;padding-bottom:4px}
+.tabs{display:flex;flex-wrap:wrap;gap:4px 6px;margin-bottom:16px;padding-bottom:4px}
 .tabs button{flex:none;border:0;background:transparent;padding:9px 13px;border-radius:10px;font-weight:700;color:var(--muted)}
 .tabs button.on{background:var(--green);color:var(--cream)}
 .tbl{width:100%;border-collapse:collapse;font-size:14px}
@@ -231,6 +231,21 @@ footer a{opacity:.9}
 .who label:has(input:checked){border-color:var(--green);background:var(--okbg)}
 @media(max-width:600px){.famrow{grid-template-columns:1fr 1fr}.famrow .fam-email{grid-column:span 2}.hh .hrow{grid-template-columns:1fr auto}.hh .hrow .fam-email{grid-column:1}}
 .hide{display:none!important}
+.wbal{background:linear-gradient(135deg,#123b2c,#1f5a43);color:#fff;border-radius:18px;padding:22px}
+.wbal b{display:block;font-family:'Cormorant Garamond',serif;font-size:46px;line-height:1;font-weight:600;margin:6px 0}
+.pkgs{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px;margin:14px 0}
+.pkg{background:var(--paper);border:1px solid var(--line);border-radius:16px;padding:16px;display:flex;flex-direction:column;gap:6px}
+.pkg .get{font-family:'Cormorant Garamond',serif;font-size:30px;font-weight:600;line-height:1}
+.pkg .bon{display:inline-block;background:#f1e7cc;color:#7a5a12;border-radius:999px;padding:2px 10px;font-size:12px;font-weight:700;width:max-content}
+.ledger div{display:flex;justify-content:space-between;gap:10px;padding:7px 0;border-bottom:1px solid var(--line);font-size:14px}
+.ledger .plus{color:var(--ok);font-weight:700}.ledger .minus{font-weight:700}
+.steps3{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:10px;margin:12px 0 18px}
+.steps3 div{background:var(--paper);border:1px solid var(--line);border-radius:14px;padding:12px;font-size:14px}
+.steps3 b{display:block;font-size:12px;letter-spacing:.08em;color:var(--gold2);margin-bottom:4px}
+.seg small{display:block;font-size:11px;font-weight:600;opacity:.7}
+.ckrow{display:flex;flex-wrap:wrap;gap:8px}.ckrow label{display:flex;gap:6px;align-items:center;background:var(--paper);border:1px solid var(--line);border-radius:10px;padding:8px 10px;font-size:14px}
+.ckrow label.taken{opacity:.5}
+.brk{font-size:13px;color:var(--muted)}.brk div{display:flex;justify-content:space-between}
 </style>
 </head>
 <body>
@@ -275,7 +290,7 @@ function fmtT(t) { if (!t) return ''; let [h, m] = t.split(':').map(Number); con
 const range = (a, b) => fmtT(a) + (b ? ' – ' + fmtT(b) : '');
 const peso = n => n == null ? '' : '₱' + Number(n).toLocaleString('en-PH', { maximumFractionDigits: 0 });
 const memberPrice = r => r == null ? null : Math.max(0, r - 100);
-function priceTxt(s) { if (s.price_regular == null) return 'Rate at the club'; return peso(s.price_regular) + ' · members ' + peso(s.price_member != null ? s.price_member : memberPrice(s.price_regular)); }
+function priceTxt(s) { if (s.price_regular == null) return 'Rate at the club'; if (s.price_member != null && +s.price_member === +s.price_regular) return peso(s.price_regular) + ' per player'; return peso(s.price_regular) + ' · members ' + peso(s.price_member != null ? s.price_member : memberPrice(s.price_regular)); }
 function memberActive(p) { return !!(p && p.is_member && (!p.member_until || p.member_until >= manilaToday())); }
 let toastT; function toast(m, err) { const t = $('toast'); t.textContent = m; t.className = 'toast show' + (err ? ' err' : ''); clearTimeout(toastT); toastT = setTimeout(() => t.className = 'toast', 3200); }
 const errMsg = e => (e && (e.message || e.error_description || e.msg)) || 'Something went wrong';
@@ -284,7 +299,7 @@ const statusPill = s => '<span class="pill ' + ({ confirmed: 'p-ok', pending: 'p
 
 /* ---------- state ---------- */
 const S = { user: null, profile: null, staff: false, route: 'home', sport: 'all', courtId: null, courtDate: null, courtStart: null, courtDur: 60, staffTab: 'sheet', sheetMode: 'week', sheetDate: manilaToday(), staffDate: manilaToday(), bkFilter: 'pending', memberQ: '', after: null, busy: false };
-const cache = { programs: null, courts: null };
+const cache = { programs: null, courts: null, trainers: null, extras: null };
 
 /* ---------- auth ---------- */
 async function loadUser() {
@@ -299,6 +314,7 @@ async function loadUser() {
     S.profile = p.data; S.staff = !!st.data;
     const [mm, hh] = await Promise.all([sb.rpc('uzu_my_membership'), S.staff ? Promise.resolve({ data: null }) : sb.rpc('uzu_my_household')]);
     S.membership = mm.data || { active: false }; S.household = hh.data || { people: [] };
+    if (!S.staff) await refreshWallet();
   }
 }
 sb.auth.onAuthStateChange((ev) => { if (ev === 'SIGNED_OUT' || ev === 'SIGNED_IN') loadUser().then(() => { renderNav(); }); });
@@ -306,6 +322,26 @@ sb.auth.onAuthStateChange((ev) => { if (ev === 'SIGNED_OUT' || ev === 'SIGNED_IN
 /* ---------- data ---------- */
 async function programs() { if (!cache.programs) { const { data } = await sb.from('uzu_programs').select('*').eq('active', true).order('sort'); cache.programs = data || []; } return cache.programs; }
 async function courts() { if (!cache.courts) { const { data } = await sb.from('uzu_courts').select('*').eq('active', true).order('sort'); cache.courts = data || []; } return cache.courts; }
+async function trainers() { if (!cache.trainers) { const { data } = await sb.from('uzu_trainers').select('id,name,bio,rate_hour,sports,active,sort').order('sort').order('name'); cache.trainers = data || []; } return cache.trainers; }
+async function extras() { if (!cache.extras) { const { data } = await sb.from('uzu_extras').select('*').order('sort'); cache.extras = data || []; } return cache.extras; }
+const racket = () => (cache.extras || []).find(x => x.id === 'racket' && x.active);
+async function refreshWallet() { if (!S.user || S.staff) { S.wallet = null; return; } const { data } = await sb.rpc('uzu_my_wallet'); S.wallet = data || { balance: 0, packages: [], topups: [], ledger: [] }; }
+const payTxt = b => b.pay_method === 'credits' ? 'Credits' + (b.credits_charged > 0 ? ' ✓' : '') : b.pay_method === 'gcash' ? 'GCash ' + esc(b.gcash_ref || '') : 'At club';
+const addonTxt = b => [b.trainer_id ? 'Trainer: ' + esc(((cache.trainers || []).find(t => t.id === b.trainer_id) || {}).name || 'yes') : '', b.rackets ? b.rackets + ' racket' + (b.rackets > 1 ? 's' : '') : ''].filter(Boolean).join(' · ');
+function paySeg(amount) {
+  const bal = S.wallet ? +S.wallet.balance : 0;
+  const cr = S.user && !S.staff ? '<button data-act="pay" data-v="credits">Credits<small>' + esc(peso(bal)) + '</small></button>' : '';
+  return '<div class="field"><span>PAYMENT</span><div class="seg" id="bk-pay"><button data-act="pay" data-v="club" class="on">Pay at the club</button><button data-act="pay" data-v="gcash">GCash</button>' + cr + '</div></div>' +
+    '<label class="field hide" id="bk-gc"><span>GCASH REFERENCE NO.</span><input id="bk-ref" class="inp" placeholder="Send to 0917 125 5048, then enter the ref no."></label>' +
+    '<div class="small hide" id="bk-crnote" data-amt="' + (amount == null ? '' : amount) + '" style="margin:-6px 0 12px">' + crNote(amount) + '</div>';
+}
+function crNote(amount) {
+  const bal = S.wallet ? +S.wallet.balance : 0;
+  if (bal <= 0) return 'You don’t have credits yet. <a href="#wallet">Top up</a> — packages come with bonus credits.';
+  if (amount == null) return 'Credits can be used once this has a price — staff will set it, or choose Pay at the club.';
+  if (bal < amount) return 'Not enough credits for ' + esc(peso(amount)) + ' (you have ' + esc(peso(bal)) + '). <a href="#wallet">Top up</a>.';
+  return 'Paid from your credits now · balance after: <b>' + esc(peso(bal - amount)) + '</b>. Refunded to your credits if you cancel.';
+}
 async function sessionsBetween(a, b, all) {
   let q = sb.from('uzu_sessions').select('*').gte('date', a).lte('date', b).order('date').order('start_time');
   if (!all) q = q.neq('status', 'cancelled');
@@ -335,17 +371,18 @@ function renderNav() {
   }
   $('nav').innerHTML = '<div class="nav"><div class="wrap"><a class="logo" href="#" aria-label="UZU Club home">' + LOGO + '</a>' +
     '<button class="burger" data-act="burger" aria-label="Menu">☰</button><div class="links" id="links">' +
-    L('schedule', 'Schedule') + L('courts', 'Book a court') +
-    (S.user ? L('account', 'My account') : '') +
+    L('schedule', 'Schedule') + L('courts', 'Book a court') + L('play', 'Group Play') +
+    (S.user ? L('wallet', 'Credits' + (S.wallet ? ' · ' + peso(S.wallet.balance) : '')) + L('account', 'My account') : '') +
     (S.user ? '<a href="#" data-act="signout">Sign out</a>' : L('signin', 'Sign in', 'cta')) + '</div></div></div>' +
     (S.user && S.profile && !S.profile.email_verified ? '<div class="staffbar"><div class="wrap">Please confirm your email to start booking — we sent a link to <b>' + esc(S.user.email) + '</b>. <button class="btn b-ghost b-sm" data-act="resendverify">Resend link</button></div></div>' : '');
 }
 
 /* ---------- router ---------- */
 async function route() {
+  if (!cache.extras || !cache.trainers) await Promise.all([extras(), trainers()]);
   S._lastRender = Date.now();
   const h = (location.hash || '').replace('#', ''); const [h0, arg] = h.split('/');
-  S.route = ['schedule', 'courts', 'account', 'signin', 'staff', 'verify', 'pay'].includes(h0) ? h0 : 'home'; S.arg = arg || '';
+  S.route = ['schedule', 'courts', 'account', 'signin', 'staff', 'verify', 'pay', 'play', 'wallet'].includes(h0) ? h0 : 'home'; S.arg = arg || '';
   renderNav(); closeModal();
   const app = $('app');
   try {
@@ -357,6 +394,8 @@ async function route() {
     else if (S.route === 'staff') app.innerHTML = await viewStaff();
     else if (S.route === 'verify') app.innerHTML = await viewVerify();
     else if (S.route === 'pay') app.innerHTML = await viewPay();
+    else if (S.route === 'play') app.innerHTML = await viewPlay();
+    else if (S.route === 'wallet') app.innerHTML = await viewWallet();
   } catch (e) { app.innerHTML = '<div class="wrap sec"><div class="card">Couldn’t load this page: ' + esc(errMsg(e)) + '</div></div>'; }
 }
 const rerender = () => route();
@@ -421,7 +460,7 @@ async function viewHome() {
   const [sess, mine] = await Promise.all([sessionsBetween(t, days[6]), myBookings()]);
   mineBySession = {}; mine.filter(b => b.status !== 'cancelled' && b.session_id).forEach(b => (mineBySession[b.session_id] = mineBySession[b.session_id] || []).push(b));
   S._sess = S._sess || {}; sess.forEach(s => S._sess[s.id] = s);
-  return '<section class="hero"><div class="wrap">' + (ASSETS.logo ? '<img class="logo-big" src="' + ASSETS.logo + '" alt="UZU Club">' : '') + '<div class="pillars">PADEL + BISTRO &amp; BAR + FOOTBALL + RECOVERY</div><h1>One of Asia’s most <i>beautiful</i> social clubs.</h1><p>El Nido, Palawan, Philippines. Book Americanos, clinics, football and any of our three padel courts in a few taps — confirmations come straight to your email.</p><div class="btns"><a class="btn b-gold" href="#schedule">See this week’s sessions</a><a class="btn b-ghostl" href="#courts">Book a court</a></div></div></section>' +
+  return '<section class="hero"><div class="wrap">' + (ASSETS.logo ? '<img class="logo-big" src="' + ASSETS.logo + '" alt="UZU Club">' : '') + '<div class="pillars">PADEL + BISTRO &amp; BAR + FOOTBALL + RECOVERY</div><h1>One of Asia’s most <i>beautiful</i> social clubs.</h1><p>El Nido, Palawan, Philippines. Book Americanos, clinics, football and any of our three padel courts in a few taps — confirmations come straight to your email.</p><div class="btns"><a class="btn b-gold" href="#schedule">See this week’s sessions</a><a class="btn b-ghostl" href="#courts">Book a court</a><a class="btn b-ghostl" href="#play">Create a Group Play</a></div></div></section>' +
         '<section class="sec"><div class="wrap" style="display:grid;grid-template-columns:minmax(0,1fr) 300px;gap:22px;align-items:start" id="homegrid">' +
     '<div>' + highlightHTML(sess) + '<h2>This week at UZU</h2><p class="sub">Today first, then the days ahead. Tap Book to grab a spot.</p>' + feedHTML(sess, days, t) +
     '<a class="btn b-ghost b-full" href="#schedule" style="margin-top:14px">See the next two weeks</a></div>' +
@@ -454,7 +493,7 @@ function sessCard(s, state, tag) {
   else if (started) act = '<span class="pill p-mute">In progress</span>';
   else act = '<button class="btn ' + (left > 0 ? 'b-green' : 'b-ghost') + ' b-sm" data-act="book" data-id="' + s.id + '">' + (left > 0 ? 'Book' : 'Join waitlist') + '</button>';
   return '<div class="sess' + (state ? ' ' + state : '') + '"><div class="time">' + esc(fmtT(s.start_time)) + '<div class="muted small" style="font-weight:500">to ' + esc(fmtT(s.end_time)) + '</div></div>' +
-    '<div class="info">' + (tag || '') + '<div class="ttl">' + esc(s.title) + '</div><div class="meta">' + esc(s.audience || '') + (s.audience ? ' · ' : '') + esc(priceTxt(s)) + '</div>' +
+    '<div class="info">' + (tag || '') + '<div class="ttl">' + esc(s.title) + (s.group_id ? ' <span class="pill p-gp">Group Play</span>' : '') + '</div><div class="meta">' + (s.group_id && s.host_name ? 'Hosted by <b>' + esc(s.host_name) + '</b> · ' : '') + esc(s.audience || '') + (s.audience ? ' · ' : '') + esc(priceTxt(s)) + '</div>' +
     '<div class="row" style="margin-top:6px;gap:8px">' + sportPill(s.sport) + '<div class="bar"><i style="width:' + pct + '%"></i></div><span class="spots">' + (left > 0 ? left + ' of ' + s.capacity + ' spots left' : 'Full' + (s.waiting ? ' · ' + s.waiting + ' waiting' : '')) + '</span></div>' + (s.names && s.names.length ? '<div class="roster">' + rosterHTML(s) + (s.waitnames && s.waitnames.length ? ' <b>· Waitlist:</b> ' + s.waitnames.map(esc).join(', ') : '') + '</div>' : '') + '</div>' +
     '<div class="act">' + act + '</div></div>';
 }
@@ -491,12 +530,22 @@ function openBook(id) {
     (full ? '<div class="note" style="margin:10px 0">This session is full — you’ll go on the waitlist and get an email if a spot opens.</div>' : '') +
     ((s.levels || []).length ? '<div class="field" style="margin-top:12px"><span>YOUR LEVEL</span><div class="lvseg" id="bk-level">' + s.levels.map(l => '<button data-act="pick" data-v="' + esc(l) + '">' + esc(l) + '</button>').join('') + '</div></div>' : '') +
     whoPicker(s) +
-    '<label class="field" style="margin-top:12px"><span>FRIENDS NOT IN YOUR HOUSEHOLD (optional)</span><select id="bk-players" class="inp">' + [0, 1, 2, 3].map(n => '<option value="' + n + '">' + (n ? '+' + n + ' friend' + (n > 1 ? 's' : '') : 'None') + '</option>').join('') + '</select></label>' +
-    '<div class="field"><span>PAYMENT</span><div class="seg" id="bk-pay"><button data-act="pay" data-v="club" class="on">Pay at the club</button><button data-act="pay" data-v="gcash">GCash</button></div></div>' +
-    '<label class="field hide" id="bk-gc"><span>GCASH REFERENCE NO.</span><input id="bk-ref" class="inp" placeholder="Send to 0917 125 5048, then enter the ref no."></label>' +
+    '<label class="field" style="margin-top:12px"><span>FRIENDS NOT IN YOUR HOUSEHOLD (optional)</span><select id="bk-players" class="inp" data-chg="bkcalc">' + [0, 1, 2, 3].map(n => '<option value="' + n + '">' + (n ? '+' + n + ' friend' + (n > 1 ? 's' : '') : 'None') + '</option>').join('') + '</select></label>' +
+    (s.sport === 'padel' && racket() ? '<label class="field"><span>RENT PADEL RACKETS · ' + (racket().price != null ? esc(peso(racket().price)) + ' each' : 'rate at the club') + '</span><select id="bk-rackets" class="inp" data-chg="bkcalc">' + [0, 1, 2, 3, 4].map(n => '<option value="' + n + '">' + (n ? n + ' racket' + (n > 1 ? 's' : '') : 'No, I have my own') + '</option>').join('') + '</select></label>' : '') +
+    paySeg(price) +
     '<label class="field"><span>NOTES (optional)</span><textarea id="bk-notes" class="inp" placeholder="Level, names of friends you’re bringing, kid’s age…"></textarea></label>' +
     '<div class="row between" style="margin:6px 0 14px"><span class="muted">' + (price != null ? 'Price per player' + (member ? ' (member)' : '') : 'Price') + '</span><b>' + (price != null ? esc(peso(price)) : 'Confirmed at the club') + '</b></div>' +
+    '<div class="row between" style="margin:-8px 0 14px"><span class="muted">Total</span><b id="bk-total"></b></div>' +
     '<button class="btn b-gold b-full" data-act="dobook" data-id="' + s.id + '">' + (full ? 'Join waitlist' : 'Confirm booking') + '</button>');
+  S._bk = { price, full }; bkCalc();
+}
+function bkCalc() {
+  const k = S._bk; if (!k || !$('bk-total')) return;
+  const n = document.querySelectorAll('#bk-who input:checked').length + (+($('bk-players') || {}).value || 0);
+  const nr = +(($('bk-rackets') || {}).value || 0), rp = racket() ? racket().price : null;
+  const tot = k.price == null || (nr && rp == null) ? null : k.price * n + (nr ? rp * nr : 0);
+  $('bk-total').textContent = tot == null ? 'Confirmed at the club' : peso(tot) + (n > 1 ? ' · ' + n + ' players' : '') + (nr ? ' · ' + nr + ' racket' + (nr > 1 ? 's' : '') : '');
+  const cn = $('bk-crnote'); if (cn) { cn.dataset.amt = tot == null ? '' : tot; cn.innerHTML = crNote(tot) + (k.full ? ' Waitlist spots are only charged if you get in.' : ''); }
 }
 
 async function openStaffAdd(id) {
@@ -516,7 +565,7 @@ async function viewCourts() {
   if (!S.courtId || !cs.some(c => c.id === S.courtId)) S.courtId = (cs[0] || {}).id;
   if (!S.courtDate || S.courtDate < t) S.courtDate = t;
   const c = cs.find(x => x.id === S.courtId);
-  const { data: busy } = await sb.rpc('uzu_court_busy', { p_date: S.courtDate });
+  const [{ data: busy }, { data: tbusy }] = await Promise.all([sb.rpc('uzu_court_busy', { p_date: S.courtDate }), sb.rpc('uzu_trainer_busy', { p_date: S.courtDate })]);
   const blocks = (busy || []).filter(b => b.court_id === S.courtId);
   const isBusy = (a, z) => blocks.find(b => mins(b.start_time) < z && mins(b.end_time) > a);
   if (S.staff) return '<section class="sec"><div class="wrap" style="max-width:620px"><div class="card"><div class="ptype" style="color:var(--gold2)">Staff account</div><h3 class="serif" style="font-size:28px;margin:6px 0">Booking a court for someone?</h3><p class="muted">Staff accounts don’t make personal bookings. Use the Court sheet to book a court for a walk-in or caller — and sign in with your member email if it’s for you.</p><a class="btn b-green" href="#staff" data-act="stafftab" data-v="sheet">Open the Court sheet</a></div></div></section>';
@@ -537,16 +586,115 @@ async function viewCourts() {
     const durs = [60, 90, 120, 180].filter(d => S.courtStart + d <= close && !isBusy(S.courtStart, S.courtStart + d));
     if (!durs.includes(S.courtDur)) S.courtDur = durs[0] || 60;
     const rate = c.hourly_rate == null ? null : (S.membership && S.membership.active ? memberPrice(c.hourly_rate) : c.hourly_rate);
-    const amt = rate != null ? rate * S.courtDur / 60 : null;
+    const courtAmt = rate != null ? rate * S.courtDur / 60 : null;
+    const z = S.courtStart + S.courtDur;
+    const trs = (cache.trainers || []).filter(x => x.active && (x.sports || []).includes(c.sport));
+    const trBusy = tr => (tbusy || []).some(x => x.trainer_id === tr.id && mins(x.start_time) < z && mins(x.end_time) > S.courtStart);
+    if (S.courtTrainer && !trs.some(x => x.id === S.courtTrainer && !trBusy(x))) S.courtTrainer = null;
+    const tr = trs.find(x => x.id === S.courtTrainer);
+    const trAmt = tr ? (tr.rate_hour != null ? Math.round(tr.rate_hour * S.courtDur / 60) : null) : 0;
+    const nr = c.sport === 'padel' ? (S.courtRackets || 0) : 0, rp = racket() ? racket().price : null;
+    const rkAmt = nr ? (rp != null ? rp * nr : null) : 0;
+    const amt = courtAmt == null || trAmt == null || rkAmt == null ? null : courtAmt + trAmt + rkAmt;
+    const addons = (trs.length ? '<label class="field"><span>ADD A TRAINER (optional)</span><select class="inp" data-chg="ctr"><option value="">No trainer</option>' + trs.map(x => '<option value="' + x.id + '"' + (x.id === S.courtTrainer ? ' selected' : '') + (trBusy(x) ? ' disabled' : '') + '>' + esc(x.name) + ' · ' + (x.rate_hour != null ? esc(peso(x.rate_hour)) + '/hr' : 'rate at the club') + (trBusy(x) ? ' — booked' : '') + '</option>').join('') + '</select>' + (tr && tr.bio ? '<span class="small muted" style="text-transform:none;letter-spacing:0;font-weight:500">' + esc(tr.bio) + '</span>' : '') + '</label>' : '') +
+      (c.sport === 'padel' && racket() ? '<label class="field"><span>RENT PADEL RACKETS · ' + (rp != null ? esc(peso(rp)) + ' each' : 'rate at the club') + '</span><select class="inp" data-chg="crk">' + [0, 1, 2, 3, 4].map(n => '<option value="' + n + '"' + (n === nr ? ' selected' : '') + '>' + (n ? n + ' racket' + (n > 1 ? 's' : '') : 'No rackets') + '</option>').join('') + '</select></label>' : '');
+    const brk = (tr || nr) ? '<div class="brk" style="margin-bottom:8px"><div><span>Court</span><span>' + (courtAmt != null ? esc(peso(courtAmt)) : 'at the club') + '</span></div>' + (tr ? '<div><span>Trainer · ' + esc(tr.name) + '</span><span>' + (trAmt != null ? esc(peso(trAmt)) : 'at the club') + '</span></div>' : '') + (nr ? '<div><span>' + nr + ' racket' + (nr > 1 ? 's' : '') + '</span><span>' + (rkAmt != null ? esc(peso(rkAmt)) : 'at the club') + '</span></div>' : '') + '</div>' : '';
     h += '<b>' + esc(c.name) + '</b><div class="muted small">' + esc(fmtDay(S.courtDate)) + ' · ' + esc(range(tstr(S.courtStart), tstr(S.courtStart + S.courtDur))) + '</div>' +
       '<label class="field" style="margin-top:12px"><span>DURATION</span><select class="inp" id="c-dur" data-chg="cdur">' + durs.map(d => '<option value="' + d + '"' + (d === S.courtDur ? ' selected' : '') + '>' + (d / 60) + ' hour' + (d > 60 ? 's' : '') + '</option>').join('') + '</select></label>' +
-      '<div class="field"><span>PAYMENT</span><div class="seg" id="bk-pay"><button data-act="pay" data-v="club" class="on">Pay at the club</button><button data-act="pay" data-v="gcash">GCash</button></div></div>' +
-      '<label class="field hide" id="bk-gc"><span>GCASH REFERENCE NO.</span><input id="bk-ref" class="inp" placeholder="Send to 0917 125 5048, then enter the ref no."></label>' +
-      '<label class="field"><span>NOTES (optional)</span><textarea id="bk-notes" class="inp" placeholder="Number of players, racket rental, anything we should know"></textarea></label>' +
-      '<div class="row between" style="margin-bottom:12px"><span class="muted">Total</span><b>' + (amt != null ? esc(peso(amt)) : 'Confirmed by staff') + '</b></div>' +
+      addons + (S.user ? paySeg(amt) : '') +
+      '<label class="field"><span>NOTES (optional)</span><textarea id="bk-notes" class="inp" placeholder="Number of players, anything we should know"></textarea></label>' +
+      brk + '<div class="row between" style="margin-bottom:12px"><span class="muted">Total</span><b>' + (amt != null ? esc(peso(amt)) : 'Confirmed by staff') + '</b></div>' +
       '<button class="btn b-gold b-full" data-act="dobookcourt">' + (S.user ? 'Request this court' : 'Sign in to book') + '</button>';
   }
   return h + '</div></div></div></section>';
+}
+
+/* ---------- CREDITS ---------- */
+const ledgerLabel = l => l.kind === 'spend' || l.kind === 'refund' ? (l.kind === 'spend' ? 'Used' : 'Refund') + ' · ' + (l.what || l.note || 'Booking') + (l.date ? ' (' + fmtShort(l.date) + ')' : '') : l.kind === 'bonus' ? 'Bonus credits · ' + String(l.note || '').replace(/^Bonus · /, '') : (l.kind === 'topup' ? 'Top-up' : 'Adjustment') + (l.note ? ' · ' + l.note : '');
+function walletMini() {
+  const w = S.wallet || { balance: 0 }; const pend = (w.topups || []).filter(t => t.status === 'submitted').length;
+  return '<div class="card" style="margin-bottom:14px"><div class="row between"><b>Credits</b><a class="small" href="#wallet">Top up & history →</a></div><div class="serif" style="font-size:34px;font-weight:600;line-height:1.1;margin:6px 0">' + esc(peso(w.balance)) + '</div><div class="small muted">Use for open play, court hours, trainers and racket rental.' + (pend ? ' <b>' + pend + ' top-up' + (pend > 1 ? 's' : '') + ' waiting for staff.</b>' : '') + '</div></div>';
+}
+async function viewWallet() {
+  if (!S.user) { S.after = 'wallet'; return viewSignin(); }
+  if (S.staff) return '<section class="sec"><div class="wrap"><div class="card">Staff accounts don’t hold credits. Sell or review credits from the <a href="#staff" data-act="stafftab" data-v="credits">Credits tab</a>.</div></div></section>';
+  await refreshWallet(); renderNav(); const w = S.wallet;
+  const pend = (w.topups || []).filter(t => t.status === 'submitted');
+  let h = '<section class="sec"><div class="wrap"><h2>Credits</h2><p class="sub">Prepay once, then pay for open play, court hours, trainers and racket rental in one tap. Buy a package in advance and we add bonus credits.</p>' +
+    '<div class="grid g2" style="align-items:start"><div><div class="wbal"><span class="small" style="opacity:.8;letter-spacing:.1em">YOUR BALANCE</span><b>' + esc(peso(w.balance)) + '</b><span class="small" style="opacity:.85">Choose “Credits” when you book. Cancelled bookings go straight back to your balance.</span></div>';
+  if (pend.length) h += '<div class="note" style="margin-top:12px">' + pend.map(t => 'Waiting for staff: <b>' + esc(t.label || 'Credits') + '</b> · ' + esc(peso(+t.amount + +t.bonus)) + ' (' + (t.method === 'gcash' ? 'GCash' : 'pay at the front desk') + ') <button class="btn b-ghost b-sm" data-act="cancelto" data-id="' + t.id + '">Withdraw</button>').join('<br>') + '</div>';
+  h += '<div class="pkgs">' + (w.packages || []).map(k => '<div class="pkg"><span class="small muted" style="font-weight:700">' + esc(k.name) + '</span><span class="get">' + esc(peso(+k.price + +k.bonus)) + '</span><span class="small">credits for ' + esc(peso(k.price)) + '</span>' + (+k.bonus > 0 ? '<span class="bon">+' + esc(peso(k.bonus)) + ' bonus</span>' : '') + (k.note ? '<span class="small muted">' + esc(k.note) + '</span>' : '') + '<button class="btn b-gold b-sm" style="margin-top:auto" data-act="buypkg" data-id="' + k.id + '">Buy</button></div>').join('') +
+    '<div class="pkg"><span class="small muted" style="font-weight:700">Any amount</span><input class="inp" id="tu-amt" inputmode="numeric" placeholder="₱ e.g. 2,000"><span class="small muted">No bonus · minimum ₱500</span><button class="btn b-ghost b-sm" style="margin-top:auto" data-act="buypkg">Top up</button></div></div></div>';
+  h += '<div class="card"><b>History</b>' + ((w.ledger || []).length ? '<div class="ledger" style="margin-top:8px">' + w.ledger.map(l => '<div><span>' + esc(ledgerLabel(l)) + '<br><small class="muted">' + esc(new Date(l.created_at).toLocaleString('en-PH', { timeZone: 'Asia/Manila', dateStyle: 'medium', timeStyle: 'short' })) + '</small></span><span class="' + (l.delta > 0 ? 'plus' : 'minus') + '">' + (l.delta > 0 ? '+' : '−') + esc(peso(Math.abs(l.delta))) + '</span></div>').join('') + '</div>' : '<p class="small muted" style="margin:6px 0 0">Nothing yet. Your top-ups, bonus credits and bookings will show here.</p>') +
+    ((w.topups || []).filter(t => t.status !== 'submitted').length ? '<div class="small muted" style="margin-top:12px"><b>Top-up requests</b><br>' + w.topups.filter(t => t.status !== 'submitted').slice(0, 8).map(t => esc(String(t.created_at).slice(0, 10)) + ' · ' + esc(peso(t.amount)) + ' · ' + esc(t.status) + (t.note ? ' — ' + esc(t.note) : '')).join('<br>') + '</div>' : '') + '</div></div></div></section>';
+  return h;
+}
+function openTopup(pkgId) {
+  if (S.profile && !S.profile.email_verified) return toast('Please confirm your email first', true);
+  const k = pkgId ? ((S.wallet || {}).packages || []).find(x => x.id === pkgId) : null;
+  const amt = k ? +k.price : Math.round(+String(($('tu-amt') || {}).value || '').replace(/[^0-9.]/g, ''));
+  if (!k && !(amt >= 500)) return toast('Enter an amount of at least ₱500', true);
+  S._tu = { pkg: k ? k.id : null, amt };
+  openModal('<button class="x" data-act="close">✕</button><h3>' + esc(k ? k.name : 'Top up ' + peso(amt)) + '</h3><div class="muted">You pay <b>' + esc(peso(amt)) + '</b> · you get <b>' + esc(peso(amt + (k ? +k.bonus : 0))) + '</b> in credits' + (k && +k.bonus > 0 ? ' (incl. ' + esc(peso(k.bonus)) + ' bonus)' : '') + '</div>' +
+    '<div class="field" style="margin-top:14px"><span>HOW WILL YOU PAY?</span><div class="seg" id="tu-pay"><button data-act="tupay" data-v="gcash" class="on">GCash</button><button data-act="tupay" data-v="club">At the front desk</button></div></div>' +
+    '<div id="tu-gc"><div class="okbox" style="margin-bottom:10px">Send <b>' + esc(peso(amt)) + '</b> by GCash to <b>0917 125 5048</b> (UZU Club), then enter the reference number and attach the receipt.</div><label class="field"><span>GCASH REFERENCE NO.</span><input class="inp" id="tu-ref"></label><label class="field"><span>RECEIPT (screenshot or PDF)</span><input type="file" class="inp" id="tu-file" accept="image/*,application/pdf"></label></div>' +
+    '<div id="tu-club" class="hide"><div class="note" style="margin-bottom:10px">Pay at the front desk on your next visit — staff add the credits once you’ve paid.</div></div>' +
+    '<p class="small muted">Credits are added after our staff check the payment. You’ll get an email when they’re ready.</p><button class="btn b-gold b-full" data-act="dotopup">Send top-up request</button>');
+}
+
+/* ---------- GROUP PLAY ---------- */
+const GP_LEVELS = ['All levels', 'Beginner', 'Intermediate', 'Advanced'];
+async function viewPlay() {
+  const t = manilaToday(), end = addDays(t, 30);
+  const [sess, mine, cs, myg] = await Promise.all([sessionsBetween(t, end), myBookings(), courts(), S.user && !S.staff ? sb.from('uzu_groups').select('*').order('date', { ascending: false }).limit(20) : Promise.resolve({ data: [] })]);
+  mineBySession = {}; mine.filter(b => b.status !== 'cancelled' && b.session_id).forEach(b => (mineBySession[b.session_id] = mineBySession[b.session_id] || []).push(b));
+  S._sess = S._sess || {}; sess.forEach(x => S._sess[x.id] = x);
+  const groups = sess.filter(x => x.group_id); const now = manilaNowMins();
+  let h = '<section class="sec"><div class="wrap"><h2>Group Play</h2><p class="sub">Start your own game. Pick the courts, time and level — once our staff approve it, it’s listed here and on the schedule for anyone to join, just like the Men’s Americano.</p>' +
+    '<div class="steps3"><div><b>1 · CREATE</b>Choose a day, time, courts, level and how many players.</div><div><b>2 · STAFF APPROVE</b>We check the courts and confirm the price per player. You take the first spot.</div><div><b>3 · PLAYERS JOIN</b>Your group goes public. Players book a spot and pay at the club, by GCash or with credits.</div></div>' +
+    '<div class="grid g2" style="align-items:start"><div><h3 class="serif" style="font-size:26px;margin:0 0 8px">Open groups</h3>';
+  if (!groups.length) h += '<div class="card muted">No Group Play listed yet — be the first to create one.</div>';
+  let cur = ''; groups.forEach(x => { if (x.date !== cur) { h += '<div class="small" style="font-weight:700;margin:14px 0 6px;letter-spacing:.06em">' + esc(fmtDay(x.date).toUpperCase()) + '</div>'; cur = x.date; } h += sessCard(x, '', ''); });
+  h += '</div><div>';
+  if (!S.user) h += '<div class="card"><b>Create a Group Play</b><p class="small muted">Sign in or create an account to start a group.</p><a class="btn b-gold b-sm" href="#signin" data-act="regtab">Sign in</a></div>';
+  else if (S.staff) h += '<div class="card"><b>Staff</b><p class="small muted">Players create Group Play from their account. Approve them in the <a href="#staff" data-act="stafftab" data-v="groups">Group Play tab</a>.</p></div>';
+  else {
+    const pc = cs.filter(c => c.sport === 'padel'); const d1 = addDays(t, 1);
+    const times = []; for (let m = 7 * 60; m <= 21 * 60; m += 30) times.push(m);
+    h += '<div class="card" id="gpform"><b>Create a Group Play</b>' +
+      '<label class="field" style="margin-top:12px"><span>NAME YOUR GROUP</span><input class="inp" id="gp-title" maxlength="60" placeholder="e.g. Sunrise Social Doubles"></label>' +
+      '<div class="prog" style="grid-template-columns:1fr 1fr 1fr"><label class="field"><span>DATE</span><input type="date" class="mini" id="gp-date" min="' + t + '" max="' + addDays(t, 60) + '" value="' + d1 + '" data-chg="gp"></label><label class="field"><span>START</span><select class="mini" id="gp-start" data-chg="gp">' + times.map(m => '<option value="' + tstr(m) + '"' + (m === 8 * 60 ? ' selected' : '') + '>' + esc(fmtT(tstr(m))) + '</option>').join('') + '</select></label><label class="field"><span>LENGTH</span><select class="mini" id="gp-dur" data-chg="gp">' + [[60, '1 hour'], [90, '1.5 hours'], [120, '2 hours'], [180, '3 hours']].map(d => '<option value="' + d[0] + '"' + (d[0] === 120 ? ' selected' : '') + '>' + d[1] + '</option>').join('') + '</select></label></div>' +
+      '<div class="field"><span>COURTS</span><div class="ckrow" id="gp-courts">' + pc.map((c, i) => '<label data-c="' + c.id + '"><input type="checkbox" value="' + c.id + '" data-chg="gp"' + (i === 0 ? ' checked' : '') + '>' + esc(c.name) + '<small class="muted"></small></label>').join('') + '</div></div>' +
+      '<div class="prog" style="grid-template-columns:1fr 1fr"><label class="field"><span>PLAYERS</span><select class="mini" id="gp-cap" data-chg="gp"></select></label><label class="field"><span>LEVEL</span><select class="mini" id="gp-level">' + GP_LEVELS.map(l => '<option>' + l + '</option>').join('') + '</select></label></div>' +
+      '<div class="field"><span>TYPE</span><div class="seg" id="gp-type"><button data-act="pick" data-v="friendly" class="on">Friendly</button><button data-act="pick" data-v="competitive">Competitive</button></div></div>' +
+      '<div class="field"><span>WHO CAN JOIN</span><div class="seg" id="gp-gender"><button data-act="pick" data-v="mixed" class="on">Everyone</button><button data-act="pick" data-v="men">Men</button><button data-act="pick" data-v="women">Women</button></div></div>' +
+      '<label class="field"><span>DESCRIPTION (optional)</span><textarea class="inp" id="gp-desc" placeholder="Format, vibe, anything players should know"></textarea></label>' +
+      '<div class="field"><span>YOUR OWN SPOT</span><div class="seg" id="gp-pay"><button data-act="pick" data-v="club" class="on">Pay at the club</button><button data-act="pick" data-v="credits">Credits<small>' + esc(peso((S.wallet || {}).balance || 0)) + '</small></button></div></div>' +
+      '<div class="okbox" id="gp-est" style="margin:4px 0 12px"></div>' +
+      '<button class="btn b-gold b-full" data-act="docreategroup">Send for approval</button></div>';
+    const mg = (myg.data || []);
+    if (mg.length) h += '<div class="card" style="margin-top:14px"><b>My groups</b>' + mg.map(g => '<div style="padding:8px 0;border-bottom:1px solid var(--line)"><div class="row between"><span><b>' + esc(g.title) + '</b><br><span class="small muted">' + esc(fmtShort(g.date)) + ' · ' + esc(range(g.start_time, g.end_time)) + ' · ' + g.capacity + ' players</span></span><span class="pill ' + ({ pending: 'p-warn', approved: 'p-ok', rejected: 'p-bad', cancelled: 'p-mute' }[g.status]) + '">' + ({ pending: 'Waiting for approval', approved: 'Live', rejected: 'Not approved', cancelled: 'Withdrawn' }[g.status]) + '</span></div>' + (g.staff_note ? '<div class="small" style="margin-top:4px">Staff: ' + esc(g.staff_note) + '</div>' : '') + (g.status === 'pending' ? '<button class="btn b-ghost b-sm" style="margin-top:6px" data-act="cancelgroup" data-id="' + g.id + '">Withdraw</button>' : '') + '</div>').join('') + '</div>';
+    setTimeout(gpUpdate, 0);
+  }
+  return h + '</div></div></div></section>';
+}
+async function gpUpdate() {
+  if (!$('gp-date')) return;
+  const cs = await courts(); const d = $('gp-date').value, a = mins($('gp-start').value), z = a + (+$('gp-dur').value);
+  S._gpBusy = S._gpBusy || {};
+  if (d && !S._gpBusy[d]) { const { data } = await sb.rpc('uzu_court_busy', { p_date: d }); S._gpBusy[d] = data || []; }
+  const busy = S._gpBusy[d] || [];
+  document.querySelectorAll('#gp-courts label').forEach(l => { const c = cs.find(x => x.id === l.dataset.c); const tk = busy.find(b => b.court_id === l.dataset.c && mins(b.start_time) < z && mins(b.end_time) > a); const out = c && (a < mins(c.open_time) || z > mins(c.close_time)); const inp = l.querySelector('input'); l.classList.toggle('taken', !!(tk || out)); inp.disabled = !!(tk || out); if (inp.disabled) inp.checked = false; l.querySelector('small').textContent = tk ? '· taken (' + tk.label + ')' : out ? '· closed' : ''; });
+  const sel = [...document.querySelectorAll('#gp-courts input:checked')].map(x => x.value);
+  const cap = $('gp-cap'), prev = +cap.value || 0, max = Math.max(4, 4 * sel.length);
+  cap.innerHTML = Array.from({ length: max - 1 }, (_, i) => i + 2).map(n => '<option value="' + n + '">' + n + ' players' + (n % 4 === 0 ? ' · ' + n / 4 + ' court' + (n > 4 ? 's' : '') + ' full' : '') + '</option>').join('');
+  cap.value = prev && prev <= max && S._gpN === sel.length ? prev : 4 * Math.max(1, sel.length); S._gpN = sel.length;
+  const rates = sel.map(id => (cs.find(c => c.id === id) || {}).hourly_rate);
+  const n = +cap.value; let txt;
+  if (!sel.length) txt = 'Choose at least one free court.';
+  else if (rates.some(r => r == null)) txt = 'Price per player: set by staff when they approve (court rates are confirmed at the club).';
+  else { const per = Math.ceil(rates.reduce((x, y) => x + y, 0) * (z - a) / 60 / n / 10) * 10; txt = 'Estimated <b>' + esc(peso(per)) + ' per player</b> — the court cost split ' + n + ' ways. Staff confirm the final price.'; }
+  $('gp-est').innerHTML = txt;
 }
 
 /* ---------- ACCOUNT ---------- */
@@ -559,12 +707,12 @@ async function viewAccount() {
   const t = manilaToday();
   const up = mine.filter(b => b.date >= t && b.status !== 'cancelled').sort((a, b) => (a.date + a.start_time).localeCompare(b.date + b.start_time));
   const past = mine.filter(b => !(b.date >= t && b.status !== 'cancelled'));
-  const item = b => '<div class="sess"><div class="time">' + esc(fmtShort(b.date)) + '<div class="muted small" style="font-weight:500">' + esc(fmtT(b.start_time)) + '</div></div><div class="info"><div class="ttl">' + esc(b.kind === 'session' ? (sm[b.session_id] || {}).title || 'Session' : ((cs.find(c => c.id === b.court_id) || {}).name || 'Court')) + '</div><div class="meta"><b>' + esc(whoFor(b)) + (b.booked_by && b.booked_by !== S.user.id && !b.for_name ? ' · booked by your partner' : '') + '</b>' + (b.level ? ' · ' + esc(b.level) : '') + ' · Ref ' + esc(b.ref) + (b.players > 1 ? ' · +' + (b.players - 1) + ' friend' + (b.players > 2 ? 's' : '') : '') + (b.amount != null ? ' · ' + esc(peso(b.amount)) : '') + ' · ' + (b.payment === 'paid' ? 'Paid' : b.pay_method === 'gcash' ? 'GCash' : 'Pay at club') + '</div></div><div class="act">' + statusPill(b.status) + (b.date >= t && b.status !== 'cancelled' ? '<button class="btn b-ghost b-sm" data-act="cancel" data-id="' + b.id + '">Cancel</button>' : '') + '</div></div>';
+  const item = b => '<div class="sess"><div class="time">' + esc(fmtShort(b.date)) + '<div class="muted small" style="font-weight:500">' + esc(fmtT(b.start_time)) + '</div></div><div class="info"><div class="ttl">' + esc(b.kind === 'session' ? (sm[b.session_id] || {}).title || 'Session' : ((cs.find(c => c.id === b.court_id) || {}).name || 'Court')) + '</div><div class="meta"><b>' + esc(whoFor(b)) + (b.booked_by && b.booked_by !== S.user.id && !b.for_name ? ' · booked by your partner' : '') + '</b>' + (b.level ? ' · ' + esc(b.level) : '') + ' · Ref ' + esc(b.ref) + (b.players > 1 ? ' · +' + (b.players - 1) + ' friend' + (b.players > 2 ? 's' : '') : '') + (addonTxt(b) ? ' · ' + addonTxt(b) : '') + (b.amount != null ? ' · ' + esc(peso(b.amount)) : '') + ' · ' + (b.pay_method === 'credits' && b.credits_charged > 0 ? 'Paid with credits' : b.payment === 'paid' ? 'Paid' : b.pay_method === 'gcash' ? 'GCash' : 'Pay at club') + '</div></div><div class="act">' + statusPill(b.status) + (b.date >= t && b.status !== 'cancelled' ? '<button class="btn b-ghost b-sm" data-act="cancel" data-id="' + b.id + '">Cancel</button>' : '') + '</div></div>';
   const p = S.profile || {};
   return '<section class="sec"><div class="wrap grid g2" style="align-items:start"><div><h2>My account</h2><p class="sub">Hi ' + esc(p.full_name || S.user.email) + (S.membership && S.membership.active ? ' · <span class="pill p-ok">Member' + (S.membership.until ? ' until ' + esc(fmtShort(S.membership.until)) : '') + '</span>' : '') + '</p>' +
     (up.length ? up.map(item).join('') : '<div class="card muted">No upcoming bookings. <a href="#schedule">Browse the schedule</a>.</div>') +
     (past.length ? '<h3 class="serif" style="font-size:24px;margin:24px 0 8px">Past & cancelled</h3>' + past.slice(0, 20).map(item).join('') : '') + '</div>' +
-    '<div>' + (await membershipCard()) + '<div class="card"><b>My details</b><label class="field" style="margin-top:12px"><span>FULL NAME</span><input id="pf-name" class="inp" value="' + esc(p.full_name || '') + '"></label><label class="field"><span>NICKNAME (shown on public lists)</span><input id="pf-nick" class="inp" maxlength="24" value="' + esc(p.nickname || '') + '"></label><label class="field"><span>MOBILE</span><input id="pf-phone" class="inp" inputmode="tel" value="' + esc(p.phone || '') + '"></label><div class="muted small" style="margin-bottom:12px">Email: ' + esc(S.user.email) + '</div><button class="btn b-green" data-act="saveprofile">Save</button></div></div></div></section>';
+    '<div>' + walletMini() + (await membershipCard()) + '<div class="card"><b>My details</b><label class="field" style="margin-top:12px"><span>FULL NAME</span><input id="pf-name" class="inp" value="' + esc(p.full_name || '') + '"></label><label class="field"><span>NICKNAME (shown on public lists)</span><input id="pf-nick" class="inp" maxlength="24" value="' + esc(p.nickname || '') + '"></label><label class="field"><span>MOBILE</span><input id="pf-phone" class="inp" inputmode="tel" value="' + esc(p.phone || '') + '"></label><div class="muted small" style="margin-bottom:12px">Email: ' + esc(S.user.email) + '</div><button class="btn b-green" data-act="saveprofile">Save</button></div></div></div></section>';
 }
 
 function householdFields(list) {
@@ -638,7 +786,7 @@ async function viewPay() {
 }
 
 /* ---------- STAFF ---------- */
-const STAFF_TABS = [['sheet', 'Court sheet'], ['people', 'People'], ['today', 'Day sheet'], ['bookings', 'Bookings'], ['sessions', 'Sessions'], ['weekly', 'Weekly schedule'], ['courts', 'Courts'], ['emails', 'Emails'], ['team', 'Staff']];
+const STAFF_TABS = [['sheet', 'Court sheet'], ['people', 'People'], ['today', 'Day sheet'], ['bookings', 'Bookings'], ['sessions', 'Sessions'], ['weekly', 'Weekly schedule'], ['courts', 'Courts'], ['groups', 'Group Play'], ['credits', 'Credits'], ['extras', 'Trainers & rentals'], ['emails', 'Emails'], ['team', 'Staff']];
 async function viewStaff() {
   if (!S.user) { S.after = 'staff'; return viewSignin(); }
   if (!S.staff) return '<section class="sec"><div class="wrap"><div class="card">This area is for UZU staff. Ask a manager to add your account.</div></div></section>';
@@ -649,9 +797,10 @@ async function viewStaff() {
     '<div class="stat"><b>' + (s.today || 0) + '</b><span>Confirmed today</span></div><div class="stat"><b>' + (s.week || 0) + '</b><span>Next 7 days</span></div>' +
     '<div class="stat" style="' + (s.pending ? 'border-color:var(--gold)' : '') + '"><b>' + (s.pending || 0) + '</b><span>Courts to confirm</span></div>' +
     '<div class="stat" data-act="stafftab" data-v="people" style="cursor:pointer"><b>' + (s.members || 0) + '</b><span>Registered · ' + (s.active_members || 0) + ' member' + (s.active_members === 1 ? '' : 's') + (s.new_week ? ' · ' + s.new_week + ' new this week' : '') + '</span></div>' +
-    '<div class="stat" data-act="peoplef" data-v="action" style="cursor:pointer;' + ((s.to_review || s.requests) ? 'border-color:var(--gold)' : '') + '"><b>' + ((s.to_review || 0) + (s.requests || 0)) + '</b><span>' + (s.to_review || 0) + ' payment' + (s.to_review === 1 ? '' : 's') + ' to review · ' + (s.requests || 0) + ' requests</span></div></div>' +
-    '<div class="tabs">' + STAFF_TABS.map(t => '<button data-act="stafftab" data-v="' + t[0] + '" class="' + (S.staffTab === t[0] ? 'on' : '') + '">' + t[1] + (t[0] === 'bookings' && s.pending ? ' (' + s.pending + ')' : '') + (t[0] === 'people' && (s.to_review || s.requests) ? ' (' + ((s.to_review || 0) + (s.requests || 0)) + ')' : '') + '</button>').join('') + '</div><div id="stafftab">';
-  const fn = { sheet: stSheet, today: stToday, bookings: stBookings, sessions: stSessions, weekly: stWeekly, courts: stCourts, people: stPeople, members: stPeople, emails: () => stEmails(s), team: () => stTeam(s) }[S.staffTab];
+    '<div class="stat" data-act="peoplef" data-v="action" style="cursor:pointer;' + ((s.to_review || s.requests) ? 'border-color:var(--gold)' : '') + '"><b>' + ((s.to_review || 0) + (s.requests || 0)) + '</b><span>' + (s.to_review || 0) + ' payment' + (s.to_review === 1 ? '' : 's') + ' to review · ' + (s.requests || 0) + ' requests</span></div>' +
+    '<div class="stat" data-act="stafftab" data-v="' + (s.groups && !s.topups ? 'groups' : 'credits') + '" style="cursor:pointer;' + ((s.topups || s.groups) ? 'border-color:var(--gold)' : '') + '"><b>' + ((s.topups || 0) + (s.groups || 0)) + '</b><span>' + (s.topups || 0) + ' top-up' + (s.topups === 1 ? '' : 's') + ' · ' + (s.groups || 0) + ' Group Play to approve</span></div></div>' +
+    '<div class="tabs">' + STAFF_TABS.map(t => '<button data-act="stafftab" data-v="' + t[0] + '" class="' + (S.staffTab === t[0] ? 'on' : '') + '">' + t[1] + (t[0] === 'bookings' && s.pending ? ' (' + s.pending + ')' : '') + (t[0] === 'people' && (s.to_review || s.requests) ? ' (' + ((s.to_review || 0) + (s.requests || 0)) + ')' : '') + (t[0] === 'groups' && s.groups ? ' (' + s.groups + ')' : '') + (t[0] === 'credits' && s.topups ? ' (' + s.topups + ')' : '') + '</button>').join('') + '</div><div id="stafftab">';
+  const fn = { sheet: stSheet, today: stToday, bookings: stBookings, sessions: stSessions, weekly: stWeekly, courts: stCourts, groups: stGroups, credits: stCredits, extras: stExtras, people: stPeople, members: stPeople, emails: () => stEmails(s), team: () => stTeam(s) }[S.staffTab];
   h += await fn();
   return h + '</div></div></section>';
 }
@@ -675,11 +824,11 @@ async function stToday() {
   sess.forEach(s => {
     const list = bookings.filter(b => b.session_id === s.id);
     h += '<div class="card" style="margin-bottom:12px"><div class="row between wrapx"><div><b style="font-size:17px">' + esc(s.title) + '</b> <span class="muted">' + esc(range(s.start_time, s.end_time)) + '</span> ' + sportPill(s.sport) + (s.status !== 'open' ? ' <span class="pill p-mute">' + esc(s.status) + '</span>' : '') + '</div><span class="small"><b>' + s.booked + '</b>/' + s.capacity + (s.waiting ? ' · ' + s.waiting + ' waiting' : '') + '</span></div>' +
-      (list.length ? '<div class="scroll"><table class="tbl" style="margin-top:8px"><tr><th>#</th><th>Player</th><th>Contact</th><th>Pax</th><th>Status</th><th>Pay</th><th></th></tr>' + list.map((b, i) => '<tr><td>' + (i + 1) + '</td><td><b>' + esc(who(b, pm)) + '</b>' + ((s.levels || []).length ? ' <select class="mini" style="width:auto;padding:2px 6px;font-size:12px" data-chg="blevel" data-id="' + b.id + '"><option value="">Level?</option>' + s.levels.map(l => '<option' + (b.level === l ? ' selected' : '') + '>' + esc(l) + '</option>').join('') + '</select>' : '') + (b.notes ? '<div class="small muted">' + esc(b.notes) + '</div>' : '') + '</td><td class="small">' + contact(b, pm) + '</td><td>' + b.players + '</td><td>' + statusPill(b.status) + '</td><td class="small">' + (b.amount != null ? esc(peso(b.amount)) + ' · ' : '') + (b.pay_method === 'gcash' ? 'GCash ' + esc(b.gcash_ref || '') : 'At club') + '</td><td style="white-space:nowrap">' + bkActions(b) + '</td></tr>').join('') + '</table></div>' : '<div class="muted small" style="margin-top:8px">No bookings yet.</div>') +
+      (list.length ? '<div class="scroll"><table class="tbl" style="margin-top:8px"><tr><th>#</th><th>Player</th><th>Contact</th><th>Pax</th><th>Status</th><th>Pay</th><th></th></tr>' + list.map((b, i) => '<tr><td>' + (i + 1) + '</td><td><b>' + esc(who(b, pm)) + '</b>' + ((s.levels || []).length ? ' <select class="mini" style="width:auto;padding:2px 6px;font-size:12px" data-chg="blevel" data-id="' + b.id + '"><option value="">Level?</option>' + s.levels.map(l => '<option' + (b.level === l ? ' selected' : '') + '>' + esc(l) + '</option>').join('') + '</select>' : '') + (b.notes ? '<div class="small muted">' + esc(b.notes) + '</div>' : '') + '</td><td class="small">' + contact(b, pm) + '</td><td>' + b.players + '</td><td>' + statusPill(b.status) + '</td><td class="small">' + (b.amount != null ? esc(peso(b.amount)) + ' · ' : '') + payTxt(b) + (addonTxt(b) ? '<br>' + addonTxt(b) : '') + '</td><td style="white-space:nowrap">' + bkActions(b) + '</td></tr>').join('') + '</table></div>' : '<div class="muted small" style="margin-top:8px">No bookings yet.</div>') +
       '<div class="row wrapx" style="margin-top:10px;gap:6px"><input class="mini" style="max-width:180px" placeholder="Walk-in name" id="g-n-' + s.id + '"><input class="mini" style="max-width:150px" placeholder="Mobile (optional)" id="g-p-' + s.id + '"><input class="mini" style="max-width:200px" placeholder="Email (optional)" id="g-e-' + s.id + '">' + ((s.levels || []).length ? '<select class="mini" style="max-width:150px" id="g-l-' + s.id + '"><option value="">Level…</option>' + s.levels.map(l => '<option>' + esc(l) + '</option>').join('') + '</select>' : '') + '<button class="btn b-ghost b-sm" data-act="addguest" data-id="' + s.id + '">+ Add player</button></div></div>';
   });
   const cb = bookings.filter(b => b.kind === 'court').sort((a, b) => mins(a.start_time) - mins(b.start_time));
-  if (cb.length) h += '<div class="card"><b>Court bookings</b><div class="scroll"><table class="tbl" style="margin-top:8px"><tr><th>Time</th><th>Court</th><th>Player</th><th>Status</th><th>Pay</th><th></th></tr>' + cb.map(b => '<tr><td>' + esc(range(b.start_time, b.end_time)) + '</td><td>' + esc((cs.find(c => c.id === b.court_id) || {}).name || b.court_id) + '</td><td><b>' + esc(who(b, pm)) + '</b><div class="small muted">' + contact(b, pm) + '</div></td><td>' + statusPill(b.status) + '</td><td class="small">' + (b.amount != null ? esc(peso(b.amount)) + ' · ' : '') + (b.pay_method === 'gcash' ? 'GCash ' + esc(b.gcash_ref || '') : 'At club') + '</td><td style="white-space:nowrap">' + bkActions(b) + '</td></tr>').join('') + '</table></div></div>';
+  if (cb.length) h += '<div class="card"><b>Court bookings</b><div class="scroll"><table class="tbl" style="margin-top:8px"><tr><th>Time</th><th>Court</th><th>Player</th><th>Status</th><th>Pay</th><th></th></tr>' + cb.map(b => '<tr><td>' + esc(range(b.start_time, b.end_time)) + '</td><td>' + esc((cs.find(c => c.id === b.court_id) || {}).name || b.court_id) + '</td><td><b>' + esc(who(b, pm)) + '</b><div class="small muted">' + contact(b, pm) + '</div></td><td>' + statusPill(b.status) + '</td><td class="small">' + (b.amount != null ? esc(peso(b.amount)) + ' · ' : '') + payTxt(b) + (addonTxt(b) ? '<br>' + addonTxt(b) : '') + '</td><td style="white-space:nowrap">' + bkActions(b) + '</td></tr>').join('') + '</table></div></div>';
   return h;
 }
 async function stBookings() {
@@ -692,7 +841,7 @@ async function stBookings() {
   if (sids.length) { const r = await sb.from('uzu_sessions').select('id,title').in('id', sids); (r.data || []).forEach(s => sm[s.id] = s); }
   let h = '<div class="seg" style="max-width:560px;margin-bottom:12px">' + [['pending', 'Awaiting'], ['confirmed', 'Confirmed'], ['waitlist', 'Waitlist'], ['cancelled', 'Cancelled'], ['all', 'All upcoming']].map(x => '<button data-act="bkf" data-v="' + x[0] + '" class="' + (S.bkFilter === x[0] ? 'on' : '') + '">' + x[1] + '</button>').join('') + '</div>';
   if (!list.length) return h + '<div class="card muted">No bookings here.</div>';
-  return h + '<div class="card scroll"><table class="tbl"><tr><th>When</th><th>What</th><th>Player</th><th>Pax</th><th>Status</th><th>Pay</th><th></th></tr>' + list.map(b => '<tr><td style="white-space:nowrap"><b>' + esc(fmtShort(b.date)) + '</b><div class="small muted">' + esc(range(b.start_time, b.end_time)) + '</div></td><td>' + esc(b.kind === 'session' ? (sm[b.session_id] || {}).title : (cs.find(c => c.id === b.court_id) || {}).name) + '<div class="small muted">Ref ' + esc(b.ref) + '</div></td><td><b>' + esc(who(b, pm)) + '</b><div class="small muted">' + contact(b, pm) + '</div>' + (b.notes ? '<div class="small">“' + esc(b.notes) + '”</div>' : '') + '</td><td>' + b.players + '</td><td>' + statusPill(b.status) + '</td><td class="small">' + (b.amount != null ? esc(peso(b.amount)) + '<br>' : '') + (b.pay_method === 'gcash' ? 'GCash ' + esc(b.gcash_ref || '') : 'At club') + '</td><td style="white-space:nowrap">' + bkActions(b) + '</td></tr>').join('') + '</table></div>';
+  return h + '<div class="card scroll"><table class="tbl"><tr><th>When</th><th>What</th><th>Player</th><th>Pax</th><th>Status</th><th>Pay</th><th></th></tr>' + list.map(b => '<tr><td style="white-space:nowrap"><b>' + esc(fmtShort(b.date)) + '</b><div class="small muted">' + esc(range(b.start_time, b.end_time)) + '</div></td><td>' + esc(b.kind === 'session' ? (sm[b.session_id] || {}).title : (cs.find(c => c.id === b.court_id) || {}).name) + '<div class="small muted">Ref ' + esc(b.ref) + '</div></td><td><b>' + esc(who(b, pm)) + '</b><div class="small muted">' + contact(b, pm) + '</div>' + (b.notes ? '<div class="small">“' + esc(b.notes) + '”</div>' : '') + '</td><td>' + b.players + '</td><td>' + statusPill(b.status) + '</td><td class="small">' + (b.amount != null ? esc(peso(b.amount)) + '<br>' : '') + payTxt(b) + (addonTxt(b) ? '<br>' + addonTxt(b) : '') + '</td><td style="white-space:nowrap">' + bkActions(b) + '</td></tr>').join('') + '</table></div>';
 }
 async function stSessions() {
   const t = manilaToday(); const [sess, cs] = await Promise.all([sessionsBetween(t, addDays(t, 41), true), courts()]);
@@ -782,7 +931,7 @@ async function stSheet() {
       const ppl = bookings.filter(b => b.session_id === s.id && b.status === 'confirmed').map(b => nick(b, pm) + (b.level ? ' · ' + b.level.slice(0, 3) : '') + (b.players > 1 ? ' +' + (b.players - 1) : ''));
       out.push({ t: mins(s.start_time), html: '<div class="blk ' + stOf(day, s.start_time, s.end_time) + '"><div class="bt">' + esc(range(s.start_time, s.end_time)) + ' · ' + esc(s.title) + ' <span class="muted">(' + s.booked + '/' + s.capacity + ')</span></div><div class="bn">' + (ppl.length ? ppl.map(esc).join(', ') : '<span class="muted">No sign-ups yet</span>') + '</div></div>' });
     });
-    bookings.filter(b => b.kind === 'court' && b.date === day && b.court_id === court.id).forEach(b => out.push({ t: mins(b.start_time), html: '<div class="blk court ' + stOf(day, b.start_time, b.end_time) + '"><div class="bt">' + esc(range(b.start_time, b.end_time)) + ' · Court booking' + (b.status === 'pending' ? ' <span class="pill p-warn">to confirm</span>' : '') + '</div><div class="bn">' + esc(who(b, pm)) + '</div></div>' }));
+    bookings.filter(b => b.kind === 'court' && b.date === day && b.court_id === court.id).forEach(b => out.push({ t: mins(b.start_time), html: '<div class="blk court ' + stOf(day, b.start_time, b.end_time) + '"><div class="bt">' + esc(range(b.start_time, b.end_time)) + ' · Court booking' + (b.status === 'pending' ? ' <span class="pill p-warn">to confirm</span>' : '') + '</div><div class="bn">' + esc(who(b, pm)) + (addonTxt(b) ? ' · ' + addonTxt(b) : '') + '</div></div>' }));
     return out.sort((a, b) => a.t - b.t).map(x => x.html).join('') || '<span class="muted small">—</span>';
   };
   let h = '<div class="row wrapx" style="margin-bottom:12px;gap:8px"><div class="seg" style="width:200px"><button data-act="smode" data-v="day" class="' + (mode === 'day' ? 'on' : '') + '">Day</button><button data-act="smode" data-v="week" class="' + (mode === 'week' ? 'on' : '') + '">7 days</button></div><button class="btn ' + (d0 === manilaToday() ? 'b-green' : 'b-ghost') + ' b-sm" data-act="stoday">Today</button><button class="btn b-ghost b-sm" data-act="sstep" data-v="-1">←</button><input type="date" class="mini" style="width:auto" data-chg="sheetdate" value="' + d0 + '"><button class="btn b-ghost b-sm" data-act="sstep" data-v="1">→</button><b>' + esc(mode === 'week' ? fmtShort(start) + ' – ' + fmtShort(end) : fmtDay(d0)) + '</b><button class="btn b-ghost b-sm" style="margin-left:auto" data-act="sheetcopy">Copy summary</button></div>';
@@ -810,6 +959,40 @@ async function stSheet() {
   return h;
 }
 
+/* ---------- staff: Group Play, Credits, Trainers & rentals ---------- */
+async function stGroups() {
+  const list = must(await sb.rpc('uzu_staff_groups')) || [];
+  const pend = list.filter(g => g.status === 'pending'), rest = list.filter(g => g.status !== 'pending');
+  let h = '<p class="muted small">Players create Group Play from the public site. A pending group holds its courts. Approving publishes it on the schedule like any club session and books the host into the first spot.</p>';
+  if (!pend.length) h += '<div class="card muted">Nothing waiting for approval.</div>';
+  pend.forEach(g => {
+    h += '<div class="card" style="margin-bottom:12px;border-color:var(--gold)"><div class="row between wrapx"><div><b style="font-size:18px">' + esc(g.title) + '</b> <span class="pill p-warn">Waiting</span><div class="small muted">' + esc(fmtDay(g.date)) + ' · ' + esc(range(g.start_time, g.end_time)) + ' · ' + esc(g.courts || '') + '</div></div><button class="btn b-ghost b-sm" data-act="mmanage" data-id="' + g.created_by + '">' + esc(g.host || g.host_email) + '</button></div>' +
+      '<div class="pgrid"><div><b>Players</b>' + g.capacity + '</div><div><b>Level</b>' + esc(g.level || 'All levels') + '</div><div><b>Type</b>' + esc(g.match_type) + '</div><div><b>Who can join</b>' + esc({ mixed: 'Everyone', men: 'Men', women: 'Women' }[g.gender]) + '</div><div><b>Host pays</b>' + (g.host_pay === 'credits' ? 'Credits' : 'At the club') + '</div><div><b>Submitted</b>' + esc(new Date(g.created_at).toLocaleString('en-PH', { timeZone: 'Asia/Manila', dateStyle: 'medium', timeStyle: 'short' })) + '</div></div>' +
+      (g.description ? '<p class="small" style="margin:8px 0">“' + esc(g.description) + '”</p>' : '') +
+      '<div class="prog" style="grid-template-columns:1fr 2fr;margin-top:8px"><label class="field"><span>PRICE PER PLAYER ₱</span><input class="mini" id="gr-price-' + g.id + '" inputmode="numeric" value="' + esc(g.price == null ? '' : g.price) + '" placeholder="Leave empty = at the club"></label><label class="field"><span>NOTE TO THE HOST (optional)</span><input class="mini" id="gr-note-' + g.id + '" placeholder="e.g. Approved — have fun! / Courts are closed that day"></label></div>' +
+      '<div class="row" style="gap:8px"><button class="btn b-gold b-sm" data-act="grev" data-v="yes" data-id="' + g.id + '">Approve & publish</button><button class="btn b-danger b-sm" data-act="grev" data-v="no" data-id="' + g.id + '">Decline</button></div></div>';
+  });
+  if (rest.length) h += '<div class="card scroll"><b>Recent & upcoming</b><table class="tbl" style="margin-top:8px"><tr><th>When</th><th>Group</th><th>Host</th><th>Status</th><th>Players</th><th>Price</th><th></th></tr>' + rest.map(g => '<tr><td style="white-space:nowrap"><b>' + esc(fmtShort(g.date)) + '</b><div class="small muted">' + esc(range(g.start_time, g.end_time)) + '</div></td><td>' + esc(g.title) + '<div class="small muted">' + esc(g.courts || '') + '</div></td><td class="small">' + esc(g.host || '') + '</td><td><span class="pill ' + ({ approved: 'p-ok', rejected: 'p-bad', cancelled: 'p-mute' }[g.status]) + '">' + esc(g.status) + '</span></td><td>' + (g.status === 'approved' ? g.booked + '/' : '') + g.capacity + '</td><td>' + (g.price != null ? esc(peso(g.price)) : '—') + '</td><td>' + (g.status === 'approved' ? '<button class="btn b-ghost b-sm" data-act="roster" data-v="' + g.date + '">Day sheet</button>' : '') + '</td></tr>').join('') + '</table></div>';
+  return h;
+}
+async function stCredits() {
+  const [c, { data: pk }] = await Promise.all([sb.rpc('uzu_staff_credits').then(must), sb.from('uzu_credit_packages').select('*').order('sort').order('price')]);
+  let h = '<div class="grid g3" style="grid-template-columns:repeat(auto-fit,minmax(170px,1fr));margin-bottom:14px"><div class="stat"><b>' + esc(peso(c.outstanding)) + '</b><span>Credits held by players</span></div><div class="stat"><b>' + esc(peso(c.sold_month)) + '</b><span>Credits sold this month (paid)</span></div><div class="stat"><b>' + c.to_review.length + '</b><span>Top-ups to check</span></div></div>';
+  h += '<div class="card" style="margin-bottom:14px"><b>Top-ups to check</b>' + (c.to_review.length ? c.to_review.map(t => '<div style="padding:10px 0;border-bottom:1px solid var(--line)"><div class="row between wrapx"><span><b>' + esc(t.player || t.email) + '</b> · ' + esc(t.label || 'Credits') + '<br><span class="small">Pays <b>' + esc(peso(t.amount)) + '</b> → gets <b>' + esc(peso(+t.amount + +t.bonus)) + '</b> · ' + (t.method === 'gcash' ? 'GCash' + (t.reference ? ' ref ' + esc(t.reference) : '') : 'At the front desk') + ' · ' + esc(new Date(t.created_at).toLocaleString('en-PH', { timeZone: 'Asia/Manila', dateStyle: 'medium', timeStyle: 'short' })) + '</span></span>' + (t.proof_path ? '<button class="btn b-ghost b-sm" data-act="proof" data-v="' + esc(t.proof_path) + '">View receipt</button>' : '') + '</div><div class="row wrapx" style="gap:6px;margin-top:6px"><input class="mini" style="max-width:240px" id="tr-' + t.id + '" placeholder="Note (optional)"><button class="btn b-gold b-sm" data-act="treview" data-v="yes" data-id="' + t.id + '">Payment received — add credits</button><button class="btn b-danger b-sm" data-act="treview" data-v="no" data-id="' + t.id + '">Not received</button></div></div>').join('') : '<div class="small muted" style="margin-top:6px">Nothing to check.</div>') + '</div>';
+  const row = k => '<div class="prog" data-pkg="' + esc(k.id || '') + '" style="grid-template-columns:2fr 1fr 1fr 2fr auto auto;align-items:center;margin-top:8px"><input class="mini" data-f="name" value="' + esc(k.name || '') + '" placeholder="Name e.g. ₱10,000 credits"><input class="mini" data-f="price" inputmode="numeric" value="' + esc(k.price == null ? '' : k.price) + '" placeholder="Player pays ₱"><input class="mini" data-f="bonus" inputmode="numeric" value="' + esc(k.bonus == null ? '' : k.bonus) + '" placeholder="Bonus ₱"><input class="mini" data-f="note" value="' + esc(k.note || '') + '" placeholder="Note (optional)"><label class="row small" style="gap:4px"><input type="checkbox" data-f="active"' + (k.active !== false ? ' checked' : '') + '>On sale</label><button class="btn b-green b-sm" data-act="savepkg">Save</button></div>';
+  h += '<div class="card" style="margin-bottom:14px"><b>Credit packages</b><p class="small muted" style="margin:4px 0 0">What players see on the Credits page. Example: player pays ₱10,000, bonus ₱600 → ₱10,600 in credits.</p>' + (pk || []).map(row).join('') + '<div class="small muted" style="margin-top:12px"><b>Add a package</b></div>' + row({ active: true }) + '</div>';
+  h += '<div class="card scroll" style="margin-bottom:14px"><b>Player balances</b>' + (c.balances.length ? '<table class="tbl" style="margin-top:8px"><tr><th>Player</th><th>Balance</th><th>Last activity</th><th></th></tr>' + c.balances.map(x => '<tr><td><b>' + esc(x.name || x.email) + '</b><div class="small muted">' + esc(x.email || '') + '</div></td><td><b>' + esc(peso(x.balance)) + '</b></td><td class="small">' + esc(String(x.last).slice(0, 10)) + '</td><td><button class="btn b-ghost b-sm" data-act="mmanage" data-id="' + x.id + '">Open · add credits</button></td></tr>').join('') + '</table>' : '<div class="small muted" style="margin-top:6px">No one has credits yet. To sell credits at the desk, open the player in People.</div>') + '</div>';
+  if (c.recent.length) h += '<div class="card scroll"><b>Recent top-ups</b><table class="tbl" style="margin-top:8px"><tr><th>Date</th><th>Player</th><th>Paid</th><th>Credits</th><th>How</th><th>Status</th></tr>' + c.recent.map(t => '<tr><td class="small">' + esc(String(t.created_at).slice(0, 10)) + '</td><td>' + esc(t.player || '') + '</td><td>' + esc(peso(t.amount)) + '</td><td>' + esc(peso(+t.amount + +t.bonus)) + '</td><td class="small">' + esc(t.method) + (t.reference ? ' · ' + esc(t.reference) : '') + '</td><td><span class="pill ' + ({ approved: 'p-ok', rejected: 'p-bad', cancelled: 'p-mute' }[t.status] || '') + '">' + esc(t.status) + '</span></td></tr>').join('') + '</table></div>';
+  return h;
+}
+async function stExtras() {
+  const [tr, ex] = await Promise.all([sb.rpc('uzu_staff_trainers').then(must), sb.from('uzu_extras').select('*').order('sort')]);
+  let h = '<div class="card" style="margin-bottom:14px"><b>Rentals</b><p class="small muted" style="margin:4px 0 0">Players add these when they book a court or a padel session. Leave the price empty to charge at the club (credits can’t be used until there’s a price).</p>' + (ex.data || []).map(x => '<div class="prog" data-extra="' + esc(x.id) + '" style="grid-template-columns:2fr 1fr auto auto;align-items:center;margin-top:8px"><input class="mini" data-f="name" value="' + esc(x.name) + '"><input class="mini" data-f="price" inputmode="numeric" placeholder="₱ each" value="' + esc(x.price == null ? '' : x.price) + '"><label class="row small" style="gap:4px"><input type="checkbox" data-f="active"' + (x.active ? ' checked' : '') + '>Offered</label><button class="btn b-green b-sm" data-act="saveextra">Save</button></div>').join('') + '</div>';
+  const row = t => '<div class="card" style="margin-bottom:10px" data-tr="' + esc(t.id || '') + '"><div class="prog"><input class="mini" data-f="name" value="' + esc(t.name || '') + '" placeholder="Trainer name"><input class="mini" data-f="rate_hour" inputmode="numeric" value="' + esc(t.rate_hour == null ? '' : t.rate_hour) + '" placeholder="₱ per hour"><input class="mini" data-f="email" type="email" value="' + esc(t.email || '') + '" placeholder="Email (gets booking alerts)"><input class="mini" data-f="sort" inputmode="numeric" value="' + esc(t.sort == null ? 0 : t.sort) + '" placeholder="Order"><input class="mini" data-f="bio" value="' + esc(t.bio || '') + '" placeholder="Short bio shown to players" style="grid-column:span 3"></div><div class="row wrapx small" style="margin-top:8px;gap:10px">' + ['padel', 'football'].map(sp => '<label class="row" style="gap:5px"><input type="checkbox" data-sport value="' + sp + '"' + ((t.sports || ['padel']).includes(sp) ? ' checked' : '') + '>' + sp[0].toUpperCase() + sp.slice(1) + '</label>').join('') + '<label class="row" style="gap:5px"><input type="checkbox" data-f="active"' + (t.active !== false ? ' checked' : '') + '>Bookable</label><button class="btn b-green b-sm" style="margin-left:auto" data-act="savetrainer">Save</button></div></div>';
+  h += '<b>Trainers</b><p class="small muted">Players can add a trainer when they book a court. A trainer can’t be double-booked. Leave the rate empty to charge at the club.</p>' + (tr || []).map(row).join('') + '<div class="small muted" style="margin:14px 0 6px"><b>Add a trainer</b></div>' + row({ active: true, sports: ['padel'] });
+  return h;
+}
+
 /* ---------- staff: member detail (membership + payments + proofs) ---------- */
 async function openGuest(key) {
   const ppl = await peopleData(); const g = ppl.guests.find(x => x.key === key); if (!g) return toast('Not found', true);
@@ -832,6 +1015,7 @@ async function openMember(id) {
     sb.from('uzu_membership_log').select('*').eq('user_id', id).order('at', { ascending: false }).limit(60),
     sb.from('uzu_member_invites').select('*').eq('user_id', id).order('created_at', { ascending: false }).limit(5),
     sb.from('uzu_bookings').select('*').or('user_id.eq.' + id + ',booked_by.eq.' + id).order('date', { ascending: false }).limit(60)]);
+  const [{ data: wal }, { data: pkgs }] = await Promise.all([sb.rpc('uzu_staff_wallet', { p_user: id }), sb.from('uzu_credit_packages').select('*').eq('active', true).order('sort').order('price')]);
   if (!p) return toast('Player not found', true);
   const ppl = await peopleData(); const me = ppl.accounts.find(x => x.id === id) || p; const typ = personType(Object.assign({}, p, { active: me.active, family_of: me.family_of }));
   const t = manilaToday(), six = (() => { const d = parseD(t); d.setMonth(d.getMonth() + 6); d.setDate(d.getDate() - 1); return dstr(d); })();
@@ -847,6 +1031,12 @@ async function openMember(id) {
     '<div class="prog" style="grid-template-columns:1fr 1fr"><label class="field"><span>' + (p.is_member ? 'VALID UNTIL' : 'TURN ON UNTIL') + '</span><input type="date" class="mini" id="mt-until" value="' + esc(p.is_member && p.member_until >= t ? p.member_until : six) + '"></label><label class="field"><span>PLAN</span><input class="mini" id="mt-plan" value="' + esc(p.member_plan || '6-month membership') + '"></label></div>' +
     '<label class="field"><span>NOTE FOR THE HISTORY (why)</span><input class="inp" id="mt-note" placeholder="e.g. Paid cash at the desk · paused while travelling"></label>' +
     '<div class="row wrapx" style="gap:8px">' + (p.is_member ? '<button class="btn b-green b-sm" data-act="mtoggle" data-v="on" data-id="' + id + '">Save dates</button><button class="btn b-danger b-sm" data-act="mtoggle" data-v="off" data-id="' + id + '">Turn membership OFF</button>' : '<button class="btn b-gold b-sm" data-act="mtoggle" data-v="on" data-id="' + id + '">Turn membership ON</button>') + '</div>');
+  // credits
+  { const W = wal || { balance: 0, ledger: [], topups: [] };
+    h += sec('Credits · ' + esc(peso(W.balance)), '<div class="prog" style="grid-template-columns:1fr 1fr;margin-top:10px"><label class="field"><span>SELL CREDITS AT THE DESK</span><select class="mini" id="mc-pkg"><option value="">Custom amount</option>' + (pkgs || []).map(k => '<option value="' + k.id + '">' + esc(k.name) + ' · pay ' + esc(peso(k.price)) + ' → ' + esc(peso(+k.price + +k.bonus)) + '</option>').join('') + '</select></label><label class="field"><span>METHOD</span><select class="mini" id="mc-method"><option value="cash">Cash</option><option value="gcash">GCash</option><option value="card">Card</option><option value="bank">Bank transfer</option></select></label><input class="mini" id="mc-amount" inputmode="numeric" placeholder="Amount paid ₱ (custom)"><input class="mini" id="mc-bonus" inputmode="numeric" placeholder="Bonus ₱ (custom, optional)"><input class="mini" id="mc-ref" placeholder="Reference no. (optional)"><input class="mini" id="mc-note" placeholder="Note (optional)"></div><button class="btn b-gold b-sm" data-act="maddcred" data-id="' + id + '">Add credits</button>' +
+      '<details style="margin-top:10px"><summary class="small" style="cursor:pointer;font-weight:700">Adjust the balance</summary><div class="prog" style="grid-template-columns:1fr 2fr;margin-top:8px"><input class="mini" id="ma-amt" inputmode="numeric" placeholder="+500 or -200"><input class="mini" id="ma-note" placeholder="Reason (required)"></div><button class="btn b-ghost b-sm" data-act="madjust" data-id="' + id + '">Save adjustment</button></details>' +
+      ((W.ledger || []).length ? '<div class="ledger" style="margin-top:10px">' + W.ledger.slice(0, 15).map(l => '<div><span>' + esc(ledgerLabel(l)) + '<br><small class="muted">' + esc(new Date(l.created_at).toLocaleString('en-PH', { timeZone: 'Asia/Manila', dateStyle: 'medium', timeStyle: 'short' })) + (l.by ? ' · ' + esc(l.by) : '') + '</small></span><span class="' + (l.delta > 0 ? 'plus' : 'minus') + '">' + (l.delta > 0 ? '+' : '−') + esc(peso(Math.abs(l.delta))) + '</span></div>').join('') + '</div>' : '<div class="small muted" style="margin-top:8px">No credit activity yet.</div>'));
+  }
   // invitation
   h += sec('Membership invitation', (inv ? '<div class="small" style="margin:6px 0 10px">Last invite ' + esc(String(inv.created_at).slice(0, 10)) + ' · ' + esc(peso(inv.amount)) + ' / ' + inv.months + ' months · <span class="pill ' + ({ sent: 'p-mute', submitted: 'p-warn', approved: 'p-ok', rejected: 'p-bad', cancelled: 'p-mute' }[inv.status]) + '">' + esc(inv.status) + '</span> ' + (['sent', 'rejected'].includes(inv.status) ? '<button class="btn b-ghost b-sm" data-act="mcopyinv" data-v="' + esc(inv.token) + '">Copy link</button>' : '') + '</div>' : '<p class="small muted" style="margin:6px 0 10px">Email them a link to pay and upload their proof of payment.</p>') +
     '<div class="prog" style="grid-template-columns:1fr 1fr"><label class="field"><span>AMOUNT ₱</span><input class="mini" id="mi-amount" inputmode="numeric" value="2000"></label><label class="field"><span>MONTHS</span><input class="mini" id="mi-months" inputmode="numeric" value="6"></label></div><label class="field"><span>PERSONAL NOTE (optional)</span><input class="inp" id="mi-msg" placeholder="Great to see you at the Americano!"></label>' +
@@ -902,7 +1092,7 @@ document.addEventListener('click', async ev => {
     }); break;
     case 'sport': S.sport = v; route(); break;
     case 'book': openBook(id); break;
-    case 'pay': { b.parentElement.querySelectorAll('button').forEach(x => x.classList.toggle('on', x === b)); $('bk-gc').classList.toggle('hide', v !== 'gcash'); break; }
+    case 'pay': { b.parentElement.querySelectorAll('button').forEach(x => x.classList.toggle('on', x === b)); $('bk-gc').classList.toggle('hide', v !== 'gcash'); const cn = $('bk-crnote'); if (cn) cn.classList.toggle('hide', v !== 'credits'); break; }
     case 'resendverify': run(async () => { must(await sb.rpc('uzu_resend_verification')); }, 'Sent — check your inbox'); break;
     case 'paysubmit': run(async () => {
       const f = $('pp-file').files[0]; if (!f) throw new Error('Please attach your receipt or screenshot'); if (f.size > 8 * 1024 * 1024) throw new Error('File is over 8 MB');
@@ -924,20 +1114,56 @@ document.addEventListener('click', async ev => {
       const who = [...document.querySelectorAll('#bk-who input:checked')].map(x => x.value); if (!who.length) throw new Error('Choose who’s playing');
       const pay = (document.querySelector('#bk-pay .on') || {}).dataset.v || 'club'; const extra = +$('bk-players').value || 0;
       const lvl = ((document.querySelector('#bk-level .on') || {}).dataset || {}).v || null; const out = [];
-      for (let i = 0; i < who.length; i++) out.push(must(await sb.rpc('uzu_book_session', { p_session: id, p_players: 1 + (i === 0 ? extra : 0), p_pay_method: pay, p_gcash_ref: ($('bk-ref') || {}).value || '', p_notes: $('bk-notes').value, p_level: lvl, p_for: who[i] })));
-      closeModal(); await route();
+      for (let i = 0; i < who.length; i++) out.push(must(await sb.rpc('uzu_book_session', { p_session: id, p_players: 1 + (i === 0 ? extra : 0), p_pay_method: pay, p_gcash_ref: ($('bk-ref') || {}).value || '', p_notes: $('bk-notes').value, p_level: lvl, p_for: who[i], p_rackets: i === 0 ? (+(($('bk-rackets') || {}).value || 0)) : 0 })));
+      closeModal(); await refreshWallet(); renderNav(); await route();
       const wl = out.filter(r => r.status === 'waitlist').length;
       toast(out.length > 1 ? out.length + ' players booked' + (wl ? ' (' + wl + ' on the waitlist)' : '') + ' — confirmations sent to your email' : (out[0].status === 'waitlist' ? 'You’re on the waitlist — we’ll email you if a spot opens' : 'Booked! Confirmation sent to your email (ref ' + out[0].ref + ')'));
     }); break;
-    case 'cancel': if (!confirmTwice(b)) return; run(async () => { must(await sb.rpc('uzu_cancel_my_booking', { p_id: id })); await route(); }, 'Booking cancelled'); break;
+    case 'cancel': if (!confirmTwice(b)) return; run(async () => { must(await sb.rpc('uzu_cancel_my_booking', { p_id: id })); await refreshWallet(); renderNav(); await route(); }, 'Booking cancelled'); break;
     case 'court': S.courtId = id; S.courtStart = null; route(); break;
     case 'cdate': S.courtDate = v; S.courtStart = null; route(); break;
     case 'cslot': S.courtStart = +v; route(); break;
     case 'dobookcourt': if (!S.user) { S.after = 'courts'; go('signin'); return; } run(async () => {
       const pay = (document.querySelector('#bk-pay .on') || {}).dataset.v || 'club';
-      const r = must(await sb.rpc('uzu_book_court', { p_court: S.courtId, p_date: S.courtDate, p_start: tstr(S.courtStart), p_end: tstr(S.courtStart + S.courtDur), p_pay_method: pay, p_gcash_ref: ($('bk-ref') || {}).value || '', p_notes: $('bk-notes').value }));
-      S.courtStart = null; await route(); toast('Request sent (ref ' + r.ref + '). We’ll email you once staff confirm.');
+      const r = must(await sb.rpc('uzu_book_court', { p_court: S.courtId, p_date: S.courtDate, p_start: tstr(S.courtStart), p_end: tstr(S.courtStart + S.courtDur), p_pay_method: pay, p_gcash_ref: ($('bk-ref') || {}).value || '', p_notes: $('bk-notes').value, p_trainer: S.courtTrainer || null, p_rackets: S.courtRackets || 0 }));
+      S.courtStart = null; S.courtTrainer = null; S.courtRackets = 0; await refreshWallet(); renderNav(); await route(); toast('Request sent (ref ' + r.ref + ').' + (r.pay_method === 'credits' ? ' Paid with credits.' : '') + ' We’ll email you once staff confirm.');
     }); break;
+    case 'buypkg': openTopup(id || null); break;
+    case 'tupay': { b.parentElement.querySelectorAll('button').forEach(x => x.classList.toggle('on', x === b)); $('tu-gc').classList.toggle('hide', v !== 'gcash'); $('tu-club').classList.toggle('hide', v !== 'club'); break; }
+    case 'dotopup': run(async () => {
+      const m = (document.querySelector('#tu-pay .on') || {}).dataset.v || 'gcash'; let path = null;
+      if (m === 'gcash') { const f = $('tu-file').files[0]; if (!f && !$('tu-ref').value.trim()) throw new Error('Enter the GCash reference number or attach the receipt');
+        if (f) { if (f.size > 8 * 1024 * 1024) throw new Error('File is over 8 MB'); path = 'topup/' + S.user.id + '/' + Date.now() + '-' + f.name.replace(/[^A-Za-z0-9._-]+/g, '_'); must(await sb.storage.from('uzu-proofs').upload(path, f, { contentType: f.type || undefined })); } }
+      must(await sb.rpc('uzu_request_topup', { p_package: S._tu.pkg, p_amount: S._tu.amt, p_method: m, p_reference: m === 'gcash' ? $('tu-ref').value : null, p_proof: path }));
+      closeModal(); await route();
+    }, 'Request sent — we’ll email you when your credits are added'); break;
+    case 'cancelto': run(async () => { must(await sb.rpc('uzu_cancel_my_topup', { p_id: id })); await route(); }, 'Withdrawn'); break;
+    case 'docreategroup': run(async () => {
+      const sel = [...document.querySelectorAll('#gp-courts input:checked')].map(x => x.value); if (!sel.length) throw new Error('Choose at least one free court');
+      const pk = q => ((document.querySelector(q + ' .on') || {}).dataset || {}).v; const st = $('gp-start').value;
+      must(await sb.rpc('uzu_create_group', { p_title: $('gp-title').value, p_description: $('gp-desc').value, p_date: $('gp-date').value, p_start: st, p_end: tstr(mins(st) + (+$('gp-dur').value)), p_courts: sel, p_capacity: +$('gp-cap').value, p_level: $('gp-level').value === 'All levels' ? null : $('gp-level').value, p_type: pk('#gp-type'), p_gender: pk('#gp-gender'), p_pay: pk('#gp-pay') }));
+      S._gpBusy = {}; await route(); window.scrollTo(0, 0);
+    }, 'Sent! Our staff will review it — you’ll get an email when it’s live'); break;
+    case 'cancelgroup': if (!confirmTwice(b)) return; run(async () => { must(await sb.rpc('uzu_cancel_my_group', { p_id: id })); S._gpBusy = {}; await route(); }, 'Withdrawn'); break;
+    case 'grev': run(async () => { must(await sb.rpc('uzu_staff_review_group', { p_id: id, p_approve: v === 'yes', p_price: v === 'yes' ? num($('gr-price-' + id).value) : null, p_note: $('gr-note-' + id).value || null })); await route(); }, v === 'yes' ? 'Approved — it’s now on the schedule' : 'Declined — host emailed'); break;
+    case 'treview': run(async () => { must(await sb.rpc('uzu_staff_review_topup', { p_id: id, p_approve: v === 'yes', p_note: $('tr-' + id).value || null })); await route(); }, v === 'yes' ? 'Credits added — player emailed' : 'Marked not received — player emailed'); break;
+    case 'savepkg': run(async () => {
+      const r = b.closest('[data-pkg]'); const f = k => r.querySelector('[data-f="' + k + '"]');
+      const row = { name: f('name').value.trim(), price: num(f('price').value), bonus: num(f('bonus').value) || 0, note: f('note').value.trim() || null, active: f('active').checked };
+      if (!row.name || !row.price) throw new Error('Enter a name and the price the player pays');
+      if (r.dataset.pkg) must(await sb.from('uzu_credit_packages').update(row).eq('id', r.dataset.pkg)); else must(await sb.from('uzu_credit_packages').insert(row));
+      await route();
+    }, 'Package saved'); break;
+    case 'saveextra': run(async () => { const r = b.closest('[data-extra]'); const f = k => r.querySelector('[data-f="' + k + '"]'); must(await sb.from('uzu_extras').update({ name: f('name').value.trim(), price: num(f('price').value), active: f('active').checked }).eq('id', r.dataset.extra)); cache.extras = null; await route(); }, 'Saved'); break;
+    case 'savetrainer': run(async () => {
+      const r = b.closest('[data-tr]'); const f = k => r.querySelector('[data-f="' + k + '"]');
+      const row = { name: f('name').value.trim(), rate_hour: num(f('rate_hour').value), email: f('email').value.trim() || null, bio: f('bio').value.trim() || null, sort: +f('sort').value || 0, active: f('active').checked, sports: [...r.querySelectorAll('[data-sport]:checked')].map(x => x.value) };
+      if (!row.name) throw new Error('Enter the trainer’s name'); if (!row.sports.length) throw new Error('Tick at least one sport');
+      if (r.dataset.tr) must(await sb.from('uzu_trainers').update(row).eq('id', r.dataset.tr)); else must(await sb.from('uzu_trainers').insert(row));
+      cache.trainers = null; await route();
+    }, 'Trainer saved'); break;
+    case 'maddcred': run(async () => { const t = must(await sb.rpc('uzu_staff_add_credits', { p_user: id, p_package: $('mc-pkg').value || null, p_amount: num($('mc-amount').value), p_bonus: num($('mc-bonus').value), p_method: $('mc-method').value, p_reference: $('mc-ref').value, p_note: $('mc-note').value })); await openMember(id); toast(peso(+t.amount + +t.bonus) + ' credits added — player emailed'); }); break;
+    case 'madjust': run(async () => { const bal = must(await sb.rpc('uzu_staff_adjust_wallet', { p_user: id, p_delta: num($('ma-amt').value), p_note: $('ma-note').value })); await openMember(id); toast('Balance now ' + peso(bal)); }); break;
     case 'saveprofile': run(async () => { must(await sb.rpc('uzu_update_profile', { p_name: $('pf-name').value, p_phone: $('pf-phone').value, p_nickname: $('pf-nick').value })); await loadUser(); }, 'Saved'); break;
     // staff
     case 'stafftab': S.staffTab = v; if (location.hash !== '#staff') { location.hash = 'staff'; } else route(); break;
@@ -1007,6 +1233,10 @@ function confirmTwice(b) { if (b.dataset.armed) return true; b.dataset.armed = '
 document.addEventListener('change', ev => {
   const el = ev.target, k = el.dataset.chg; if (!k) return; const id = el.dataset.id;
   if (k === 'cdur') { S.courtDur = +el.value; route(); }
+  else if (k === 'ctr') { S.courtTrainer = el.value || null; route(); }
+  else if (k === 'crk') { S.courtRackets = +el.value || 0; route(); }
+  else if (k === 'bkcalc') bkCalc();
+  else if (k === 'gp') gpUpdate();
   else if (k === 'sdate') { S.staffDate = el.value; route(); }
   else if (k === 'sheetdate') { S.sheetDate = el.value; route(); }
   else if (k === 'mq') { S.memberQ = el.value; route(); }
@@ -1015,6 +1245,7 @@ document.addEventListener('change', ev => {
   else if (k === 'sstatus') run(async () => { must(await sb.from('uzu_sessions').update({ status: el.value }).eq('id', id)); await route(); }, 'Session ' + el.value);
   else if (k === 'member') run(async () => { must(await sb.from('uzu_profiles').update({ is_member: el.checked }).eq('id', id)); }, el.checked ? 'Member rate on' : 'Member rate off');
 });
+document.addEventListener('change', ev => { if (ev.target.closest && ev.target.closest('#bk-who')) bkCalc(); });
 document.addEventListener('keydown', ev => { if (ev.key === 'Enter' && ev.target.id === 'su-pass') { const b = document.querySelector('[data-act="signin"],[data-act="signup"]'); if (b) b.click(); } if (ev.key === 'Escape') closeModal(); });
 window.addEventListener('hashchange', () => { route(); window.scrollTo(0, 0); });
 
