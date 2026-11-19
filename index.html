@@ -382,7 +382,7 @@ async function route() {
   if (!cache.extras || !cache.trainers) await Promise.all([extras(), trainers()]);
   S._lastRender = Date.now();
   const h = (location.hash || '').replace('#', ''); const [h0, arg] = h.split('/');
-  S.route = ['schedule', 'courts', 'account', 'signin', 'staff', 'verify', 'pay', 'play', 'wallet'].includes(h0) ? h0 : 'home'; S.arg = arg || '';
+  S.route = ['schedule', 'courts', 'account', 'signin', 'staff', 'verify', 'pay', 'play', 'wallet', 'reset'].includes(h0) ? h0 : 'home'; S.arg = arg || '';
   renderNav(); closeModal();
   const app = $('app');
   try {
@@ -394,6 +394,7 @@ async function route() {
     else if (S.route === 'staff') app.innerHTML = await viewStaff();
     else if (S.route === 'verify') app.innerHTML = await viewVerify();
     else if (S.route === 'pay') app.innerHTML = await viewPay();
+    else if (S.route === 'reset') app.innerHTML = await viewReset();
     else if (S.route === 'play') app.innerHTML = await viewPlay();
     else if (S.route === 'wallet') app.innerHTML = await viewWallet();
   } catch (e) { app.innerHTML = '<div class="wrap sec"><div class="card">Couldn’t load this page: ' + esc(errMsg(e)) + '</div></div>'; }
@@ -748,6 +749,13 @@ async function membershipCard() {
 /* ---------- SIGN IN ---------- */
 let signTab = 'in';
 function viewSignin() {
+  if (signTab === 'forgot' || signTab === 'forgotsent') {
+    const sent = signTab === 'forgotsent';
+    return '<section class="sec"><div class="wrap" style="max-width:460px"><div class="card">' + (sent
+      ? '<div style="text-align:center"><div style="font-size:40px">✉️</div><h2 style="margin:6px 0">Check your inbox</h2><p class="muted">If <b>' + esc(S._resetTo || '') + '</b> has an UZU account, we’ve emailed it a link to choose a new password. The link works for 1 hour.</p><p class="small muted">Nothing after a few minutes? Check spam, or try again.</p></div><button class="btn b-ghost b-full" data-act="stab" data-v="forgot">Send another link</button>'
+      : '<h2 style="margin:0 0 6px">Reset your password</h2><p class="muted small" style="margin:0 0 14px">Enter the email you registered with and we’ll send you a link to choose a new password.</p><label class="field"><span>EMAIL</span><input id="fp-email" class="inp" type="email" autocomplete="email" value="' + esc(S._resetTo || '') + '"></label><button class="btn b-gold b-full" data-act="forgotsend">Email me a reset link</button>') +
+      '<p class="small" style="margin:14px 0 0;text-align:center"><a href="#signin" data-act="stab" data-v="in">← Back to sign in</a></p></div></div></section>';
+  }
   if (signTab === 'sent') { signTab = 'in'; return '<section class="sec"><div class="wrap" style="max-width:520px"><div class="card" style="text-align:center;padding:28px"><div style="font-size:40px">✉️</div><h2 style="margin:6px 0">Check your inbox</h2><p class="muted">We sent a confirmation link to <b>' + esc(S._sentTo || '') + '</b>. Tap it to activate your account — then you can book sessions and courts.</p><p class="small muted">Nothing after a few minutes? Check spam, or resend it from <a href="#account">My account</a>.</p><a class="btn b-green" href="#schedule">See the schedule</a></div></div></section>'; }
   if (S.user) { setTimeout(() => go(S.staff ? 'staff' : (S.after || 'account')), 0); return '<div class="loader">Signed in…</div>'; }
   return '<section class="sec"><div class="wrap" style="max-width:460px"><div class="card"><div class="seg" style="margin-bottom:16px"><button data-act="stab" data-v="in" class="' + (signTab === 'in' ? 'on' : '') + '">Sign in</button><button data-act="stab" data-v="up" class="' + (signTab === 'up' ? 'on' : '') + '">Create account</button></div>' +
@@ -755,7 +763,16 @@ function viewSignin() {
     '<label class="field"><span>EMAIL</span><input id="su-email" class="inp" type="email" autocomplete="email"></label><label class="field"><span>PASSWORD</span><input id="su-pass" class="inp" type="password" autocomplete="' + (signTab === 'up' ? 'new-password' : 'current-password') + '" placeholder="' + (signTab === 'up' ? 'At least 8 characters' : '') + '"></label>' +
     (signTab === 'up' ? '<div class="card" style="background:#fff;margin:4px 0 14px"><label class="row" style="gap:8px;font-weight:700"><input type="checkbox" id="su-member">I want to become a member — ₱2,000 for 6 months</label><div class="small muted" style="margin:4px 0 8px">Includes up to 2 family members (spouse/partner or child). Our staff will send you an invitation to pay and upload your proof of payment.</div></div><div class="card" style="background:#fff;margin:0 0 14px"><b>Your household (optional)</b><div class="small muted">Add your partner and kids so you can book for them.</div>' + householdFields([]) + '</div>' : '') +
     '<button class="btn b-gold b-full" data-act="' + (signTab === 'up' ? 'signup' : 'signin') + '">' + (signTab === 'up' ? 'Create my account' : 'Sign in') + '</button>' +
-    (signTab === 'in' ? '<p class="small muted" style="margin:12px 0 0">Forgot your password? Message us on <a href="https://www.facebook.com/uzu.club" target="_blank" rel="noopener">Facebook</a> or call 0917 125 5048.</p>' : '<p class="small muted" style="margin:12px 0 0">We’ll email you a link to confirm your address. Once confirmed, you can book — and our staff can send you a membership invitation.</p>') + '</div></div></section>';
+    (signTab === 'in' ? '<p class="small" style="margin:12px 0 0;text-align:center"><a href="#signin" data-act="stab" data-v="forgot">Forgot your password?</a></p>' : '<p class="small muted" style="margin:12px 0 0">We’ll email you a link to confirm your address. Once confirmed, you can book — and our staff can send you a membership invitation.</p>') + '</div></div></section>';
+}
+
+/* ---------- RESET PASSWORD ---------- */
+async function viewReset() {
+  const { data: r } = await sb.rpc('uzu_reset_info', { p_token: S.arg });
+  const box = inner => '<section class="sec"><div class="wrap" style="max-width:460px"><div class="card">' + inner + '</div></div></section>';
+  if (!r || !r.ok) return box('<h2 style="margin:0 0 6px">Link not valid</h2><p class="muted">' + esc((r && r.message) || 'This link isn’t valid. Request a new one from the sign-in page.') + '</p><a class="btn b-gold" href="#signin" data-act="stab" data-v="forgot">Request a new link</a>');
+  S._resetEmail = r.email;
+  return box('<h2 style="margin:0 0 6px">Choose a new password</h2><p class="muted small" style="margin:0 0 14px">For <b>' + esc(r.email) + '</b></p><label class="field"><span>NEW PASSWORD</span><input id="rp-pass" class="inp" type="password" autocomplete="new-password" placeholder="At least 8 characters"></label><label class="field"><span>TYPE IT AGAIN</span><input id="rp-pass2" class="inp" type="password" autocomplete="new-password"></label><label class="row small" style="gap:6px;margin:-4px 0 12px"><input type="checkbox" data-act="rpshow">Show password</label><button class="btn b-gold b-full" data-act="doreset">Save new password & sign in</button>');
 }
 
 /* ---------- VERIFY EMAIL ---------- */
@@ -1164,6 +1181,20 @@ document.addEventListener('click', async ev => {
     }, 'Trainer saved'); break;
     case 'maddcred': run(async () => { const t = must(await sb.rpc('uzu_staff_add_credits', { p_user: id, p_package: $('mc-pkg').value || null, p_amount: num($('mc-amount').value), p_bonus: num($('mc-bonus').value), p_method: $('mc-method').value, p_reference: $('mc-ref').value, p_note: $('mc-note').value })); await openMember(id); toast(peso(+t.amount + +t.bonus) + ' credits added — player emailed'); }); break;
     case 'madjust': run(async () => { const bal = must(await sb.rpc('uzu_staff_adjust_wallet', { p_user: id, p_delta: num($('ma-amt').value), p_note: $('ma-note').value })); await openMember(id); toast('Balance now ' + peso(bal)); }); break;
+    case 'forgotsend': run(async () => {
+      const e = $('fp-email').value.trim(); if (!/^\S+@\S+\.\S+$/.test(e)) throw new Error('Enter your email address');
+      must(await sb.rpc('uzu_request_password_reset', { p_email: e })); S._resetTo = e; signTab = 'forgotsent'; route();
+    }); break;
+    case 'rpshow': ['rp-pass', 'rp-pass2'].forEach(x => $(x).type = b.checked ? 'text' : 'password'); break;
+    case 'doreset': run(async () => {
+      const p1 = $('rp-pass').value, p2 = $('rp-pass2').value;
+      if (p1.length < 8) throw new Error('Password must be at least 8 characters'); if (p1 !== p2) throw new Error('The two passwords don’t match');
+      const r = must(await sb.rpc('uzu_reset_password', { p_token: S.arg, p_password: p1 }));
+      await sb.auth.signOut().catch(() => {});
+      const si = await sb.auth.signInWithPassword({ email: r.email, password: p1 });
+      if (si.error) { signTab = 'in'; go('signin'); toast('Password changed — please sign in'); return; }
+      await loadUser(); renderNav(); go(S.staff ? 'staff' : 'account'); toast('Password changed — you’re signed in');
+    }); break;
     case 'saveprofile': run(async () => { must(await sb.rpc('uzu_update_profile', { p_name: $('pf-name').value, p_phone: $('pf-phone').value, p_nickname: $('pf-nick').value })); await loadUser(); }, 'Saved'); break;
     // staff
     case 'stafftab': S.staffTab = v; if (location.hash !== '#staff') { location.hash = 'staff'; } else route(); break;
