@@ -259,6 +259,18 @@ footer a{opacity:.9}
 .tip{font-size:13.5px;padding:6px 0;border-bottom:1px solid var(--line)}.tip:last-child{border-bottom:0}.tip a{cursor:pointer;font-weight:700;text-decoration:underline}
 .cr{display:inline-block;background:#eaf3ea;color:#1f5a43;border:1px solid #cfe3cf;border-radius:999px;padding:1px 9px;font-size:12px;font-weight:800;white-space:nowrap}
 .promo .sl{display:flex;gap:10px;align-items:center;justify-content:space-between;flex-wrap:wrap;padding:10px 0;border-top:1px solid rgba(255,255,255,.18)}
+.fr-av{width:42px;height:42px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:800;color:#fff;flex:0 0 42px;font-size:15px}
+.prow{display:flex;align-items:center;gap:12px;padding:10px 0;border-bottom:1px solid var(--line)}.prow:last-child{border-bottom:0}
+.prow .pn{flex:1;min-width:0;font-weight:700;font-size:16px;overflow-wrap:anywhere}.prow .pn small{display:block;font-weight:500;color:var(--muted);font-size:13px}
+.prow .pa{display:flex;gap:6px;align-items:center;flex-wrap:wrap;justify-content:flex-end}
+.frsearch{position:relative}.frsearch input{font-size:17px;padding:14px 14px 14px 44px;border-radius:14px}.frsearch:before{content:'🔍';position:absolute;left:15px;top:50%;transform:translateY(-50%);font-size:17px}
+.fbox{background:#fff7e2;border:1.5px solid var(--gold);border-radius:16px;padding:14px 16px;margin:0 0 12px}
+.fbox .row{gap:8px;flex-wrap:wrap;margin-top:8px}
+.ipick{display:flex;align-items:center;gap:12px;padding:10px 12px;border:1.5px solid var(--line);border-radius:14px;margin:0 0 8px;cursor:pointer;background:var(--paper)}
+.ipick input{width:22px;height:22px;accent-color:var(--green)}.ipick.on{border-color:var(--green);background:#eef5ee}.ipick.dis{opacity:.6;cursor:default}
+.fchips{display:flex;flex-wrap:wrap;gap:8px}.fchips button{border:1.5px solid var(--line);background:var(--paper);border-radius:999px;padding:7px 14px 7px 7px;font-weight:700;font-size:14px;display:flex;align-items:center;gap:7px}
+.fchips button .fr-av{width:26px;height:26px;flex-basis:26px;font-size:11px}.fchips button.on{border-color:var(--green);background:#eef5ee}.fchips button.on:after{content:'✓';color:var(--green)}
+.nbadge{display:inline-block;min-width:18px;padding:0 5px;margin-left:5px;border-radius:999px;background:#d64545;color:#fff;font-size:11px;font-weight:800;line-height:18px;text-align:center}
 </style>
 </head>
 <body>
@@ -351,7 +363,16 @@ async function attachBookingProof(list) {
   const path = await uploadProof('player/' + S.user.id, f);
   for (const b of list) must(await sb.rpc('uzu_attach_proof', { p_booking: b.id, p_path: path }));
 }
-async function refreshWallet() { if (!S.user || S.staff) { S.wallet = null; return; } const { data } = await sb.rpc('uzu_my_wallet'); S.wallet = data || { balance: 0, packages: [], topups: [], ledger: [] }; }
+async function refreshWallet() { if (!S.user || S.staff) { S.wallet = null; S.social = null; return; } const [{ data }] = await Promise.all([sb.rpc('uzu_my_wallet'), refreshSocial()]); S.wallet = data || { balance: 0, packages: [], topups: [], ledger: [] }; }
+async function refreshSocial() { if (!S.user || S.staff) { S.social = null; return; } const { data } = await sb.rpc('uzu_my_social'); S.social = data || { friends: [], incoming: [], outgoing: [], invites: [] }; }
+const AVC = ['#2f6b4f', '#b5832a', '#3d5a80', '#9a4c68', '#5c7a2e', '#7a4f2e', '#2e6f7a', '#6a4c9a'];
+const avatar = (p, sz) => { const n = (p.name || '?').replace(/[^\p{L}\p{N} ]/gu, '').trim(); const ini = (n.split(/\s+/).map(w => w[0]).join('').slice(0, 2) || '?').toUpperCase(); let h = 0; for (const c of String(p.id)) h = (h * 31 + c.charCodeAt(0)) >>> 0; return '<span class="fr-av" style="background:' + AVC[h % AVC.length] + (sz ? ';width:' + sz + 'px;height:' + sz + 'px;flex-basis:' + sz + 'px' : '') + '">' + esc(ini) + '</span>'; };
+const frAct = (id, st) => st === 'friends' ? '<span class="pill p-ok">✓ Connected</span>'
+  : st === 'sent' ? '<span class="pill p-mute">Request sent</span><button class="btn b-ghost b-sm" data-act="fr" data-v="cancel" data-id="' + id + '">Cancel</button>'
+  : st === 'received' ? '<button class="btn b-green b-sm" data-act="fr" data-v="accept" data-id="' + id + '">Accept</button><button class="btn b-ghost b-sm" data-act="fr" data-v="decline" data-id="' + id + '">Not now</button>'
+  : '<button class="btn b-green b-sm" data-act="fr" data-v="connect" data-id="' + id + '">+ Connect</button>';
+const prow = (p, act, sub) => '<div class="prow" data-pid="' + p.id + '">' + avatar(p) + '<div class="pn">' + esc(p.name) + (sub ? '<small>' + sub + '</small>' : '') + '</div><div class="pa">' + act + '</div></div>';
+const socialCount = () => S.social ? (S.social.incoming || []).length + (S.social.invites || []).length : 0;
 const payTxt = b => b.pay_method === 'credits' ? '<span class="cr">💳 ' + (b.credits_charged > 0 ? 'Paid with credits' : 'Credits') + '</span>' : b.pay_method === 'gcash' ? 'GCash ' + esc(b.gcash_ref || '') : 'At club';
 const addonTxt = b => [b.trainer_id ? 'Trainer: ' + esc(((cache.trainers || []).find(t => t.id === b.trainer_id) || {}).name || 'yes') : '', b.rackets ? b.rackets + ' racket' + (b.rackets > 1 ? 's' : '') : ''].filter(Boolean).join(' · ');
 function paySeg(amount) {
@@ -401,11 +422,13 @@ function renderNav() {
   }
   $('nav').innerHTML = '<div class="nav"><div class="wrap"><a class="logo" href="#" aria-label="UZU Club home">' + LOGO + '</a>' +
     '<button class="burger" data-act="burger" aria-label="Menu">☰</button><div class="links" id="links">' +
-    L('schedule', 'Schedule') + L('courts', 'Book a court') + L('play', 'Group Play') +
+    L('schedule', 'Schedule') + L('courts', 'Book a court') + L('play', 'Group Play') + (S.user ? L('friends', 'Friends' + (socialCount() ? '<span class="nbadge">' + socialCount() + '</span>' : '')) : '') +
     (S.user ? L('wallet', 'Credits' + (S.wallet ? ' · ' + peso(S.wallet.balance) : '')) + L('account', 'My account') : '') +
     (S.isStaff ? '<a href="#" data-act="mode" data-v="staff" class="cta">Staff mode</a>' : '') +
     (S.user ? '<a href="#" data-act="signout">Sign out</a>' : L('signin', 'Sign in', 'cta')) + '</div></div></div>' +
     (S.isStaff ? '<div class="staffbar"><div class="wrap">Player view · bookings you make here are in your own name (' + esc(S.user.email) + '). <a href="#" data-act="mode" data-v="staff">Back to staff mode</a></div></div>' : '') +
+    (S.social && r !== 'friends' && (S.social.invites || []).length ? '<div class="staffbar"><div class="wrap">🎾 <b>' + esc(S.social.invites[0].from) + '</b> invited you to <b>' + esc(S.social.invites[0].title) + '</b> · ' + esc(S.social.invites[0].date) + (S.social.invites.length > 1 ? ' (+' + (S.social.invites.length - 1) + ' more)' : '') + ' <a href="#friends">See invite</a></div></div>'
+      : S.social && r !== 'friends' && (S.social.incoming || []).length ? '<div class="staffbar"><div class="wrap">👋 <b>' + esc(S.social.incoming[0].name) + '</b>' + (S.social.incoming.length > 1 ? ' and ' + (S.social.incoming.length - 1) + ' other' + (S.social.incoming.length > 2 ? 's' : '') : '') + ' want' + (S.social.incoming.length > 1 ? '' : 's') + ' to connect with you. <a href="#friends">See request</a></div></div>' : '') +
     (S.user && S.profile && !S.profile.email_verified ? '<div class="staffbar"><div class="wrap">Please confirm your email to start booking — we sent a link to <b>' + esc(S.user.email) + '</b>. <button class="btn b-ghost b-sm" data-act="resendverify">Resend link</button></div></div>' : '');
 }
 
@@ -415,7 +438,7 @@ async function route() {
   S._lastRender = Date.now();
   const h = (location.hash || '').replace('#', ''); const [h0, arg] = h.split('/');
   if (h0 === 'staff' && S.isStaff && !S.staff) { try { localStorage.setItem('uzu_mode', 'staff'); } catch (e) {} S.staff = true; S.wallet = null; renderNav(); }
-  S.route = ['schedule', 'courts', 'account', 'signin', 'staff', 'verify', 'pay', 'play', 'wallet', 'reset', 's'].includes(h0) ? h0 : 'home'; S.arg = arg || '';
+  S.route = ['schedule', 'courts', 'account', 'signin', 'staff', 'verify', 'pay', 'play', 'wallet', 'reset', 's', 'friends'].includes(h0) ? h0 : 'home'; S.arg = arg || '';
   renderNav(); closeModal();
   const app = $('app');
   try {
@@ -429,6 +452,7 @@ async function route() {
     else if (S.route === 'pay') app.innerHTML = await viewPay();
     else if (S.route === 'reset') app.innerHTML = await viewReset();
     else if (S.route === 's') app.innerHTML = await viewOne();
+    else if (S.route === 'friends') app.innerHTML = await viewFriends();
     else if (S.route === 'play') app.innerHTML = await viewPlay();
     else if (S.route === 'wallet') app.innerHTML = await viewWallet();
   } catch (e) { app.innerHTML = '<div class="wrap sec"><div class="card">Couldn’t load this page: ' + esc(errMsg(e)) + '</div></div>'; }
@@ -533,7 +557,7 @@ function sessCard(s, state, tag) {
   const started = s.date === manilaToday() && mins(s.start_time) <= manilaNowMins();
   let act;
   if (S.staff) act = started ? '<span class="pill p-mute">In progress</span>' : '<button class="btn b-ghost b-sm" data-act="staffadd" data-id="' + s.id + '">+ Add player</button>';
-  else if (mine && mine.length) act = '<span class="pill p-ok">Booked: ' + mine.map(x => esc(whoFor(x))).join(', ') + '</span>' + (started || s.status !== 'open' ? '' : '<button class="btn b-ghost b-sm" data-act="book" data-id="' + s.id + '">+ Book someone else</button>');
+  else if (mine && mine.length) act = '<span class="pill p-ok">Booked: ' + mine.map(x => esc(whoFor(x))).join(', ') + '</span>' + (started || s.status !== 'open' ? '' : '<button class="btn b-gold b-sm" data-act="invite" data-id="' + s.id + '">👋 Invite friends</button><button class="btn b-ghost b-sm" data-act="book" data-id="' + s.id + '">+ Book someone else</button>');
   else if (s.status === 'closed') act = '<span class="pill p-mute">Bookings closed</span>';
   else if (started) act = '<span class="pill p-mute">In progress</span>';
   else act = '<button class="btn ' + (left > 0 ? 'b-green' : 'b-ghost') + ' b-sm" data-act="book" data-id="' + s.id + '">' + (left > 0 ? 'Book' : 'Join waitlist') + '</button>';
@@ -687,6 +711,57 @@ function openTopup(pkgId) {
     '<p class="small muted">Credits are added after our staff check the payment. You’ll get an email when they’re ready.</p><button class="btn b-gold b-full" data-act="dotopup">Send top-up request</button>');
 }
 
+/* ---------- FRIENDS ---------- */
+async function viewFriends() {
+  const box = x => '<section class="sec"><div class="wrap" style="max-width:780px">' + x + '</div></section>';
+  if (!S.user) return box('<h2>Friends</h2><div class="card">Sign in to connect with other players and invite them to games. <a href="#signin">Sign in</a></div>');
+  if (S.staff) return box('<h2>Friends</h2><div class="card">Friends are for players. <a href="#" data-act="mode" data-v="player">Switch to player view</a> to use them.</div>');
+  const [, { data: sug }] = await Promise.all([refreshSocial(), sb.rpc('uzu_player_suggestions')]); renderNav();
+  const X = S.social;
+  let h = '<h2>Friends</h2><p class="sub">Connect with the people you play with — then invite them to a game in one tap.</p>';
+  (X.invites || []).forEach(i => h += '<div class="fbox"><div class="row" style="margin:0;align-items:center">' + avatar({ id: i.from_id, name: i.from }) + '<div style="flex:1"><b>' + esc(i.from) + '</b> invited you to play<div style="font-size:18px;font-weight:800;margin-top:2px">' + esc(i.title) + '</div><div class="small">' + esc(i.date) + ' · ' + esc(range(i.start, i.end)) + '</div></div></div>' +
+    '<div class="row"><a class="btn b-green" href="#s/' + i.session_id + '">See the game & join</a><button class="btn b-ghost" data-act="invresp" data-id="' + i.id + '">No thanks</button></div></div>');
+  if ((X.incoming || []).length) h += '<div class="card" style="margin-bottom:12px"><b>Want to connect with you</b>' + X.incoming.map(p => prow(p, frAct(p.id, 'received'))).join('') + '</div>';
+  h += '<div class="card" style="margin-bottom:12px"><b style="font-size:17px">Find a player</b><p class="small muted" style="margin:4px 0 10px">Type their name or nickname. Only names are shown — emails and phone numbers stay private.</p>' +
+    '<div class="frsearch"><input class="inp" id="fr-q" placeholder="e.g. Ana" autocomplete="off" value="' + esc(S._frq || '') + '"></div><div id="fr-res" style="margin-top:6px"></div></div>';
+  const sg = (sug || []).filter(p => p.status === 'none');
+  if (sg.length) h += '<div class="card" style="margin-bottom:12px"><b>People you’ve played with</b>' + sg.map(p => prow(p, frAct(p.id, p.status), p.n > 1 ? 'Played together ' + p.n + ' times' : 'Played together recently')).join('') + '</div>';
+  h += '<div class="card"><b>My friends' + ((X.friends || []).length ? ' (' + X.friends.length + ')' : '') + '</b>' +
+    ((X.friends || []).length ? X.friends.map(p => prow(p, '<button class="btn b-ghost b-sm" data-act="fr" data-v="remove" data-id="' + p.id + '" title="Remove friend">Remove</button>')).join('')
+      : '<p class="muted" style="margin:8px 0 0">No friends yet. Search for a player above and tap <b>+ Connect</b>. When they accept, you can invite them to games.</p>') +
+    ((X.outgoing || []).length ? '<div class="small muted" style="margin:14px 0 2px;font-weight:700">WAITING FOR THEM TO ACCEPT</div>' + X.outgoing.map(p => prow(p, frAct(p.id, 'sent'))).join('') : '') + '</div>';
+  if (S._frq) setTimeout(() => frSearch(S._frq), 0);
+  return box(h);
+}
+let frTimer = null;
+async function frSearch(q) {
+  S._frq = q; const out = $('fr-res'); if (!out) return;
+  if (q.trim().length < 2) { out.innerHTML = q.trim() ? '<p class="small muted">Keep typing…</p>' : ''; return; }
+  out.innerHTML = '<p class="small muted">Searching…</p>';
+  const { data, error } = await sb.rpc('uzu_search_players', { p_q: q.trim() }); if (S._frq !== q || !$('fr-res')) return;
+  if (error) { out.innerHTML = '<p class="small muted">Couldn’t search right now. Please try again.</p>'; return; }
+  out.innerHTML = (data || []).length ? data.map(p => prow(p, frAct(p.id, p.status))).join('') : '<p class="small muted">No player found with that name. Check the spelling, or ask them to sign up at the club.</p>';
+}
+async function openInvite(o) {
+  await refreshSocial();
+  const fr = (S.social || {}).friends || [];
+  const { data: done } = await sb.rpc('uzu_game_invites', { p_session: o.session || null, p_group: o.group || null });
+  const joined = new Set(((o.session && mineBySession[o.session]) || []).map(b => b.user_id));
+  const st = id => (done || {})[id] || (joined.has(id) ? 'joined' : null);
+  const link = o.session ? SITE + '#s/' + o.session : null;
+  let h = '<button class="x" data-act="close">✕</button><h3 style="margin-bottom:2px">Invite friends</h3><div class="muted small" style="margin-bottom:14px">to <b>' + esc(o.title || 'this game') + '</b>' + (o.pending ? ' · they’ll get the invite once staff approve your game' : '') + '</div>';
+  if (!fr.length) h += '<div class="fbox" style="background:var(--paper);border-color:var(--line)">You haven’t connected with anyone yet. Find your padel friends first — it only takes a moment.<div class="row"><a class="btn b-green" href="#friends" data-act="close">Find players</a></div></div>';
+  else {
+    h += '<div class="row between" style="margin-bottom:8px"><span class="small muted">Tap the people you want to invite</span><button class="btn b-ghost b-sm" data-act="invall">Select everyone</button></div><div id="inv-list">' +
+      fr.map(p => { const s0 = st(p.id); const lab = s0 === 'joined' ? 'Already in ✓' : s0 === 'pending' ? 'Invited' : s0 === 'declined' ? 'Can’t make it' : s0 === 'accepted' ? 'Coming ✓' : '';
+        return '<label class="ipick' + (s0 ? ' dis' : '') + '">' + '<input type="checkbox" value="' + p.id + '"' + (s0 ? ' disabled' : '') + ' data-chg="invpick">' + avatar(p, 34) + '<span style="flex:1;font-weight:700">' + esc(p.name) + '</span>' + (lab ? '<span class="pill ' + (/✓/.test(lab) ? 'p-ok' : 'p-mute') + '">' + lab + '</span>' : '') + '</label>'; }).join('') + '</div>' +
+      '<button class="btn b-gold b-full" style="margin-top:8px" data-act="doinvite" data-s="' + (o.session || '') + '" data-g="' + (o.group || '') + '" id="inv-go" disabled>Choose friends to invite</button>';
+  }
+  if (link) h += '<div class="small muted" style="margin-top:14px">Inviting someone who isn’t on the app yet? <a href="#" data-act="sharegp" data-v="' + o.session + '">Copy the game link</a> and send it on WhatsApp or Messenger.</div>';
+  openModal(h);
+}
+function invCount() { const n = document.querySelectorAll('#inv-list input:checked').length, b = $('inv-go'); document.querySelectorAll('#inv-list .ipick').forEach(l => l.classList.toggle('on', l.querySelector('input').checked)); if (b) { b.disabled = !n; b.textContent = n ? 'Send invite' + (n > 1 ? 's to ' + n + ' friends' : '') : 'Choose friends to invite'; } }
+
 /* ---------- ONE SESSION (invite links) ---------- */
 async function viewOne() {
   const { data: one } = await sb.from('uzu_sessions').select('id,date').eq('id', S.arg).maybeSingle();
@@ -695,15 +770,16 @@ async function viewOne() {
   const [sess, mine] = await Promise.all([sessionsBetween(one.date, one.date, 'withprivate'), myBookings()]);
   const x = sess.find(z => z.id === S.arg); if (!x) return box('<div class="card">This game isn’t available any more.</div>');
   mineBySession = {}; mine.filter(b => b.status !== 'cancelled' && b.session_id).forEach(b => (mineBySession[b.session_id] = mineBySession[b.session_id] || []).push(b));
-  S._sess = S._sess || {}; S._sess[x.id] = x;
-  return box('<div class="small" style="font-weight:700;letter-spacing:.06em;margin-bottom:8px">' + esc(fmtDay(x.date).toUpperCase()) + '</div>' + sessCard(x, '', '') + (x.description ? '<p class="muted">' + esc(x.description) + '</p>' : '') + (!S.user ? '<p class="small muted">Sign in or create an account to book your spot.</p>' : ''));
+  S._sess = S._sess || {}; S._sess[x.id] = x; if (S.user && !S.staff && !S.social) await refreshSocial();
+  const inv = ((S.social || {}).invites || []).find(i => i.session_id === x.id);
+  return box((inv ? '<div class="fbox"><b>' + esc(inv.from) + '</b> invited you to this game 🎾 — tap <b>Book</b> below to join.<div class="row"><button class="btn b-ghost b-sm" data-act="invresp" data-id="' + inv.id + '">No thanks</button></div></div>' : '') + '<div class="small" style="font-weight:700;letter-spacing:.06em;margin-bottom:8px">' + esc(fmtDay(x.date).toUpperCase()) + '</div>' + sessCard(x, '', '') + (x.description ? '<p class="muted">' + esc(x.description) + '</p>' : '') + (!S.user ? '<p class="small muted">Sign in or create an account to book your spot.</p>' : ''));
 }
 
 /* ---------- GROUP PLAY ---------- */
 const GP_LEVELS = ['All levels', 'Beginner', 'Intermediate', 'Advanced'];
 async function viewPlay() {
   const t = manilaToday(), end = addDays(t, 30);
-  const [sess, mine, cs, myg] = await Promise.all([sessionsBetween(t, end), myBookings(), courts(), S.user && !S.staff ? sb.from('uzu_groups').select('*').eq('created_by', S.user.id).order('date', { ascending: false }).limit(20) : Promise.resolve({ data: [] })]);
+  const [sess, mine, cs, , myg] = await Promise.all([sessionsBetween(t, end), myBookings(), courts(), S.user && !S.staff ? refreshSocial() : null, S.user && !S.staff ? sb.from('uzu_groups').select('*').eq('created_by', S.user.id).order('date', { ascending: false }).limit(20) : Promise.resolve({ data: [] })]);
   mineBySession = {}; mine.filter(b => b.status !== 'cancelled' && b.session_id).forEach(b => (mineBySession[b.session_id] = mineBySession[b.session_id] || []).push(b));
   S._sess = S._sess || {}; sess.forEach(x => S._sess[x.id] = x);
   const groups = sess.filter(x => x.group_id); const now = manilaNowMins();
@@ -726,12 +802,13 @@ async function viewPlay() {
       '<div class="field"><span>TYPE</span><div class="seg" id="gp-type"><button data-act="pick" data-v="friendly" class="on">Friendly</button><button data-act="pick" data-v="competitive">Competitive</button></div></div>' +
       '<div class="field"><span>LISTING</span><div class="seg" id="gp-vis"><button data-act="pick" data-v="public" class="on">Public<small>listed & promoted</small></button><button data-act="pick" data-v="private">Private<small>only people with the link</small></button></div></div>' +
       '<div class="field"><span>WHO CAN JOIN</span><div class="seg" id="gp-gender"><button data-act="pick" data-v="mixed" class="on">Everyone</button><button data-act="pick" data-v="men">Men</button><button data-act="pick" data-v="women">Women</button></div></div>' +
+      '<div class="field"><span>INVITE FRIENDS (optional)</span>' + (((S.social || {}).friends || []).length ? '<div class="fchips" id="gp-inv">' + S.social.friends.map(p => '<button type="button" data-act="togchip" data-v="' + p.id + '">' + avatar(p) + esc(p.name) + '</button>').join('') + '</div><div class="small muted" style="margin-top:6px">Tap to pick. They’ll get an email as soon as staff approve your game.</div>' : '<div class="small muted">Connect with players on the <a href="#friends">Friends</a> page and you can invite them here.</div>') + '</div>' +
       '<label class="field"><span>DESCRIPTION (optional)</span><textarea class="inp" id="gp-desc" placeholder="Format, vibe, anything players should know"></textarea></label>' +
       '<div class="field"><span>YOUR OWN SPOT</span><div class="seg" id="gp-pay"><button data-act="pick" data-v="club" class="on">Pay at the club</button><button data-act="pick" data-v="credits">Credits<small>' + esc(peso((S.wallet || {}).balance || 0)) + '</small></button></div></div>' +
       '<div class="okbox" id="gp-est" style="margin:4px 0 12px"></div>' +
       '<button class="btn b-gold b-full" data-act="docreategroup">Send for approval</button></div>';
     const mg = (myg.data || []);
-    if (mg.length) h += '<div class="card" style="margin-top:14px"><b>My groups</b>' + mg.map(g => '<div style="padding:8px 0;border-bottom:1px solid var(--line)"><div class="row between"><span><b>' + esc(g.title) + '</b><br><span class="small muted">' + esc(fmtShort(g.date)) + ' · ' + esc(range(g.start_time, g.end_time)) + ' · ' + g.capacity + ' players</span></span><span class="pill ' + ({ pending: 'p-warn', approved: 'p-ok', rejected: 'p-bad', cancelled: 'p-mute' }[g.status]) + '">' + ({ pending: 'Waiting for approval', approved: 'Live', rejected: 'Not approved', cancelled: 'Withdrawn' }[g.status]) + '</span></div>' + (g.staff_note ? '<div class="small" style="margin-top:4px">Staff: ' + esc(g.staff_note) + '</div>' : '') + (g.is_private ? '<div class="small muted" style="margin-top:4px">🔒 Private — only people you send the link to can join</div>' : '') + (g.status === 'approved' && g.session_id ? '<button class="btn b-gold b-sm" style="margin-top:6px" data-act="sharegp" data-v="' + g.session_id + '">Copy invite link</button>' : '') + (g.status === 'pending' ? '<button class="btn b-ghost b-sm" style="margin-top:6px" data-act="cancelgroup" data-id="' + g.id + '">Withdraw</button>' : '') + '</div>').join('') + '</div>';
+    if (mg.length) h += '<div class="card" style="margin-top:14px"><b>My groups</b>' + mg.map(g => '<div style="padding:8px 0;border-bottom:1px solid var(--line)"><div class="row between"><span><b>' + esc(g.title) + '</b><br><span class="small muted">' + esc(fmtShort(g.date)) + ' · ' + esc(range(g.start_time, g.end_time)) + ' · ' + g.capacity + ' players</span></span><span class="pill ' + ({ pending: 'p-warn', approved: 'p-ok', rejected: 'p-bad', cancelled: 'p-mute' }[g.status]) + '">' + ({ pending: 'Waiting for approval', approved: 'Live', rejected: 'Not approved', cancelled: 'Withdrawn' }[g.status]) + '</span></div>' + (g.staff_note ? '<div class="small" style="margin-top:4px">Staff: ' + esc(g.staff_note) + '</div>' : '') + (g.is_private ? '<div class="small muted" style="margin-top:4px">🔒 Private — only people you send the link to can join</div>' : '') + ((g.status === 'approved' || g.status === 'pending') && g.date >= manilaToday() ? '<button class="btn b-gold b-sm" style="margin-top:6px;margin-right:6px" data-act="invite" data-g="' + g.id + '" data-id="' + (g.session_id || '') + '" data-t="' + esc(g.title) + '" data-p="' + (g.status === 'pending' ? 1 : '') + '">👋 Invite friends</button>' : '') + (g.status === 'approved' && g.session_id ? '<button class="btn b-ghost b-sm" style="margin-top:6px" data-act="sharegp" data-v="' + g.session_id + '">Copy game link</button>' : '') + (g.status === 'pending' ? '<button class="btn b-ghost b-sm" style="margin-top:6px" data-act="cancelgroup" data-id="' + g.id + '">Withdraw</button>' : '') + '</div>').join('') + '</div>';
     setTimeout(gpUpdate, 0);
   }
   return h + '</div></div></div></section>';
@@ -1225,9 +1302,22 @@ document.addEventListener('click', async ev => {
   const b = ev.target.closest('[data-act]'); if (!b) return;
   const a = b.dataset.act, id = b.dataset.id, v = b.dataset.v;
   if (a === 'bg' && ev.target !== b) return;
-  if (b.tagName === 'A' && (a === 'signout' || a === 'mode')) ev.preventDefault();
+  if (b.tagName === 'A' && (a === 'signout' || a === 'mode' || b.getAttribute('href') === '#')) ev.preventDefault();
   switch (a) {
     case 'mode': setMode(v); break;
+    case 'fr': { const fn = { connect: ['uzu_connect', 'Request sent — they’ll get an email'], accept: ['uzu_respond_connection', 'You’re now connected 🎾'], decline: ['uzu_respond_connection', 'Request removed'], cancel: ['uzu_remove_connection', 'Request cancelled'], remove: ['uzu_remove_connection', 'Removed from your friends'] }[v];
+      if (v === 'remove' && !confirmTwice(b)) return;
+      run(async () => { const args = v === 'accept' || v === 'decline' ? { p_user: id, p_accept: v === 'accept' } : { p_user: id }; const r = must(await sb.rpc(fn[0], args));
+        const st = v === 'connect' ? (r || 'sent') : v === 'accept' ? 'friends' : 'none';
+        document.querySelectorAll('.prow[data-pid="' + id + '"] .pa').forEach(x => x.innerHTML = frAct(id, st));
+        await refreshSocial(); renderNav(); if (v !== 'connect' && v !== 'cancel' || !$('fr-q')) { if (S.route === 'friends') await route(); } }, fn[1]); break; }
+    case 'invresp': run(async () => { must(await sb.rpc('uzu_respond_invite', { p_id: id, p_accept: false })); await refreshSocial(); renderNav(); await route(); }, 'Invite declined — no worries'); break;
+    case 'invite': { if (!S.user) { location.hash = 'signin'; break; } const ss = (S._sess || {})[id]; run(() => openInvite({ session: id || null, group: b.dataset.g || null, title: b.dataset.t || (ss && ss.title), pending: !!b.dataset.p })); break; }
+    case 'invall': document.querySelectorAll('#inv-list input:not(:disabled)').forEach(x => x.checked = true); invCount(); break;
+    case 'doinvite': run(async () => { const ids = [...document.querySelectorAll('#inv-list input:checked')].map(x => x.value); if (!ids.length) throw new Error('Tap at least one friend');
+      const n = must(await sb.rpc('uzu_invite_players', { p_users: ids, p_session: b.dataset.s || null, p_group: b.dataset.g || null })); closeModal();
+      toast(n ? 'Invite' + (n > 1 ? 's' : '') + ' sent to ' + n + ' friend' + (n > 1 ? 's' : '') + ' 🎾' : 'They’re already invited'); }); break;
+    case 'togchip': b.classList.toggle('on'); break;
     case 'brief': S.hideBrief = v === 'hide'; try { localStorage.setItem('uzu_brief', S.hideBrief ? '0' : '1'); } catch (e) {} route(); break;
     case 'sharegp': try { await navigator.clipboard.writeText(SITE + '#s/' + v); toast('Link copied — send it to your players'); } catch (e) { prompt('Copy this link', SITE + '#s/' + v); } break;
     case 'histf': { b.parentElement.querySelectorAll('button').forEach(x => x.classList.toggle('on', x === b)); document.querySelectorAll('#phist .hrow2').forEach(r => r.style.display = v === 'all' || r.dataset.g === v ? '' : 'none'); break; }
@@ -1303,9 +1393,12 @@ document.addEventListener('click', async ev => {
     case 'docreategroup': run(async () => {
       const sel = [...document.querySelectorAll('#gp-courts input:checked')].map(x => x.value); if (!sel.length) throw new Error('Choose at least one free court');
       const pk = q => ((document.querySelector(q + ' .on') || {}).dataset || {}).v; const st = $('gp-start').value;
-      must(await sb.rpc('uzu_create_group', { p_title: $('gp-title').value, p_description: $('gp-desc').value, p_date: $('gp-date').value, p_start: st, p_end: tstr(mins(st) + (+$('gp-dur').value)), p_courts: sel, p_capacity: +$('gp-cap').value, p_level: $('gp-level').value === 'All levels' ? null : $('gp-level').value, p_type: pk('#gp-type'), p_gender: pk('#gp-gender'), p_pay: pk('#gp-pay'), p_private: pk('#gp-vis') === 'private' }));
+      const inv = [...document.querySelectorAll('#gp-inv button.on')].map(x => x.dataset.v);
+      const g = must(await sb.rpc('uzu_create_group', { p_title: $('gp-title').value, p_description: $('gp-desc').value, p_date: $('gp-date').value, p_start: st, p_end: tstr(mins(st) + (+$('gp-dur').value)), p_courts: sel, p_capacity: +$('gp-cap').value, p_level: $('gp-level').value === 'All levels' ? null : $('gp-level').value, p_type: pk('#gp-type'), p_gender: pk('#gp-gender'), p_pay: pk('#gp-pay'), p_private: pk('#gp-vis') === 'private' }));
+      if (inv.length && g && g.id) await sb.rpc('uzu_invite_players', { p_users: inv, p_group: g.id });
       S._gpBusy = {}; await route(); window.scrollTo(0, 0);
-    }, 'Sent! Our staff will review it — you’ll get an email when it’s live'); break;
+      toast('Sent! Our staff will review it — you’ll get an email when it’s live' + (inv.length ? '. Your ' + (inv.length > 1 ? inv.length + ' friends get' : 'friend gets') + ' the invite then too' : ''));
+    }); break;
     case 'cancelgroup': if (!confirmTwice(b)) return; run(async () => { must(await sb.rpc('uzu_cancel_my_group', { p_id: id })); S._gpBusy = {}; await route(); }, 'Withdrawn'); break;
     case 'grev': run(async () => { must(await sb.rpc('uzu_staff_review_group', { p_id: id, p_approve: v === 'yes', p_price: v === 'yes' ? num($('gr-price-' + id).value) : null, p_note: $('gr-note-' + id).value || null })); await route(); }, v === 'yes' ? 'Approved — it’s now on the schedule' : 'Declined — host emailed'); break;
     case 'treview': run(async () => { must(await sb.rpc('uzu_staff_review_topup', { p_id: id, p_approve: v === 'yes', p_note: ((b.parentElement.querySelector('input') || {}).value) || null })); if (b.dataset.u) await openMember(b.dataset.u); await route(); }, v === 'yes' ? 'Credits added — player emailed' : 'Marked not received — player emailed'); break;
@@ -1413,6 +1506,7 @@ document.addEventListener('change', ev => {
   else if (k === 'ctr') { S.courtTrainer = el.value || null; route(); }
   else if (k === 'crk') { S.courtRackets = +el.value || 0; route(); }
   else if (k === 'bkcalc') bkCalc();
+  else if (k === 'invpick') invCount();
   else if (k === 'gp') gpUpdate();
   else if (k === 'sdate') { S.staffDate = el.value; route(); }
   else if (k === 'sheetdate') { S.sheetDate = el.value; route(); }
@@ -1424,6 +1518,7 @@ document.addEventListener('change', ev => {
 });
 document.addEventListener('change', ev => { if (ev.target.closest && ev.target.closest('#bk-who')) bkCalc(); });
 document.addEventListener('keydown', ev => { if (ev.key === 'Enter' && ev.target.id === 'su-pass') { const b = document.querySelector('[data-act="signin"],[data-act="signup"]'); if (b) b.click(); } if (ev.key === 'Escape') closeModal(); });
+document.addEventListener('input', ev => { if (ev.target.id === 'fr-q') { clearTimeout(frTimer); const q = ev.target.value; frTimer = setTimeout(() => frSearch(q), 280); } });
 window.addEventListener('hashchange', () => { route(); window.scrollTo(0, 0); });
 
 /* ---------- boot ---------- */
