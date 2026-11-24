@@ -361,6 +361,31 @@ footer.x-foot{padding:56px 0 30px;margin-top:0}
 .x-soc{display:flex;gap:8px;margin-top:14px}.x-soc a{display:inline-flex;padding:8px 12px;border:1px solid rgba(244,239,227,.25);border-radius:999px;font-size:13px;font-weight:700;opacity:1}
 .x-nb{margin-top:34px;padding-top:18px;border-top:1px solid rgba(244,239,227,.14);font-size:13px;opacity:.75}.x-nb a{text-decoration:none}.x-nb a:hover{text-decoration:underline}
 @media(max-width:820px){.x-fgrid{grid-template-columns:1fr 1fr}}@media(max-width:480px){.x-fgrid{grid-template-columns:1fr}}
+/* ===== club board ===== */
+.x-board{columns:3 300px;column-gap:16px}.x-board.row3{columns:auto;display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:16px;align-items:start}.x-board.row3>.x-post{margin:0}.x-board>.x-post{break-inside:avoid;display:inline-block;width:100%;margin:0 0 16px}
+.x-post{background:#fff;border:1px solid var(--line);border-radius:20px;overflow:hidden;box-shadow:0 10px 30px rgba(20,35,25,.06)}
+.x-post.pinned{border-color:var(--gold);box-shadow:0 0 0 1px var(--gold) inset,0 10px 30px rgba(20,35,25,.06)}
+.x-pimg{background:#e9e4d6;cursor:zoom-in;max-height:420px;overflow:hidden;display:flex;justify-content:center}.x-pimg img{width:100%;height:auto;display:block;object-fit:cover}
+.x-post.compact .x-pimg{max-height:240px}
+.x-pbody{padding:16px 18px 18px}.x-ptag{font-size:12px;font-weight:700;color:var(--muted);letter-spacing:.02em}
+.x-pbody h3{font-family:'Cormorant Garamond',serif;font-size:26px;line-height:1.08;margin:6px 0 6px;font-weight:600}
+.x-pbody p{margin:0;color:#3b463d;font-size:15px}.x-pbody p.clamp{display:-webkit-box;-webkit-line-clamp:4;-webkit-box-orient:vertical;overflow:hidden}
+.x-pbody a{word-break:break-word}
+.x-fchips{display:flex;gap:8px;flex-wrap:wrap}.x-chip{border:1.5px solid var(--line);background:#fff;border-radius:999px;padding:7px 14px;font-weight:700;font-size:13.5px;color:var(--ink)}.x-chip.on{background:var(--green);border-color:var(--green);color:var(--cream)}
+.x-poll{display:flex;flex-direction:column;gap:8px;margin-top:12px}
+.x-opt{position:relative;overflow:hidden;display:flex;justify-content:space-between;align-items:center;gap:10px;text-align:left;border:1.5px solid var(--line);background:var(--paper);border-radius:12px;padding:11px 14px;font-weight:700;font-size:15px;color:var(--ink)}
+.x-opt i{position:absolute;inset:0 auto 0 0;background:rgba(214,178,94,.28);transition:width .4s}.x-opt span,.x-opt b{position:relative}.x-opt.on{border-color:var(--green)}.x-opt.on span:after{content:' ✓';color:var(--green)}
+.x-res{margin-top:12px}.x-resh{font-weight:800;font-size:14px;margin-bottom:6px}
+.x-pod{display:grid;grid-template-columns:1fr 1.1fr 1fr;gap:6px;align-items:end;text-align:center;margin-bottom:6px}
+.x-pod>div{display:flex;flex-direction:column;align-items:center;gap:2px;min-width:0}
+.x-pod .av{width:38px;height:38px;border-radius:50%;background:var(--cream);display:flex;align-items:center;justify-content:center;font-weight:800;font-size:13px;border:2px solid var(--line)}
+.x-pod .p1 .av{width:46px;height:46px;border-color:var(--gold);background:#fff6dc}.x-pod b{font-size:13.5px;max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.x-pod small{color:var(--muted);font-size:12px}
+.x-pod i{display:block;width:100%;border-radius:10px 10px 0 0;font-style:normal;font-weight:900;color:#fff;padding:6px 0;margin-top:4px}
+.x-pod .p1 i{background:var(--gold);height:58px;font-size:20px}.x-pod .p2 i{background:#9aa5a0;height:42px}.x-pod .p3 i{background:#b9875a;height:32px}
+.x-rt td,.x-rt th{padding:7px 0 7px 8px!important;font-size:13.5px}.x-rt td:nth-child(2){text-align:left}
+.x-rank th:nth-child(2),.x-rank td:nth-child(2),.x-rt th:nth-child(2),.x-rt td:nth-child(2){text-align:left!important;white-space:normal}.x-rank td:first-child,.x-rank th:first-child{text-align:left;width:34px}
+.x-rank td small{display:block;font-weight:500;color:var(--muted);font-size:12px}
+details summary{cursor:pointer;color:var(--green);font-weight:700;margin-top:6px}
 </style>
 </head>
 <body>
@@ -371,7 +396,7 @@ footer.x-foot{padding:56px 0 30px;margin-top:0}
     <div class="x-fgrid">
       <div><div class="logo" id="footlogo" style="align-items:flex-start"><b>UZU</b><small>CLUB</small></div><p style="opacity:.8;margin:14px 0 0;max-width:280px">One of Asia’s most beautiful padel &amp; social clubs — padel, football, recovery and an all-day bistro in El Nido, Palawan.</p>
         <div class="x-soc"><a href="https://www.instagram.com/socialsportsclub.elnido/" target="_blank" rel="noopener">Instagram</a><a href="https://www.facebook.com/profile.php?id=61573365191704" target="_blank" rel="noopener">Facebook</a><a href="https://wa.me/639171255048" target="_blank" rel="noopener">WhatsApp</a></div></div>
-      <div><h5>THE CLUB</h5><a href="#padel">Padel</a><a href="#football">Football</a><a href="#recovery">Recovery</a><a href="#bistro">Bistro &amp; Bar</a><a href="#visit">Visit us</a></div>
+      <div><h5>THE CLUB</h5><a href="#padel">Padel</a><a href="#football">Football</a><a href="#recovery">Recovery</a><a href="#bistro">Bistro &amp; Bar</a><a href="#news">Club news</a><a href="#results">Results</a><a href="#visit">Visit us</a></div>
       <div><h5>BOOK</h5><a href="#courts">Book a court</a><a href="#schedule">What’s on</a><a href="#play">Group Play</a><a href="#account">Membership</a><a href="#signin">Sign in</a></div>
       <div><h5>VISIT</h5><div style="opacity:.85;line-height:1.6">Taytay–El Nido National Highway<br>Villa Libertad, El Nido, Palawan<br>Open daily · 7 AM – 10 PM<br><a href="tel:+639171255048" style="display:inline;padding:0">0917 125 5048</a> · <a href="mailto:info@uzuclub.com" style="display:inline;padding:0">info@uzuclub.com</a></div></div>
     </div>
@@ -521,7 +546,7 @@ function renderNav() {
   const bdg = socialCount() ? '<span class="nbadge">' + socialCount() + '</span>' : '';
   $('nav').innerHTML = '<div class="nav"><div class="wrap"><a class="logo" href="#" aria-label="UZU Club home">' + LOGO + '</a>' +
     '<button class="burger" data-act="burger" aria-label="Menu">☰</button><div class="links" id="links">' +
-    L('padel', 'Padel') + L('football', 'Football') + L('recovery', 'Recovery') + L('bistro', 'Bistro & Bar') + L('schedule', 'What’s on') +
+    L('padel', 'Padel') + L('football', 'Football') + L('recovery', 'Recovery') + L('bistro', 'Bistro & Bar') + L('schedule', 'What’s on') + L('news', 'News') +
     '<a href="#" class="book" data-act="booknow">Book now</a>' +
     (S.user ? '<div class="acct" id="acct"><button data-act="acctmenu" aria-label="My account">' + avatar({ id: S.user.id, name: meName }) + esc(meName) + bdg + ' ▾</button><div class="menu">' +
       L('account', 'My bookings') + L('courts', 'Book a court') + L('play', 'Group Play') + L('friends', 'Friends' + bdg) + L('wallet', 'Credits' + (S.wallet ? ' · ' + peso(S.wallet.balance) : '')) +
@@ -538,7 +563,7 @@ async function route() {
   S._lastRender = Date.now();
   const h = (location.hash || '').replace('#', ''); const [h0, arg] = h.split('/');
   if (h0 === 'staff' && S.isStaff && !S.staff) { try { localStorage.setItem('uzu_mode', 'staff'); } catch (e) {} S.staff = true; S.wallet = null; renderNav(); }
-  S.route = ['schedule', 'courts', 'account', 'signin', 'staff', 'verify', 'pay', 'play', 'wallet', 'reset', 's', 'friends', 'padel', 'football', 'recovery', 'bistro', 'visit'].includes(h0) ? h0 : 'home'; S.arg = arg || '';
+  S.route = ['schedule', 'courts', 'account', 'signin', 'staff', 'verify', 'pay', 'play', 'wallet', 'reset', 's', 'friends', 'padel', 'football', 'recovery', 'bistro', 'visit', 'news', 'results'].includes(h0) ? h0 : 'home'; S.arg = arg || '';
   renderNav(); closeModal();
   const app = $('app');
   try {
@@ -555,6 +580,8 @@ async function route() {
     else if (S.route === 'friends') app.innerHTML = await viewFriends();
     else if (VENUES[S.route]) app.innerHTML = await viewVenue(S.route);
     else if (S.route === 'visit') app.innerHTML = viewVisit();
+    else if (S.route === 'news') app.innerHTML = await viewNews();
+    else if (S.route === 'results') app.innerHTML = await viewResults();
     else if (S.route === 'play') app.innerHTML = await viewPlay();
     else if (S.route === 'wallet') app.innerHTML = await viewWallet();
   } catch (e) { app.innerHTML = '<div class="wrap sec"><div class="card">Couldn’t load this page: ' + esc(errMsg(e)) + '</div></div>'; }
@@ -739,7 +766,7 @@ async function viewVenue(key) {
 
 async function viewHome() {
   const t = manilaToday(), days = Array.from({ length: 7 }, (_, i) => addDays(t, i));
-  const [sess, mine] = await Promise.all([sessionsBetween(t, addDays(t, 13)), myBookings()]);
+  const [sess, mine, board] = await Promise.all([sessionsBetween(t, addDays(t, 13)), myBookings(), boardData(3).catch(() => ({ posts: [], res: {} }))]);
   mineBySession = {}; mine.filter(b => b.status !== 'cancelled' && b.session_id).forEach(b => (mineBySession[b.session_id] = mineBySession[b.session_id] || []).push(b));
   S._sess = S._sess || {}; sess.forEach(s => S._sess[s.id] = s);
   const now = manilaNowMins();
@@ -754,6 +781,7 @@ async function viewHome() {
     '<section class="x-quick"><div class="wrap"><div class="grid">' + quick.map(q => '<a href="' + esc(q[3]) + '"' + (/^http/.test(q[3]) ? ' target="_blank" rel="noopener"' : '') + '><span class="ic">' + q[0] + '</span><span><b>' + q[1] + '</b><small>' + q[2] + '</small></span></a>').join('') + '</div></div></section>' +
     '<section class="x-sec tight"><div class="wrap">' + highlightHTML(sess) + '<div class="row between" style="align-items:flex-end;flex-wrap:wrap;gap:10px;margin-top:8px"><div><div class="x-kick">What’s on</div><div class="x-h">This week at UZU</div></div><a class="btn b-ghost" href="#schedule">Full schedule →</a></div>' +
     '<p class="x-lead" style="margin-bottom:16px">Tap any session to see who’s playing and book your spot.</p><div class="x-week">' + week + '</div></div></section>' +
+    (board.posts.length ? '<section class="x-sec tight"><div class="wrap"><div class="row between" style="align-items:flex-end;flex-wrap:wrap;gap:10px"><div><div class="x-kick">Club news</div><div class="x-h">From the club</div></div><div class="btns"><a class="btn b-ghost" href="#results">Results</a><a class="btn b-ghost" href="#news">All news →</a></div></div><div class="x-board row3" style="margin-top:14px">' + board.posts.map(p => postCard(p, board, true)).join('') + '</div></div></section>' : '') +
     '<section class="x-sec"><div class="wrap"><div class="x-kick">The club</div><div class="x-h">Everything in one place</div><p class="x-lead">Three covered padel courts, a real-grass football pitch, a recovery area with ice bath and sauna, and the bistro at the heart of it all — plus showers, changing rooms and lockers.</p>' +
     '<div class="x-venues">' + ['padel', 'football', 'recovery', 'bistro'].map(k => { const V = VENUES[k]; return '<a class="x-venue" href="#' + k + '" style="' + bg(V.card, 1000) + '"><div><h3>' + esc(V.name) + '</h3><p>' + esc(V.blurb) + '</p><span>Explore →</span></div></a>'; }).join('') + '</div></div></section>' +
     ctaBand() +
@@ -778,6 +806,126 @@ function openBookChooser() {
     o.map(x => { const ext = /^http/.test(x[3]); return '<a class="x-pick" href="' + esc(x[3]) + '" data-act="close"' + (ext ? ' target="_blank" rel="noopener"' : '') + '><span class="ic">' + x[0] + '</span><span style="flex:1"><b>' + x[1] + '</b><small>' + x[2] + (ext ? ' · via WhatsApp' : '') + '</small></span><span class="chev">›</span></a>'; }).join(''));
 }
 
+/* ---------- CLUB NEWS, POLLS, RESULTS, WHATSAPP SHARE ---------- */
+const KIND = { news: ['📣', 'News'], event: ['📅', 'Event'], notice: ['📌', 'Notice'], lost: ['🔎', 'Lost & found'], poll: ['📊', 'Poll'], results: ['🏆', 'Results'] };
+const LVL_ICON = ['🔥', '⚡', '🎾', '✨', '⭐'];
+const ago = ts => { const m = Math.round((Date.now() - new Date(ts).getTime()) / 60000); if (m < 60) return m <= 1 ? 'just now' : m + ' min ago'; const h = Math.round(m / 60); if (h < 24) return h + 'h ago'; const d = Math.round(h / 24); return d === 1 ? 'yesterday' : d < 7 ? d + ' days ago' : fmtShort(new Date(ts).toISOString().slice(0, 10)); };
+const richText = t => esc(t || '').replace(/(https?:\/\/[^\s<]+)/g, '<a href="$1" target="_blank" rel="noopener">$1</a>').replace(/\n/g, '<br>');
+async function boardData(limit, withHidden) {
+  let q = sb.from('uzu_posts').select('*').order('pinned', { ascending: false }).order('created_at', { ascending: false });
+  if (limit) q = q.limit(limit + 6);
+  const { data } = await q; let posts = (data || []).filter(p => withHidden || p.status === 'live');
+  if (limit) posts = posts.slice(0, limit);
+  S._posts = S._posts || {}; posts.forEach(p => S._posts[p.id] = p);
+  const polls = posts.filter(p => p.kind === 'poll').map(p => p.id), rs = posts.filter(p => p.kind === 'results' && p.session_id).map(p => p.session_id);
+  const [t, r] = await Promise.all([polls.length ? sb.rpc('uzu_poll_tally', { p_ids: polls }) : { data: {} }, rs.length ? sb.from('uzu_results').select('*').in('session_id', rs).order('grp').order('pos') : { data: [] }]);
+  S._tally = Object.assign(S._tally || {}, t.data || {}); const res = {}; (r.data || []).forEach(x => (res[x.session_id] = res[x.session_id] || []).push(x));
+  return { posts, res };
+}
+function podiumHTML(rows, full) {
+  const groups = {}; rows.forEach(r => (groups[r.grp || 'Results'] = groups[r.grp || 'Results'] || []).push(r));
+  return Object.keys(groups).map(g => { const L = groups[g].sort((a, b) => a.pos - b.pos), top = L.slice(0, 3);
+    return '<div class="x-res"><div class="x-resh">' + esc(g) + (L[0] && L[0].fmt ? ' <span class="small muted">· ' + esc(L[0].fmt) + '</span>' : '') + '</div>' +
+      '<div class="x-pod">' + [top[1], top[0], top[2]].map((r, i) => r ? '<div class="p' + [2, 1, 3][i] + '"><span class="av">' + esc((r.name || '?').slice(0, 2).toUpperCase()) + '</span><b>' + esc(r.name) + '</b><small>' + r.pts + ' pts</small><i>' + [2, 1, 3][i] + '</i></div>' : '<div></div>').join('') + '</div>' +
+      (full ? '<table class="x-price x-rt"><thead><tr><th>#</th><th>Player</th><th>Pts</th><th>W-T-L</th><th>Diff</th></tr></thead><tbody>' + L.map(r => '<tr><td>' + r.pos + '</td><td>' + esc(r.name) + '</td><td>' + r.pts + '</td><td>' + r.w + '-' + r.t + '-' + r.l + '</td><td>' + (r.diff == null ? '' : (r.diff > 0 ? '+' : '') + r.diff) + '</td></tr>').join('') + '</tbody></table>'
+        : '<details><summary class="small">Full table (' + L.length + ' players)</summary><table class="x-price x-rt"><tbody>' + L.map(r => '<tr><td>' + r.pos + '</td><td>' + esc(r.name) + '</td><td>' + r.pts + '</td><td>' + r.w + '-' + r.t + '-' + r.l + '</td></tr>').join('') + '</tbody></table></details>') + '</div>'; }).join('');
+}
+function pollHTML(p) {
+  const T = (S._tally || {})[p.id] || { counts: [], total: 0, mine: null }, closed = p.poll_closes && new Date(p.poll_closes) < new Date(), voted = T.mine != null;
+  return '<div class="x-poll">' + p.poll_options.map((o, i) => { const c = T.counts[i] || 0, pct = T.total ? Math.round(c / T.total * 100) : 0;
+    return '<button class="x-opt' + (T.mine === i ? ' on' : '') + '" data-act="vote" data-id="' + p.id + '" data-v="' + i + '"' + (closed ? ' disabled' : '') + '>' + (voted || closed ? '<i style="width:' + pct + '%"></i>' : '') + '<span>' + esc(o) + '</span>' + (voted || closed ? '<b>' + pct + '%</b>' : '') + '</button>'; }).join('') +
+    '<div class="small muted">' + T.total + ' vote' + (T.total === 1 ? '' : 's') + (closed ? ' · poll closed' : voted ? ' · tap another option to change your vote' : S.user ? ' · tap to vote' : ' · <a href="#signin">sign in</a> to vote') + '</div></div>';
+}
+function postCard(p, X, compact) {
+  const k = KIND[p.kind] || KIND.news, sess = p.session_id && (S._sess || {})[p.session_id];
+  const img = p.image_url ? '<div class="x-pimg" data-act="zoom" data-v="' + esc(p.image_url) + '"><img loading="lazy" alt="" src="' + esc(p.image_url) + '" onerror="this.parentNode.remove()"></div>' : '';
+  let acts = '';
+  if (p.session_id && p.kind !== 'results') acts += '<a class="btn b-green b-sm" href="#s/' + p.session_id + '">' + (sess && sess.capacity - sess.booked <= 0 ? 'Join the waitlist' : 'Sign up') + '</a>';
+  if (p.link) acts += '<a class="btn ' + (p.session_id ? 'b-ghost' : 'b-green') + ' b-sm" href="' + esc(p.link) + '"' + (/^https?:/.test(p.link) ? ' target="_blank" rel="noopener"' : '') + '>' + esc(p.link_label || 'Open') + '</a>';
+  if (p.kind === 'results' && p.session_id) acts += '<a class="btn b-ghost b-sm" href="#results">Season rankings</a>';
+  return '<article class="x-post' + (compact ? ' compact' : '') + (p.pinned ? ' pinned' : '') + '">' + img + '<div class="x-pbody"><div class="x-ptag">' + k[0] + ' ' + k[1] + ' · ' + esc(ago(p.created_at)) + (p.pinned ? ' · 📌 Pinned' : '') + (p.status === 'hidden' ? ' · <b style="color:var(--bad)">Hidden</b>' : '') + '</div>' +
+    '<h3>' + esc(p.title) + '</h3>' + (p.body ? '<p' + (compact ? ' class="clamp"' : '') + '>' + richText(p.body) + '</p>' : '') +
+    (p.kind === 'results' ? podiumHTML((X.res || {})[p.session_id] || [], false) : '') + (p.kind === 'poll' ? pollHTML(p) : '') +
+    (acts ? '<div class="btns" style="margin-top:12px">' + acts + '</div>' : '') + '</div></article>';
+}
+async function viewNews() {
+  const t = manilaToday(); const [X, sess] = await Promise.all([boardData(0), sessionsBetween(t, addDays(t, 30))]);
+  S._sess = S._sess || {}; sess.forEach(s => S._sess[s.id] = s);
+  const f = S.newsKind || 'all', chips = [['all', 'Everything'], ['event', 'Events'], ['results', 'Results'], ['notice', 'Notices'], ['poll', 'Polls'], ['lost', 'Lost & found']];
+  const list = X.posts.filter(p => f === 'all' || p.kind === f || (f === 'notice' && p.kind === 'news'));
+  return '<section class="x-sec tight"><div class="wrap"><div class="x-kick">Club news</div><div class="x-h">What’s happening at UZU</div><p class="x-lead">Events, results, notices and polls — all in one place. Sign up straight from any post.</p>' +
+    '<div class="x-fchips" style="margin-bottom:16px">' + chips.map(c => '<button class="x-chip' + (f === c[0] ? ' on' : '') + '" data-act="newsf" data-v="' + c[0] + '">' + c[1] + '</button>').join('') + '</div>' +
+    (list.length ? '<div class="x-board">' + list.map(p => postCard(p, X)).join('') + '</div>' : '<div class="card muted">Nothing here yet.</div>') + '</div></section>';
+}
+async function viewResults() {
+  const now = manilaToday(), from = S.resFrom || '2026-11-01';
+  const [{ data: posts }, { data: lb }] = await Promise.all([sb.from('uzu_posts').select('*').eq('kind', 'results').eq('status', 'live').order('created_at', { ascending: false }).limit(4), sb.rpc('uzu_leaderboard', { p_from: from, p_to: now, p_title: null })]);
+  const ids = (posts || []).map(p => p.session_id).filter(Boolean); const { data: rows } = ids.length ? await sb.from('uzu_results').select('*').in('session_id', ids).order('grp').order('pos') : { data: [] };
+  const res = {}; (rows || []).forEach(x => (res[x.session_id] = res[x.session_id] || []).push(x));
+  const L = lb || [];
+  let h = '<section class="x-sec tight"><div class="wrap"><div class="x-kick">Results</div><div class="x-h">Leaderboards & rankings</div><p class="x-lead">Every Americano result in one place. Season rankings use average points per game, so playing more doesn’t beat playing better. Strong results help our coaches place you in the right level — that’s how promotion works.</p>';
+  if ((posts || []).length) { const p = posts[0]; h += '<div class="card x-pcard" style="margin-bottom:16px"><div class="row between" style="flex-wrap:wrap;gap:8px"><b style="font-size:20px">' + esc(p.title) + '</b>' + (p.session_id ? '<a class="small" href="#s/' + p.session_id + '">Event page</a>' : '') + '</div>' + (p.body ? '<p class="muted" style="margin:6px 0 0">' + richText(p.body) + '</p>' : '') + '<div class="x-cols" style="margin-top:12px">' + podiumHTML(res[p.session_id] || [], true) + '</div></div>'; }
+  h += '<div class="card x-pcard"><div class="row between" style="flex-wrap:wrap;gap:8px"><b style="font-size:20px">Season rankings</b><div class="x-fchips">' + [['2026-11-01', 'This season'], ['2025-01-01', 'All time']].map(x => '<button class="x-chip' + (from === x[0] ? ' on' : '') + '" data-act="resfrom" data-v="' + x[0] + '">' + x[1] + '</button>').join('') + '</div></div>' +
+    (L.length ? '<div class="scroll"><table class="x-price x-rank"><thead><tr><th>#</th><th>Player</th><th>Avg / game</th><th>Points</th><th>Games</th><th>Wins</th><th>Podiums</th><th>Events</th></tr></thead><tbody>' +
+      L.map((r, i) => '<tr><td>' + (i < 3 ? ['🥇', '🥈', '🥉'][i] : i + 1) + '</td><td>' + esc(r.name) + (r.titles ? ' <span class="pill p-ok">🏆 ×' + r.titles + '</span>' : '') + '<small>' + esc((r.groups || []).filter(Boolean).join(', ')) + '</small></td><td class="m">' + (r.avg != null ? r.avg : '—') + '</td><td>' + r.pts + '</td><td>' + r.games + '</td><td>' + r.wins + '</td><td>' + r.podiums + '</td><td>' + r.events + '</td></tr>').join('') + '</tbody></table></div>'
+      : '<p class="muted">No results yet this season.</p>') + '</div>';
+  if ((posts || []).length > 1) h += '<div class="x-kick" style="margin-top:28px">Earlier events</div><div class="x-board" style="margin-top:10px">' + posts.slice(1).map(p => postCard(p, { res })).join('') + '</div>';
+  return h + '</div></section>';
+}
+function shareText(s) {
+  const bl = s.by_level || {}, lv = (s.levels || []).length ? s.levels : [''], left = s.capacity - s.booked;
+  let t = '🎾 ' + s.title + ' at UZU Club\n' + fmtDay(s.date) + ' · ' + range(s.start_time, s.end_time) + '\n' + (s.price_regular != null ? peso(s.price_regular) + ' regular' + (s.price_member != null ? ' · ' + peso(s.price_member) + ' members' : '') + '\n' : '');
+  lv.forEach((l, i) => { const names = (l ? bl[l] : s.names) || []; t += '\n' + (l ? LVL_ICON[i % LVL_ICON.length] + ' ' + l + ' (' + names.length + ')\n' : names.length ? 'Who’s in:\n' : ''); names.forEach((n, j) => t += (j + 1) + '. ' + n + '\n'); });
+  if (lv[0] && (bl[''] || []).length) t += '\nLevel TBC: ' + bl[''].join(', ') + '\n';
+  t += '\n' + (left > 0 ? '✅ ' + s.booked + ' of ' + s.capacity + ' spots taken · ' + left + ' left' : '⛔ Full — join the waitlist') + '\n👉 Sign up in one tap (no copy-paste needed):\n' + SITE + '#s/' + s.id;
+  return t;
+}
+function openPostForm(p) {
+  p = p || { kind: 'news', status: 'live', poll_options: [] }; S._postImg = null; S._postEdit = p;
+  const sess = Object.values(S._sess || {}).filter(s => s.date >= manilaToday()).sort((a, b) => (a.date + a.start_time).localeCompare(b.date + b.start_time));
+  openModal('<button class="x" data-act="close">✕</button><h3>' + (p.id ? 'Edit post' : 'New post for the club board') + '</h3>' +
+    '<div class="field"><span>TYPE</span><div class="seg" id="pf-kind">' + ['news', 'event', 'notice', 'poll', 'lost'].map(k => '<button data-act="pick" data-v="' + k + '" class="' + (p.kind === k ? 'on' : '') + '">' + KIND[k][0] + ' ' + KIND[k][1] + '</button>').join('') + '</div></div>' +
+    '<label class="field"><span>TITLE</span><input class="inp" id="pf-title" value="' + esc(p.title || '') + '" placeholder="e.g. Mixed Doubles Saturday"></label>' +
+    '<label class="field"><span>MESSAGE</span><textarea class="inp" id="pf-body" rows="5" placeholder="Paste the same text you would post on WhatsApp">' + esc(p.body || '') + '</textarea></label>' +
+    '<div class="field"><span>POSTER OR PHOTO</span><div class="row" style="gap:8px;flex-wrap:wrap;align-items:center">' + (p.image_url ? '<img id="pf-prev" src="' + esc(p.image_url) + '" style="height:64px;border-radius:8px">' : '<img id="pf-prev" style="height:64px;border-radius:8px;display:none">') +
+      '<button class="btn b-ghost b-sm" data-act="pfimg" data-v="file">Choose image</button><button class="btn b-ghost b-sm" data-act="pfimg" data-v="cam">📷 Take photo</button>' + (p.image_url ? '<button class="btn b-ghost b-sm" data-act="pfimg" data-v="none">Remove</button>' : '') + '</div></div>' +
+    '<label class="field"><span>SIGN-UP BUTTON FOR A SESSION (optional)</span><select class="inp" id="pf-sess"><option value="">— none —</option>' + sess.map(s => '<option value="' + s.id + '"' + (p.session_id === s.id ? ' selected' : '') + '>' + esc(fmtShort(s.date) + ' · ' + fmtT(s.start_time) + ' · ' + s.title) + '</option>').join('') + '</select></label>' +
+    '<div class="grid g2"><label class="field"><span>OTHER LINK (optional)</span><input class="inp" id="pf-link" value="' + esc(p.link || '') + '" placeholder="https://… or #recovery"></label><label class="field"><span>BUTTON TEXT</span><input class="inp" id="pf-ll" value="' + esc(p.link_label || '') + '" placeholder="e.g. Register"></label></div>' +
+    '<label class="field" id="pf-pollw"' + (p.kind === 'poll' ? '' : ' style="display:none"') + '><span>POLL OPTIONS (one per line)</span><textarea class="inp" id="pf-poll" rows="4" placeholder="10 AM – 12 noon&#10;3 – 5 PM&#10;5 – 7 PM">' + esc((p.poll_options || []).join('\n')) + '</textarea></label>' +
+    '<div class="grid g2"><label class="field"><span>SHOW UNTIL (optional)</span><input class="inp" type="date" id="pf-until" value="' + esc(p.show_until || '') + '"></label><div class="field"><span>VISIBILITY</span><div class="seg" id="pf-status"><button data-act="pick" data-v="live" class="' + (p.status !== 'hidden' ? 'on' : '') + '">Live</button><button data-act="pick" data-v="hidden" class="' + (p.status === 'hidden' ? 'on' : '') + '">Draft</button></div></div></div>' +
+    '<label class="row" style="gap:8px;margin:4px 0 14px"><input type="checkbox" id="pf-pin"' + (p.pinned ? ' checked' : '') + '> 📌 Pin to the top of the board</label>' +
+    '<button class="btn b-gold b-full" data-act="pfsave" data-id="' + (p.id || '') + '">' + (p.id ? 'Save changes' : 'Post to the board') + '</button>');
+}
+async function stNews() {
+  const t = manilaToday(); const [X, sess] = await Promise.all([boardData(0, true), sessionsBetween(t, addDays(t, 45), true)]);
+  S._sess = S._sess || {}; sess.forEach(s => S._sess[s.id] = s); S._posts = {}; X.posts.forEach(p => S._posts[p.id] = p);
+  return '<div class="row between" style="flex-wrap:wrap;gap:10px;margin-bottom:12px"><div class="muted" style="max-width:620px">Post events, posters, notices, polls and lost & found here instead of in every WhatsApp group. Each post has a sign-up button, and you can share it to WhatsApp with one tap.</div><button class="btn b-gold" data-act="pfnew">+ New post</button></div>' +
+    '<div class="x-board">' + X.posts.map(p => postCard(p, X, true).replace('</article>', '<div class="btns" style="padding:0 16px 16px"><button class="btn b-ghost b-sm" data-act="pfedit" data-id="' + p.id + '">Edit</button>' + (p.kind !== 'results' ? '<a class="btn b-ghost b-sm" target="_blank" rel="noopener" href="https://wa.me/?text=' + encodeURIComponent('📣 ' + p.title + '\n\n' + (p.body || '') + '\n\n👉 ' + SITE + (p.session_id ? '#s/' + p.session_id : '#news')) + '">💬 Share</a>' : '') + '<button class="btn b-ghost b-sm" data-act="pfdel" data-id="' + p.id + '">Delete</button></div></article>')).join('') + '</div>';
+}
+function parseResults(txt) {
+  return txt.split(/\n+/).map(l => l.trim()).filter(Boolean).map(l => {
+    l = l.replace(/^\d+[.)]?\s+/, '');
+    const m = l.match(/^(.*?)\s+(\d+)\s*(?:pts?)?\s+(\d+)\s*[-–\s]\s*(\d+)\s*[-–\s]\s*(\d+)(?:\s+([+-−]?\d+))?\s*$/i) || l.match(/^(.*?)\s+(\d+)\s*$/);
+    if (!m) return { name: l, pts: 0, w: 0, t: 0, l: 0 };
+    return { name: m[1].trim(), pts: +m[2], w: +(m[3] || 0), t: +(m[4] || 0), l: +(m[5] || 0), diff: m[6] != null ? +String(m[6]).replace('−', '-') : null };
+  }).filter(r => r.name);
+}
+async function stResults() {
+  const t = manilaToday(); const sess = (await sessionsBetween(addDays(t, -35), t, true)).filter(s => s.sport === 'padel' && s.booked > 0 || s.id === S.resSess).reverse();
+  if (!S.resSess && sess.length) S.resSess = sess[0].id;
+  const s = sess.find(x => x.id === S.resSess); const { data: rows } = s ? await sb.from('uzu_results').select('*').eq('session_id', s.id).order('grp').order('pos') : { data: [] };
+  const groups = [...new Set((rows || []).map(r => r.grp))];
+  let h = '<div class="muted" style="max-width:660px;margin-bottom:12px">Enter results after each Americano — players see the podium on the club board and the season rankings update automatically. Type or paste one player per line, like the Americano app shows it: <b>Clement 96 4-1-1 +24</b>.</div>' +
+    '<label class="field" style="max-width:520px"><span>EVENT</span><select class="inp" data-chg="ressess">' + sess.map(x => '<option value="' + x.id + '"' + (x.id === S.resSess ? ' selected' : '') + '>' + esc(fmtShort(x.date) + ' · ' + x.title + ' · ' + x.booked + ' players') + '</option>').join('') + '</select></label>';
+  if (!s) return h + '<div class="card muted">No past padel sessions with players yet.</div>';
+  if (groups.length) h += '<div class="card x-pcard" style="margin-bottom:14px"><b>Saved results</b><div class="x-cols" style="margin-top:10px">' + podiumHTML(rows, true) + '</div><div class="btns" style="margin-top:10px">' + groups.map(g => '<button class="btn b-ghost b-sm" data-act="resclear" data-v="' + esc(g) + '">Delete “' + esc(g || 'Results') + '”</button>').join('') + '</div></div>';
+  const names = (s.levels || []).length ? (s.levels.map(l => ((s.by_level || {})[l] || []).join('\n')).join('\n')) : (s.names || []).join('\n');
+  h += '<div class="card x-pcard"><b>Add a group’s results</b><div class="grid g2" style="margin-top:10px"><label class="field"><span>GROUP</span><input class="inp" id="rs-grp" placeholder="e.g. Mexicano group, High Intermediate" value="' + (groups.length ? '' : esc((s.levels || [])[0] || 'Results')) + '"></label><label class="field"><span>FORMAT</span><select class="inp" id="rs-fmt"><option>Americano</option><option>Mexicano</option><option>Round robin</option></select></label></div>' +
+    '<label class="field"><span>RESULTS — ONE PLAYER PER LINE, IN FINISHING ORDER</span><textarea class="inp" id="rs-txt" rows="10" data-chg="resprev" placeholder="Clement 96 4-1-1 +24&#10;Martijn 91 4-1-2 +14">' + esc(names) + '</textarea></label><div id="rs-prev" class="small muted" style="margin-bottom:10px">Booked players are pre-filled — add their points and W-T-L.</div>' +
+    '<button class="btn b-gold" data-act="ressave" data-id="' + s.id + '">Save & post results</button></div>';
+  return h;
+}
+
 /* ---------- SCHEDULE ---------- */
 let mineBySession = {};
 function whoFor(b) {
@@ -796,7 +944,7 @@ function sessCard(s, state, tag) {
   const mine = mineBySession[s.id];
   const started = s.date === manilaToday() && mins(s.start_time) <= manilaNowMins();
   let act;
-  if (S.staff) act = started ? '<span class="pill p-mute">In progress</span>' : '<button class="btn b-ghost b-sm" data-act="staffadd" data-id="' + s.id + '">+ Add player</button>';
+  if (S.staff) act = (started ? '<span class="pill p-mute">In progress</span>' : '<button class="btn b-ghost b-sm" data-act="staffadd" data-id="' + s.id + '">+ Add player</button>') + '<button class="btn b-ghost b-sm" data-act="share" data-id="' + s.id + '">💬 Share list</button>';
   else if (mine && mine.length) act = '<span class="pill p-ok">Booked: ' + mine.map(x => esc(whoFor(x))).join(', ') + '</span>' + (started || s.status !== 'open' ? '' : '<button class="btn b-gold b-sm" data-act="invite" data-id="' + s.id + '">👋 Invite friends</button><button class="btn b-ghost b-sm" data-act="book" data-id="' + s.id + '">+ Book someone else</button>');
   else if (s.status === 'closed') act = '<span class="pill p-mute">Bookings closed</span>';
   else if (started) act = '<span class="pill p-mute">In progress</span>';
@@ -1013,7 +1161,9 @@ async function viewOne() {
   mineBySession = {}; mine.filter(b => b.status !== 'cancelled' && b.session_id).forEach(b => (mineBySession[b.session_id] = mineBySession[b.session_id] || []).push(b));
   S._sess = S._sess || {}; S._sess[x.id] = x; if (S.user && !S.staff && !S.social) await refreshSocial();
   const inv = ((S.social || {}).invites || []).find(i => i.session_id === x.id);
-  return box((inv ? '<div class="fbox"><b>' + esc(inv.from) + '</b> invited you to this game 🎾 — tap <b>Book</b> below to join.<div class="row"><button class="btn b-ghost b-sm" data-act="invresp" data-id="' + inv.id + '">No thanks</button></div></div>' : '') + '<div class="small" style="font-weight:700;letter-spacing:.06em;margin-bottom:8px">' + esc(fmtDay(x.date).toUpperCase()) + '</div>' + sessCard(x, '', '') + (x.description ? '<p class="muted">' + esc(x.description) + '</p>' : '') + (!S.user ? '<p class="small muted">Sign in or create an account to book your spot.</p>' : ''));
+  const { data: evp } = await sb.from('uzu_posts').select('image_url,body,title').eq('session_id', x.id).neq('kind', 'results').eq('status', 'live').limit(1);
+  const poster = (evp || [])[0];
+  return box((poster && poster.image_url ? '<div class="x-pimg" style="border-radius:18px;margin-bottom:14px" data-act="zoom" data-v="' + esc(poster.image_url) + '"><img alt="" src="' + esc(poster.image_url) + '" onerror="this.parentNode.remove()"></div>' : '') + (inv ? '<div class="fbox"><b>' + esc(inv.from) + '</b> invited you to this game 🎾 — tap <b>Book</b> below to join.<div class="row"><button class="btn b-ghost b-sm" data-act="invresp" data-id="' + inv.id + '">No thanks</button></div></div>' : '') + '<div class="small" style="font-weight:700;letter-spacing:.06em;margin-bottom:8px">' + esc(fmtDay(x.date).toUpperCase()) + '</div>' + sessCard(x, '', '') + (x.description ? '<p class="muted">' + esc(x.description) + '</p>' : '') + (!S.user ? '<p class="small muted">Sign in or create an account to book your spot.</p>' : '') + '<div class="btns" style="margin-top:14px"><a class="btn b-ghost" target="_blank" rel="noopener" href="https://wa.me/?text=' + encodeURIComponent(shareText(x)) + '">💬 Share the list on WhatsApp</a>' + (S.user && !S.staff && mineBySession[x.id] ? '<button class="btn b-ghost" data-act="invite" data-id="' + x.id + '">👋 Invite friends</button>' : '') + '</div>');
 }
 
 /* ---------- GROUP PLAY ---------- */
@@ -1178,7 +1328,7 @@ async function viewPay() {
 }
 
 /* ---------- STAFF ---------- */
-const STAFF_TABS = [['sheet', 'Court sheet'], ['people', 'Players'], ['today', 'Day sheet'], ['bookings', 'Bookings'], ['sessions', 'Sessions'], ['weekly', 'Weekly schedule'], ['courts', 'Courts'], ['groups', 'Group Play'], ['credits', 'Credits'], ['extras', 'Trainers & rentals'], ['emails', 'Emails'], ['team', 'Staff']];
+const STAFF_TABS = [['sheet', 'Court sheet'], ['people', 'Players'], ['today', 'Day sheet'], ['bookings', 'Bookings'], ['sessions', 'Sessions'], ['weekly', 'Weekly schedule'], ['courts', 'Courts'], ['groups', 'Group Play'], ['news', 'Club board'], ['results', 'Results'], ['credits', 'Credits'], ['extras', 'Trainers & rentals'], ['emails', 'Emails'], ['team', 'Staff']];
 async function viewStaff() {
   if (!S.user) { S.after = 'staff'; return viewSignin(); }
   if (!S.staff) return '<section class="sec"><div class="wrap"><div class="card">This area is for UZU staff. Ask a manager to add your account.</div></div></section>';
@@ -1187,7 +1337,7 @@ async function viewStaff() {
   let h = '<section class="sec" style="padding-top:26px"><div class="wrap"><div class="row between wrapx"><h2>Staff dashboard</h2><span class="muted small">' + esc(fmtDay(manilaToday())) + '</span></div>' +
     staffBrief(al || {}, s) +
     '<div class="tabs">' + STAFF_TABS.map(t => '<button data-act="stafftab" data-v="' + t[0] + '" class="' + (S.staffTab === t[0] ? 'on' : '') + '">' + t[1] + (t[0] === 'bookings' && s.pending ? ' (' + s.pending + ')' : '') + (t[0] === 'people' && (s.to_review || s.requests) ? ' (' + ((s.to_review || 0) + (s.requests || 0)) + ')' : '') + (t[0] === 'groups' && s.groups ? ' (' + s.groups + ')' : '') + (t[0] === 'credits' && s.topups ? ' (' + s.topups + ')' : '') + '</button>').join('') + '</div><div id="stafftab">';
-  const fn = { sheet: stSheet, today: stToday, bookings: stBookings, sessions: stSessions, weekly: stWeekly, courts: stCourts, groups: stGroups, credits: stCredits, extras: stExtras, people: stPeople, members: stPeople, emails: () => stEmails(s), team: () => stTeam(s) }[S.staffTab];
+  const fn = { news: stNews, results: stResults, sheet: stSheet, today: stToday, bookings: stBookings, sessions: stSessions, weekly: stWeekly, courts: stCourts, groups: stGroups, credits: stCredits, extras: stExtras, people: stPeople, members: stPeople, emails: () => stEmails(s), team: () => stTeam(s) }[S.staffTab];
   h += await fn();
   return h + '</div></div></section>';
 }
@@ -1548,6 +1698,25 @@ document.addEventListener('click', async ev => {
   switch (a) {
     case 'mode': setMode(v); break;
     case 'booknow': openBookChooser(); break;
+    case 'share': { const ss = (S._sess || {})[id]; if (ss) window.open('https://wa.me/?text=' + encodeURIComponent(shareText(ss)), '_blank', 'noopener'); break; }
+    case 'newsf': S.newsKind = v; route(); break;
+    case 'resfrom': S.resFrom = v; route(); break;
+    case 'vote': if (!S.user) { location.hash = 'signin'; break; } run(async () => { const r = must(await sb.rpc('uzu_vote', { p_post: id, p_choice: +v })); S._tally[id] = r; const card = b.closest('.x-poll'); const p = (S._posts || {})[id] || { id, poll_options: [...card.querySelectorAll('.x-opt span')].map(x => x.textContent) }; card.outerHTML = pollHTML(p); }, 'Thanks for voting!'); break;
+    case 'pfnew': openPostForm(null); break;
+    case 'pfedit': openPostForm(S._posts[id]); break;
+    case 'pfdel': if (!confirmTwice(b)) return; run(async () => { must(await sb.rpc('uzu_staff_delete_post', { p_id: id })); await route(); }, 'Post deleted'); break;
+    case 'pfimg': { let f = null; if (v === 'none') { S._postImg = 'none'; $('pf-prev').style.display = 'none'; break; } f = v === 'cam' ? await captureProof('Photo of the poster') : await pickProof(); if (!f) break; if (!/^image\//.test(f.type)) { toast('Please choose an image'); break; } S._postImg = f; const pv = $('pf-prev'); pv.src = URL.createObjectURL(f); pv.style.display = ''; break; }
+    case 'pfsave': run(async () => {
+      const old = S._postEdit || {}; let url = old.image_url || null;
+      if (S._postImg === 'none') url = null;
+      else if (S._postImg) { const f = S._postImg; if (f.size > 8 * 1024 * 1024) throw new Error('Image is over 8 MB'); const path = 'posts/' + Date.now() + '-' + (f.name || 'photo.jpg').replace(/[^A-Za-z0-9._-]+/g, '_'); must(await sb.storage.from('uzu-media').upload(path, f, { contentType: f.type || 'image/jpeg' })); url = sb.storage.from('uzu-media').getPublicUrl(path).data.publicUrl; }
+      const kind = (document.querySelector('#pf-kind .on') || {}).dataset.v || 'news';
+      must(await sb.rpc('uzu_staff_save_post', { p_id: id || null, p: { kind, title: $('pf-title').value, body: $('pf-body').value, image_url: url || '', session_id: $('pf-sess').value, link: $('pf-link').value, link_label: $('pf-ll').value,
+        pinned: $('pf-pin').checked, poll_options: kind === 'poll' ? $('pf-poll').value.split('\n') : [], show_until: $('pf-until').value, status: (document.querySelector('#pf-status .on') || {}).dataset.v || 'live' } }));
+      closeModal(); await route(); }, id ? 'Post updated' : 'Posted to the club board'); break;
+    case 'ressave': run(async () => { const rows = parseResults($('rs-txt').value); if (!rows.length) throw new Error('Add at least one player'); if (!rows.some(r => r.pts > 0)) throw new Error('Add the points for each player (e.g. “Clement 96 4-1-1”)');
+      const n = must(await sb.rpc('uzu_staff_save_results', { p_session: id, p_group: $('rs-grp').value, p_format: $('rs-fmt').value, p_rows: rows })); await route(); toast(n + ' players saved — results are on the club board'); }); break;
+    case 'resclear': if (!confirmTwice(b)) return; run(async () => { must(await sb.rpc('uzu_staff_clear_results', { p_session: S.resSess, p_group: v })); await route(); }, 'Results removed'); break;
     case 'acctmenu': $('acct').classList.toggle('open'); break;
     case 'zoom': { const lb = document.createElement('div'); lb.className = 'lightbox'; lb.innerHTML = '<img alt="" src="' + v + '">'; lb.onclick = () => lb.remove(); document.body.appendChild(lb); break; }
     case 'fr': { const fn = { connect: ['uzu_connect', 'Request sent — they’ll get an email'], accept: ['uzu_respond_connection', 'You’re now connected 🎾'], decline: ['uzu_respond_connection', 'Request removed'], cancel: ['uzu_remove_connection', 'Request cancelled'], remove: ['uzu_remove_connection', 'Removed from your friends'] }[v];
@@ -1752,6 +1921,7 @@ document.addEventListener('change', ev => {
   else if (k === 'crk') { S.courtRackets = +el.value || 0; route(); }
   else if (k === 'bkcalc') bkCalc();
   else if (k === 'invpick') invCount();
+  else if (k === 'ressess') { S.resSess = el.value; route(); }
   else if (k === 'gp') gpUpdate();
   else if (k === 'sdate') { S.staffDate = el.value; route(); }
   else if (k === 'sheetdate') { S.sheetDate = el.value; route(); }
@@ -1763,7 +1933,8 @@ document.addEventListener('change', ev => {
 });
 document.addEventListener('change', ev => { if (ev.target.closest && ev.target.closest('#bk-who')) bkCalc(); });
 document.addEventListener('keydown', ev => { if (ev.key === 'Enter' && ev.target.id === 'su-pass') { const b = document.querySelector('[data-act="signin"],[data-act="signup"]'); if (b) b.click(); } if (ev.key === 'Escape') closeModal(); });
-document.addEventListener('input', ev => { if (ev.target.id === 'fr-q') { clearTimeout(frTimer); const q = ev.target.value; frTimer = setTimeout(() => frSearch(q), 280); } });
+document.addEventListener('click', ev => { const k = ev.target.closest('#pf-kind [data-v]'); if (k) setTimeout(() => { const w = $('pf-pollw'); if (w) w.style.display = k.dataset.v === 'poll' ? '' : 'none'; }, 0); });
+document.addEventListener('input', ev => { if (ev.target.id === 'rs-txt') { const r = parseResults(ev.target.value), pv = $('rs-prev'); if (pv) pv.innerHTML = r.length ? r.length + ' players read · top 3: ' + r.slice(0, 3).map(x => esc(x.name) + ' ' + x.pts).join(', ') : ''; } if (ev.target.id === 'fr-q') { clearTimeout(frTimer); const q = ev.target.value; frTimer = setTimeout(() => frSearch(q), 280); } });
 window.addEventListener('hashchange', () => { route(); window.scrollTo(0, 0); });
 
 /* ---------- boot ---------- */
