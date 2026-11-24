@@ -279,13 +279,14 @@ footer a{opacity:.9}
 .x-sec{padding:76px 0}.x-sec.tight{padding:40px 0}
 .x-hero{position:relative;min-height:min(88vh,780px);display:flex;align-items:flex-end;color:#fff;background:#24392b center/cover no-repeat}
 .x-hero.sub{min-height:min(68vh,600px)}
-.x-hero:before{content:'';position:absolute;inset:0;background:linear-gradient(180deg,rgba(14,24,17,.25) 0%,rgba(14,24,17,.30) 40%,rgba(14,24,17,.86) 100%)}
+.x-hero:before{content:'';position:absolute;inset:0;background:linear-gradient(90deg,rgba(14,24,17,.62) 0%,rgba(14,24,17,.30) 70%,rgba(14,24,17,.15) 100%),linear-gradient(180deg,rgba(14,24,17,.35) 0%,rgba(14,24,17,.45) 45%,rgba(14,24,17,.9) 100%)}
 .x-hero .wrap{position:relative;width:100%;padding-top:120px;padding-bottom:110px}
 .x-hero.sub .wrap{padding-bottom:84px}
 .x-hero .x-kick{color:var(--gold)}
 .x-hero h1{font-family:'Cormorant Garamond',Georgia,serif;font-weight:500;font-size:clamp(44px,7.2vw,92px);line-height:.95;margin:14px 0 16px;max-width:920px;letter-spacing:-.015em;text-shadow:0 2px 30px rgba(0,0,0,.25)}
 .x-hero h1 i{color:var(--gold)}
-.x-hero p{font-size:18px;max-width:580px;opacity:.92;margin:0 0 26px}
+.x-hero p{font-size:18px;max-width:580px;margin:0 0 26px;text-shadow:0 1px 12px rgba(0,0,0,.45)}
+.x-hero .x-kick{text-shadow:0 1px 10px rgba(0,0,0,.5)}
 .x-chips{display:flex;gap:8px;flex-wrap:wrap;margin-top:22px}
 .x-chips span{background:rgba(255,255,255,.14);-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px);border:1px solid rgba(255,255,255,.24);padding:7px 13px;border-radius:999px;font-size:13px;font-weight:600}
 .x-quick{position:relative;z-index:2;margin-top:-58px}
@@ -663,7 +664,7 @@ const VENUES = {
     gallery: PHOTOS.padel
   },
   football: {
-    name: 'Football', kick: 'Football · real grass', hero: '7906675c-72f6-420a-9bf2-27770e7246c7/IMG_4539.jpg', card: PHOTOS.football[0],
+    name: 'Football', kick: 'Football · real grass', hero: '7906675c-72f6-420a-9bf2-27770e7246c7/IMG_4539.jpg', card: PHOTOS.football[1],
     title: 'Real grass. <i>Real games.</i>', blurb: 'A natural-grass pitch for open games and academy.',
     lead: 'A beautifully kept natural-grass pitch in the middle of the club — for Sunday open games, the kids’ academy and private matches.',
     chips: ['Natural-grass pitch', 'Open Football · Sundays', 'Kids Academy 3× a week', 'Showers & lockers'], sport: 'football',
