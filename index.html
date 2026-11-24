@@ -271,15 +271,111 @@ footer a{opacity:.9}
 .fchips{display:flex;flex-wrap:wrap;gap:8px}.fchips button{border:1.5px solid var(--line);background:var(--paper);border-radius:999px;padding:7px 14px 7px 7px;font-weight:700;font-size:14px;display:flex;align-items:center;gap:7px}
 .fchips button .fr-av{width:26px;height:26px;flex-basis:26px;font-size:11px}.fchips button.on{border-color:var(--green);background:#eef5ee}.fchips button.on:after{content:'✓';color:var(--green)}
 .nbadge{display:inline-block;min-width:18px;padding:0 5px;margin-left:5px;border-radius:999px;background:#d64545;color:#fff;font-size:11px;font-weight:800;line-height:18px;text-align:center}
+/* ===== club website ===== */
+.btn-lg{padding:16px 26px;font-size:16px;border-radius:14px}
+.x-kick{font-size:12px;letter-spacing:.24em;font-weight:800;color:var(--gold2);text-transform:uppercase}
+.x-h{font-family:'Cormorant Garamond',Georgia,serif;font-weight:600;font-size:clamp(34px,4.4vw,50px);line-height:1.02;margin:6px 0 10px;letter-spacing:-.01em}
+.x-lead{font-size:17px;color:var(--muted);max-width:640px;margin:0 0 26px}
+.x-sec{padding:76px 0}.x-sec.tight{padding:40px 0}
+.x-hero{position:relative;min-height:min(88vh,780px);display:flex;align-items:flex-end;color:#fff;background:#24392b center/cover no-repeat}
+.x-hero.sub{min-height:min(68vh,600px)}
+.x-hero:before{content:'';position:absolute;inset:0;background:linear-gradient(180deg,rgba(14,24,17,.25) 0%,rgba(14,24,17,.30) 40%,rgba(14,24,17,.86) 100%)}
+.x-hero .wrap{position:relative;width:100%;padding-top:120px;padding-bottom:110px}
+.x-hero.sub .wrap{padding-bottom:84px}
+.x-hero .x-kick{color:var(--gold)}
+.x-hero h1{font-family:'Cormorant Garamond',Georgia,serif;font-weight:500;font-size:clamp(44px,7.2vw,92px);line-height:.95;margin:14px 0 16px;max-width:920px;letter-spacing:-.015em;text-shadow:0 2px 30px rgba(0,0,0,.25)}
+.x-hero h1 i{color:var(--gold)}
+.x-hero p{font-size:18px;max-width:580px;opacity:.92;margin:0 0 26px}
+.x-chips{display:flex;gap:8px;flex-wrap:wrap;margin-top:22px}
+.x-chips span{background:rgba(255,255,255,.14);-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px);border:1px solid rgba(255,255,255,.24);padding:7px 13px;border-radius:999px;font-size:13px;font-weight:600}
+.x-quick{position:relative;z-index:2;margin-top:-58px}
+.x-quick .grid{display:grid;grid-template-columns:repeat(4,1fr);background:#fff;border-radius:22px;box-shadow:0 20px 60px rgba(20,35,25,.18);overflow:hidden}
+.x-quick a{display:flex;gap:14px;align-items:center;padding:22px 20px;text-decoration:none;border-right:1px solid var(--line);transition:background .15s}
+.x-quick a:last-child{border-right:0}.x-quick a:hover{background:var(--cream)}
+.x-quick .ic,.x-pick .ic{width:46px;height:46px;border-radius:14px;background:var(--cream);display:flex;align-items:center;justify-content:center;font-size:23px;flex:0 0 46px}
+.x-quick b,.x-pick b{display:block;font-size:15.5px}.x-quick small,.x-pick small{display:block;color:var(--muted);font-size:13px;line-height:1.3;margin-top:2px}
+@media(max-width:900px){.x-quick .grid{grid-template-columns:1fr 1fr}.x-quick a:nth-child(2){border-right:0}.x-quick a:nth-child(-n+2){border-bottom:1px solid var(--line)}}
+@media(max-width:520px){.x-quick{margin-top:-40px}.x-quick a{padding:16px 14px;gap:10px;flex-direction:column;align-items:flex-start}.x-quick .ic{width:40px;height:40px;flex-basis:40px;font-size:20px}}
+.x-week{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:10px}
+.x-day{background:var(--paper);border:1px solid var(--line);border-radius:18px;padding:14px 14px 8px;min-height:160px}
+.x-day.today{border-color:var(--gold);box-shadow:0 0 0 1px var(--gold) inset;background:#fffaf0}
+.x-day h4{margin:0 0 6px;font-size:11.5px;letter-spacing:.16em;color:var(--muted);display:flex;justify-content:space-between}.x-day h4 span{color:var(--ink);font-size:15px;letter-spacing:0}
+.x-day.today h4{color:var(--gold2)}
+.x-day a{display:block;text-decoration:none;padding:9px 0;border-top:1px solid var(--line);font-size:13.5px;font-weight:700;line-height:1.25;border-radius:6px}
+.x-day a:hover{color:var(--green3)}.x-day a small{display:block;font-weight:500;color:var(--muted);font-size:12.5px;margin-top:2px}
+.x-day .dot{display:inline-block;width:7px;height:7px;border-radius:50%;margin-right:6px;vertical-align:2px;background:var(--gold)}.x-day .dot.f{background:#4f8a5b}
+.x-day .free{font-size:13px;color:var(--muted);border-top:1px solid var(--line);padding-top:9px}
+@media(max-width:980px){.x-week{grid-template-columns:none;grid-auto-flow:column;grid-auto-columns:minmax(190px,1fr);overflow-x:auto;scroll-snap-type:x mandatory;padding-bottom:8px;margin-right:-18px;padding-right:18px}.x-day{scroll-snap-align:start}}
+.x-venues{display:grid;grid-template-columns:repeat(4,1fr);gap:14px}
+.x-venue{position:relative;border-radius:22px;overflow:hidden;aspect-ratio:3/4;color:#fff;text-decoration:none;display:flex;align-items:flex-end;background:#2f4a37 center/cover no-repeat;transition:transform .25s,box-shadow .25s}
+.x-venue:before{content:'';position:absolute;inset:0;background:linear-gradient(180deg,rgba(0,0,0,0) 35%,rgba(12,22,15,.85) 100%)}
+.x-venue:hover{transform:translateY(-4px);box-shadow:0 18px 40px rgba(20,35,25,.25)}
+.x-venue div{position:relative;padding:22px}.x-venue h3{font-family:'Cormorant Garamond',serif;font-size:32px;margin:0 0 4px;font-weight:600;line-height:1}
+.x-venue p{margin:0 0 12px;font-size:14px;opacity:.9}.x-venue span{font-weight:800;font-size:14px;color:var(--gold)}
+@media(max-width:900px){.x-venues{grid-template-columns:1fr 1fr}}@media(max-width:520px){.x-venues{grid-template-columns:1fr}.x-venue{aspect-ratio:16/11}}
+.x-band{background:var(--green) radial-gradient(circle at 100% 0,rgba(214,178,94,.22),transparent 55%);color:var(--cream);border-radius:26px;padding:44px;display:grid;grid-template-columns:1.25fr 1fr;gap:34px;align-items:center}
+.x-band .x-kick{color:var(--gold)}.x-band ul{list-style:none;padding:0;margin:0}.x-band li{padding:11px 0;border-bottom:1px solid rgba(255,255,255,.12);font-weight:600}.x-band li:last-child{border-bottom:0}
+.x-band li:before{content:'✓';color:var(--gold);font-weight:900;margin-right:12px}
+@media(max-width:760px){.x-band{grid-template-columns:1fr;padding:28px;gap:18px}}
+.x-gal{display:grid;grid-template-columns:repeat(4,1fr);grid-auto-rows:190px;gap:10px}
+.x-gal div,.x-strip div{border-radius:16px;background:#cfd6c9 center/cover no-repeat;cursor:zoom-in;transition:opacity .2s}.x-gal div:hover,.x-strip div:hover{opacity:.9}
+.x-gal div:nth-child(1){grid-column:span 2;grid-row:span 2}.x-gal div:nth-child(6){grid-column:span 2}
+@media(max-width:700px){.x-gal{grid-template-columns:1fr 1fr;grid-auto-rows:130px}.x-gal div:nth-child(6){grid-column:auto}}
+.x-strip{display:flex;gap:12px;overflow-x:auto;scroll-snap-type:x mandatory;padding-bottom:10px;margin-right:-18px;padding-right:18px}
+.x-strip div{flex:0 0 min(80%,420px);aspect-ratio:4/3;scroll-snap-align:start}
+.x-visit{display:grid;grid-template-columns:1fr 1.15fr;gap:20px;align-items:stretch}
+.x-visit iframe{width:100%;height:100%;min-height:360px;border:0;border-radius:22px;background:#dfe5da}
+@media(max-width:760px){.x-visit{grid-template-columns:1fr}}
+.x-info{display:flex;gap:12px;padding:12px 0;border-bottom:1px solid var(--line)}.x-info:last-of-type{border-bottom:0}.x-info .ic{font-size:20px;width:28px;flex:0 0 28px}.x-info a{font-weight:600}
+.x-pull{margin-top:-60px;position:relative;z-index:2;padding-top:0!important}
+.x-acts{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px}
+.x-act{display:flex;flex-direction:column;gap:6px;padding:22px;border-radius:20px;background:#fff;border:1px solid var(--line);text-decoration:none;box-shadow:0 12px 34px rgba(20,35,25,.08);transition:transform .2s,border-color .2s}
+.x-act:hover{transform:translateY(-3px);border-color:var(--green3)}.x-act .ic{font-size:28px}.x-act b{font-size:18px}.x-act small{color:var(--muted);font-size:14px;line-height:1.4}.x-act .go{margin-top:auto;font-weight:800;color:var(--green);padding-top:8px;font-size:14px}
+.x-act.primary{background:var(--green);color:var(--cream);border-color:var(--green)}.x-act.primary small{color:rgba(244,239,227,.82)}.x-act.primary .go{color:var(--gold)}
+.x-when{font-size:12px;font-weight:800;letter-spacing:.12em;color:var(--muted);text-transform:uppercase;margin:16px 0 6px}
+.x-cols{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:16px;align-items:start}
+.x-pcard{padding:22px;border-radius:20px;background:#fff;margin:0}
+.x-price{width:100%;border-collapse:collapse;font-size:15px;margin-top:8px}
+.x-price th{text-align:right;font-size:11px;letter-spacing:.14em;color:var(--muted);padding:6px 0 6px 10px;text-transform:uppercase}.x-price th:first-child{text-align:left}
+.x-price td{padding:11px 0 11px 10px;border-top:1px solid var(--line);text-align:right;white-space:nowrap;font-weight:600}.x-price td:first-child{text-align:left;white-space:normal;padding-left:0}
+.x-price td small{display:block;font-weight:500;color:var(--muted);font-size:12.5px}.x-price td.m{color:var(--ok);font-weight:800}
+.x-wk{display:flex;gap:14px;padding:11px 0;border-top:1px solid var(--line)}.x-wk:first-child{border-top:0}.x-wk span{flex:0 0 44px;font-weight:800;color:var(--gold2);font-size:13px;letter-spacing:.06em;padding-top:2px}.x-wk small{display:block;color:var(--muted)}
+.x-rules{margin:10px 0 0;padding:0;list-style:none}.x-rules li{padding:8px 0 8px 26px;position:relative;border-top:1px solid var(--line)}.x-rules li:first-child{border-top:0}.x-rules li:before{content:'•';position:absolute;left:8px;color:var(--gold2);font-weight:900}
+.x-made{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px;margin-top:14px}.x-made div{background:#fff;border:1px solid var(--line);border-radius:18px;padding:18px}.x-made span{font-size:26px}.x-made b{display:block;margin-top:6px;font-size:16px}.x-made small{color:var(--muted)}
+.x-pick{display:flex;gap:14px;align-items:center;padding:13px 14px;border:1.5px solid var(--line);border-radius:16px;margin-bottom:9px;text-decoration:none;background:var(--paper);transition:border-color .15s,background .15s}
+.x-pick:hover{border-color:var(--green3);background:#fff}.x-pick .chev{font-size:26px;color:var(--muted);line-height:1}
+.lightbox{position:fixed;inset:0;background:rgba(8,14,10,.94);z-index:90;display:flex;align-items:center;justify-content:center;padding:18px;cursor:zoom-out}.lightbox img{max-width:100%;max-height:100%;border-radius:12px;box-shadow:0 20px 60px rgba(0,0,0,.5)}
+/* nav */
+.nav .links a.book{background:var(--gold);color:var(--green);opacity:1;margin-left:6px}
+.acct{position:relative}.acct>button{display:flex;align-items:center;gap:8px;background:rgba(255,255,255,.1);border:0;color:var(--cream);border-radius:999px;padding:5px 12px 5px 5px;font-weight:700;font-size:14px;margin-left:6px}
+.acct>button .fr-av{width:28px;height:28px;flex-basis:28px;font-size:11px}
+.acct .menu{display:none;position:absolute;right:0;top:calc(100% + 8px);background:#fff;color:var(--ink);border-radius:16px;box-shadow:0 18px 50px rgba(0,0,0,.2);min-width:230px;padding:8px;z-index:30}
+.acct.open .menu{display:block}.acct .menu a{display:flex;justify-content:space-between;align-items:center;padding:10px 12px;border-radius:10px;opacity:1;font-weight:600;color:var(--ink)}.acct .menu a:hover{background:var(--cream)}
+.acct .menu hr{border:0;border-top:1px solid var(--line);margin:6px 4px}
+@media(max-width:760px){.acct>button{display:none}.acct .menu{display:block;position:static;background:none;box-shadow:none;padding:0;min-width:0;color:inherit;border-top:1px solid rgba(255,255,255,.12);margin-top:6px;padding-top:6px}.acct .menu a{color:var(--cream)}.acct .menu a:hover{background:rgba(255,255,255,.08)}.acct .menu hr{display:none}.nav .links a.book{margin:6px 0;text-align:center}}
+/* footer */
+footer.x-foot{padding:56px 0 30px;margin-top:0}
+.x-fgrid{display:grid;grid-template-columns:1.4fr 1fr 1fr 1.3fr;gap:28px}
+.x-fgrid h5{margin:0 0 10px;font-size:11px;letter-spacing:.2em;color:var(--gold)}.x-fgrid a{display:block;text-decoration:none;padding:4px 0;opacity:.85}.x-fgrid a:hover{opacity:1}
+.x-soc{display:flex;gap:8px;margin-top:14px}.x-soc a{display:inline-flex;padding:8px 12px;border:1px solid rgba(244,239,227,.25);border-radius:999px;font-size:13px;font-weight:700;opacity:1}
+.x-nb{margin-top:34px;padding-top:18px;border-top:1px solid rgba(244,239,227,.14);font-size:13px;opacity:.75}.x-nb a{text-decoration:none}.x-nb a:hover{text-decoration:underline}
+@media(max-width:820px){.x-fgrid{grid-template-columns:1fr 1fr}}@media(max-width:480px){.x-fgrid{grid-template-columns:1fr}}
 </style>
 </head>
 <body>
 <div id="nav"></div>
 <main id="app"><div class="loader">Loading…</div></main>
-<footer>
-  <div class="wrap row between wrapx" style="gap:20px">
-    <div><div class="logo" id="footlogo" style="align-items:flex-start"><b>UZU</b><small>CLUB</small></div><div style="margin-top:10px;opacity:.8">Padel + Bistro &amp; Bar + Football + Recovery<br>El Nido, Palawan, Philippines</div></div>
-    <div><b style="color:var(--gold);letter-spacing:.18em;font-size:11px">FOR BOOKINGS</b><br>0917 125 5048 · <a href="mailto:info@uzuclub.com">info@uzuclub.com</a><br><a href="https://www.facebook.com/uzu.club" target="_blank" rel="noopener">facebook.com/uzu.club</a> · @uzu.club</div>
+<footer class="x-foot">
+  <div class="wrap">
+    <div class="x-fgrid">
+      <div><div class="logo" id="footlogo" style="align-items:flex-start"><b>UZU</b><small>CLUB</small></div><p style="opacity:.8;margin:14px 0 0;max-width:280px">One of Asia’s most beautiful padel &amp; social clubs — padel, football, recovery and an all-day bistro in El Nido, Palawan.</p>
+        <div class="x-soc"><a href="https://www.instagram.com/socialsportsclub.elnido/" target="_blank" rel="noopener">Instagram</a><a href="https://www.facebook.com/profile.php?id=61573365191704" target="_blank" rel="noopener">Facebook</a><a href="https://wa.me/639171255048" target="_blank" rel="noopener">WhatsApp</a></div></div>
+      <div><h5>THE CLUB</h5><a href="#padel">Padel</a><a href="#football">Football</a><a href="#recovery">Recovery</a><a href="#bistro">Bistro &amp; Bar</a><a href="#visit">Visit us</a></div>
+      <div><h5>BOOK</h5><a href="#courts">Book a court</a><a href="#schedule">What’s on</a><a href="#play">Group Play</a><a href="#account">Membership</a><a href="#signin">Sign in</a></div>
+      <div><h5>VISIT</h5><div style="opacity:.85;line-height:1.6">Taytay–El Nido National Highway<br>Villa Libertad, El Nido, Palawan<br>Open daily · 7 AM – 10 PM<br><a href="tel:+639171255048" style="display:inline;padding:0">0917 125 5048</a> · <a href="mailto:info@uzuclub.com" style="display:inline;padding:0">info@uzuclub.com</a></div></div>
+    </div>
+    <div class="x-nb">Friends of UZU in El Nido: <a href="https://diwatuvillas.com/" target="_blank" rel="noopener">Diwatu Villas</a> · <a href="https://www.townsquareelnido.com/" target="_blank" rel="noopener">Townsquare</a> · <a href="https://thebahman.com/" target="_blank" rel="noopener">The Bahman Hotel</a> · <a href="https://aqua.ph/" target="_blank" rel="noopener">Aqua Beach Club</a> · <a href="https://www.cornersquareelnido.com/" target="_blank" rel="noopener">CornerSquare</a> · <a href="https://www.babar.ph/" target="_blank" rel="noopener">Babar Bistro</a> · <a href="https://www.vintagehall.ph/" target="_blank" rel="noopener">The Vintage Hall</a> · <a href="https://www.thebahmanspa.com/" target="_blank" rel="noopener">The Bahman Spa</a>
+      <div style="margin-top:10px">© 2026 UZU Club · El Nido, Palawan, Philippines</div></div>
   </div>
 </footer>
 <div id="modal"></div>
@@ -420,12 +516,15 @@ function renderNav() {
       '<div class="staffbar"><div class="wrap">Signed in as staff · <b>' + esc(S.user.email) + '</b><span class="muted">Want to book for yourself? <a href="#" data-act="mode" data-v="player">Switch to player view</a>.</span></div></div>';
     return;
   }
+  const meName = S.user ? ((S.profile && (S.profile.nickname || (S.profile.full_name || '').split(' ')[0])) || 'Me') : '';
+  const bdg = socialCount() ? '<span class="nbadge">' + socialCount() + '</span>' : '';
   $('nav').innerHTML = '<div class="nav"><div class="wrap"><a class="logo" href="#" aria-label="UZU Club home">' + LOGO + '</a>' +
     '<button class="burger" data-act="burger" aria-label="Menu">☰</button><div class="links" id="links">' +
-    L('schedule', 'Schedule') + L('courts', 'Book a court') + L('play', 'Group Play') + (S.user ? L('friends', 'Friends' + (socialCount() ? '<span class="nbadge">' + socialCount() + '</span>' : '')) : '') +
-    (S.user ? L('wallet', 'Credits' + (S.wallet ? ' · ' + peso(S.wallet.balance) : '')) + L('account', 'My account') : '') +
-    (S.isStaff ? '<a href="#" data-act="mode" data-v="staff" class="cta">Staff mode</a>' : '') +
-    (S.user ? '<a href="#" data-act="signout">Sign out</a>' : L('signin', 'Sign in', 'cta')) + '</div></div></div>' +
+    L('padel', 'Padel') + L('football', 'Football') + L('recovery', 'Recovery') + L('bistro', 'Bistro & Bar') + L('schedule', 'What’s on') +
+    '<a href="#" class="book" data-act="booknow">Book now</a>' +
+    (S.user ? '<div class="acct" id="acct"><button data-act="acctmenu" aria-label="My account">' + avatar({ id: S.user.id, name: meName }) + esc(meName) + bdg + ' ▾</button><div class="menu">' +
+      L('account', 'My bookings') + L('courts', 'Book a court') + L('play', 'Group Play') + L('friends', 'Friends' + bdg) + L('wallet', 'Credits' + (S.wallet ? ' · ' + peso(S.wallet.balance) : '')) +
+      (S.isStaff ? '<a href="#" data-act="mode" data-v="staff">Staff mode</a>' : '') + '<hr><a href="#" data-act="signout">Sign out</a></div></div>' : L('signin', 'Sign in')) + '</div></div></div>' +
     (S.isStaff ? '<div class="staffbar"><div class="wrap">Player view · bookings you make here are in your own name (' + esc(S.user.email) + '). <a href="#" data-act="mode" data-v="staff">Back to staff mode</a></div></div>' : '') +
     (S.social && r !== 'friends' && (S.social.invites || []).length ? '<div class="staffbar"><div class="wrap">🎾 <b>' + esc(S.social.invites[0].from) + '</b> invited you to <b>' + esc(S.social.invites[0].title) + '</b> · ' + esc(S.social.invites[0].date) + (S.social.invites.length > 1 ? ' (+' + (S.social.invites.length - 1) + ' more)' : '') + ' <a href="#friends">See invite</a></div></div>'
       : S.social && r !== 'friends' && (S.social.incoming || []).length ? '<div class="staffbar"><div class="wrap">👋 <b>' + esc(S.social.incoming[0].name) + '</b>' + (S.social.incoming.length > 1 ? ' and ' + (S.social.incoming.length - 1) + ' other' + (S.social.incoming.length > 2 ? 's' : '') : '') + ' want' + (S.social.incoming.length > 1 ? '' : 's') + ' to connect with you. <a href="#friends">See request</a></div></div>' : '') +
@@ -438,7 +537,7 @@ async function route() {
   S._lastRender = Date.now();
   const h = (location.hash || '').replace('#', ''); const [h0, arg] = h.split('/');
   if (h0 === 'staff' && S.isStaff && !S.staff) { try { localStorage.setItem('uzu_mode', 'staff'); } catch (e) {} S.staff = true; S.wallet = null; renderNav(); }
-  S.route = ['schedule', 'courts', 'account', 'signin', 'staff', 'verify', 'pay', 'play', 'wallet', 'reset', 's', 'friends'].includes(h0) ? h0 : 'home'; S.arg = arg || '';
+  S.route = ['schedule', 'courts', 'account', 'signin', 'staff', 'verify', 'pay', 'play', 'wallet', 'reset', 's', 'friends', 'padel', 'football', 'recovery', 'bistro', 'visit'].includes(h0) ? h0 : 'home'; S.arg = arg || '';
   renderNav(); closeModal();
   const app = $('app');
   try {
@@ -453,6 +552,8 @@ async function route() {
     else if (S.route === 'reset') app.innerHTML = await viewReset();
     else if (S.route === 's') app.innerHTML = await viewOne();
     else if (S.route === 'friends') app.innerHTML = await viewFriends();
+    else if (VENUES[S.route]) app.innerHTML = await viewVenue(S.route);
+    else if (S.route === 'visit') app.innerHTML = viewVisit();
     else if (S.route === 'play') app.innerHTML = await viewPlay();
     else if (S.route === 'wallet') app.innerHTML = await viewWallet();
   } catch (e) { app.innerHTML = '<div class="wrap sec"><div class="card">Couldn’t load this page: ' + esc(errMsg(e)) + '</div></div>'; }
@@ -523,19 +624,157 @@ function highlightHTML(sess) {
 }
 
 /* ---------- HOME ---------- */
+/* ---------- CLUB WEBSITE (public pages) ---------- */
+const SQ = 'https://images.squarespace-cdn.com/content/v1/6a7995719c16383673b13f09/';
+const ph = (p, w) => /^https?:/.test(p) ? p : SQ + p + '?format=' + (w || 1500) + 'w';
+const WA = t => 'https://wa.me/639171255048?text=' + encodeURIComponent(t);
+const CLUB = {
+  phone: '0917 125 5048', tel: '+639171255048', email: 'info@uzuclub.com',
+  addr: 'Taytay–El Nido National Highway, Villa Libertad, El Nido, Palawan',
+  hours: 'Open daily · 7:00 AM – 10:00 PM',
+  ig: 'https://www.instagram.com/socialsportsclub.elnido/', fb: 'https://www.facebook.com/profile.php?id=61573365191704',
+  maps: 'https://www.google.com/maps/search/?api=1&query=' + encodeURIComponent('UZU Club, Villa Libertad, El Nido, Palawan'),
+  embed: 'https://maps.google.com/maps?q=' + encodeURIComponent('UZU Club, Villa Libertad, El Nido, Palawan') + '&z=14&output=embed'
+};
+const PHOTOS = {
+  home: 'b011f8e8-f414-446b-bba6-8cd41619aa5b/dji_fly_20261112_160248_0031_1794471937533_photo.jpg',
+  padel: ['83c476cb-acc3-467c-b6d0-d48038422f81/IMG_4552.jpg', 'd413a325-684d-4428-9c4b-92c0441ae82a/IMG_4437.jpg', 'b0188286-aaff-446f-9e41-aac82fe18e0c/IMG_4545.jpg', 'acb26da7-723f-44a3-b007-8adff90f394b/IMG_4439.jpg', '9dd9c206-8924-43be-bc14-3b5978373732/IMG_4440.jpg', '47a803cd-ee52-4e46-bdaf-53352ebcb2ee/IMG_4453.jpg', 'f9df29e6-3c08-437b-b4b6-3aa6bb02b9ff/IMG_4446.jpg'],
+  football: ['9731808f-726c-44a1-9fb7-906dbc465b63/IMG_4567.jpg', '6b24bad2-b54a-4dab-acdb-f8eabe7c1a06/IMG_5527-2.jpg', '45d59b8e-2850-4875-8f47-408b5b8bcd5d/IMG_4535.jpg', '26843085-2bdd-49e4-879c-ab9a32802991/IMG_4538.jpg', '7c8637e3-63ee-45fd-9dc5-58b07ebaeaaa/IMG_4564.jpg', 'eb47054e-f7d6-4bb9-bfd3-eaca38294a35/IMG_5525-2.jpg', '77a68ff7-3c56-4abc-95cf-ea3616a9f94f/IMG_4539.jpg', '2d3dbde9-63a9-4bd0-84ef-ffec2a8c9024/IMG_4534.jpg'],
+  recovery: ['26d46930-4102-4f72-bf0e-3c8513ed389c/IMG_5916.jpg', '6c245165-fc61-4ca8-b6c5-64eb01842676/IMG_5917.jpg', '0e783077-363c-4cbd-b5f9-d546c680978d/dji_fly_20261112_173146_0022_1794476247918_photo.jpg', '82a125eb-080d-4945-b674-35819d232d35/IMG_5144.jpg', '86405c88-d571-403e-ac91-758c020e2e68/IMG_5913.jpg', '37ff8b42-4f81-4e27-b71c-b8ae9e1f9c52/IMG_4489.jpg', 'fac60ab2-b1d8-4e56-a1a2-1c876c53dbf1/IMG_5926.jpg', '40e7adcb-c432-45c6-ade3-1c70e62632c3/IMG_4484.jpg', '3f4513b3-57cb-4751-b987-929b64544d29/IMG_5929.jpg', '4c200380-5bee-430d-8ec8-bbe4be9ede74/IMG_5930.jpg'],
+  bistro: ['3b8683f8-8843-4f41-8c76-bfc12adef636/IMG_5259.jpg', '7bc7cdda-7591-4d90-a7b6-0d7610094ea3/IMG_5375%281%29-2.jpg', '9ed0ccf3-b846-4e9f-83a9-41bf0df44e3b/IMG_5335-2.jpg', 'd564de67-1e45-4e82-bfc7-88be98eff31e/IMG_5342-2.jpg', 'c602671d-4c56-4996-ba2f-686b5e37d2bf/IMG_5364-2.jpg', '8bd99bd3-0be5-4932-885b-03dda6e09f7e/IMG_5356-2.jpg', 'be5daee8-808c-4075-8ad4-3659975511a5/IMG_5327-2.jpg', '328a6abc-29cf-4e49-89ff-4eb08f8ca6be/dji_fly_20261112_155932_0017_1794472086958_photo.jpg', 'f00a35f4-72fb-483a-af32-dca6e0df28ee/IMG_5263.jpg']
+};
+const VENUES = {
+  padel: {
+    name: 'Padel', kick: 'Padel · 3 covered courts', hero: 'd0420066-64e6-4834-8c5a-c12d12dce76c/IMG_4552.jpg', card: PHOTOS.padel[0],
+    title: 'Three covered courts. <i>Rain or shine.</i>', blurb: 'Covered courts, open every day of the year.',
+    lead: 'Premium covered courts overlooking the UZU lawn, open 365 days a year — with the bistro right beside them for a post-match drink.',
+    chips: ['3 covered courts', 'Open 7 AM – 10 PM', 'Rackets & balls for rent', 'Coaching for every level'], sport: 'padel',
+    acts: [
+      { ic: '🎾', t: 'Book a court', s: 'See which courts are free and book in a few taps.', href: '#courts', primary: 1 },
+      { ic: '📅', t: 'Join an Americano', s: 'Social games with rotating partners. Come alone — we’ll pair you up.', href: '#schedule/padel' },
+      { ic: '👥', t: 'Start a Group Play', s: 'Set the time, invite friends or open it to other players.', href: '#play' },
+      { ic: '🧑‍🏫', t: 'Book a coach', s: 'Add a trainer when you book your court — private or small group.', href: '#courts' }],
+    prices: [
+      { h: 'Court rental', u: 'per court, per hour', rows: [['Early bird', '7 AM – 5 PM', 1500, 1200], ['Prime time', '5 PM – 9 PM', 2000, 1600]] },
+      { h: 'Coaching', u: 'per player, per session', note: 'Court rental is charged separately.', rows: [['1 player', '', 700, 560], ['2 players', '', 600, 480], ['3 players', '', 500, 400], ['4 players', '', 400, 320], ['5 players', '', 300, 240], ['Kids · 1 child', '', 500, 400]] },
+      { h: 'Rentals', u: '', rows: [['Nox racket', '', 400, 320], ['Nox racket · kids', '', 350, 280], ['Regular racket', '', 200, 160], ['Regular racket · kids', '', 150, 120], ['Padel balls', 'per game', 450, 360], ['Towel', '', 100, 80]] }],
+    weekly: [['Mon', 'Kids Padel Academy', 'Ages 11–17 · 4–5 PM'], ['Tue', 'Kids Padel Academy', 'Ages 5–10 · 4–5 PM'], ['Wed', 'Ladies Americano', '3–5 PM'], ['Fri', 'Men’s Americano', '3–5 PM']],
+    rules: ['Proper padel sportswear on court', 'No racket throwing, rough play or aggressive behaviour', 'No equipment that could damage the court', 'Respect other players and leave the court clean'],
+    gallery: PHOTOS.padel
+  },
+  football: {
+    name: 'Football', kick: 'Football · real grass', hero: '7906675c-72f6-420a-9bf2-27770e7246c7/IMG_4539.jpg', card: PHOTOS.football[0],
+    title: 'Real grass. <i>Real games.</i>', blurb: 'A natural-grass pitch for open games and academy.',
+    lead: 'A beautifully kept natural-grass pitch in the middle of the club — for Sunday open games, the kids’ academy and private matches.',
+    chips: ['Natural-grass pitch', 'Open Football · Sundays', 'Kids Academy 3× a week', 'Showers & lockers'], sport: 'football',
+    acts: [
+      { ic: '⚽', t: 'Join Open Football', s: 'Men’s 6v6 every Sunday, 6–8 PM. Ages 17+, max 21 players.', href: '#schedule/football', primary: 1 },
+      { ic: '🧒', t: 'Kids Football Academy', s: 'Ages 5–16 · teamwork, discipline and fun.', href: '#schedule/football' },
+      { ic: '🏟️', t: 'Rent the whole field', s: 'Private matches and team events — minimum 2 hours.', href: WA('Hi UZU! I’d like to rent the football field. Date: … Time: … Hours: …'), ext: 1 }],
+    prices: [{ h: 'Football', u: '', rows: [['Open Football session', 'standard', 450, 360], ['Session + towel & facilities', 'shower and changing room', 550, 440], ['Kids Academy', 'per session', 600, 480], ['Private field rental', 'per hour · min. 2 hours', 3750, 3000], ['Turf shoe rental', '', 400, 320]] }],
+    weekly: [['Wed', 'Kids Football Academy', 'Ages 5–10 · 4:45–6:15 PM'], ['Thu', 'Kids Football Academy', 'Ages 11–16 · 4:45–6:15 PM'], ['Sun', 'Kids Football Academy', 'Ages 5–10 · 4:30–6 PM'], ['Sun', 'Men’s Open Football · 6v6', 'Ages 17+ · 6–8 PM']],
+    rules: ['Turf shoes with small rubber nubs, or regular sports shoes', 'No studded boots or cleats', 'No slide tackles, rough play or dangerous challenges', 'Follow the club rules at all times'],
+    gallery: PHOTOS.football
+  },
+  recovery: {
+    name: 'Recovery', kick: 'Recovery · ice bath & sauna', hero: '55f24773-2c42-42df-b871-81c081665f72/IMG_5917.jpg', card: PHOTOS.recovery[0],
+    title: 'Cool down. Heat up. <i>Recover.</i>', blurb: 'Ice bath, sauna and red-light therapy by the pond.',
+    lead: 'An ice bath, a four-person sauna and red-light therapy, tucked into a patch of nature overlooking the pond. Towels, showers and lockers included.',
+    chips: ['Ice bath', '4-person sauna', 'Red-light therapy', 'Towels, showers & lockers'],
+    acts: [
+      { ic: '🧊', t: 'Book a recovery session', s: 'Message us your time — we’ll have it ready.', href: WA('Hi UZU! I’d like to book a recovery session (ice bath & sauna). Date: … Time: … People: …'), ext: 1, primary: 1 },
+      { ic: '➕', t: 'Add it after your game', s: 'Finish your padel or football with a ₱400 recovery add-on — just tell the front desk.', href: '#courts' }],
+    prices: [{ h: 'Recovery', u: '', single: 1, rows: [['Standalone session', 'ice bath, sauna & red light', 500], ['Add-on to padel or football', 'incl. towel, shower & changing room', 400]] }],
+    rules: ['Clean swimwear only — no sportswear or underwear', 'Shower before using the ice bath and sauna', 'Follow the hygiene and safety guidance'],
+    extra: '🥤 Healthy drinks and snacks are a few steps away at the Bistro + Bar.',
+    gallery: PHOTOS.recovery
+  },
+  bistro: {
+    name: 'Bistro & Bar', kick: 'UZU Bistro + Bar', hero: 'b2e9eb8f-967a-472f-9b10-4e111fce8b09/dji_fly_20261112_160240_0029_1794471964677_photo.jpg', card: PHOTOS.bistro[0],
+    title: 'El Nido’s all-day <i>brunch club.</i>', blurb: 'Brunch, coffee, cocktails and Champagne.',
+    lead: 'The heart of UZU — coffee and nourishing plates in the morning, cocktails, fine wine and Champagne at night, with the courts and the pitch in view.',
+    chips: ['All-day brunch', 'Coffee & healthy plates', 'Cocktails, wine & Champagne', 'Watch the matches'],
+    acts: [
+      { ic: '🍽️', t: 'Reserve a table', s: 'Tell us the day, time and how many — we’ll save you a spot.', href: WA('Hi UZU! I’d like to reserve a table at the Bistro. Date: … Time: … Guests: …'), ext: 1, primary: 1 },
+      { ic: '🥂', t: 'Celebrations & private events', s: 'Birthdays, team dinners and corporate gatherings.', href: WA('Hi UZU! I’d like to ask about a private event. Occasion: … Date: … Guests: …'), ext: 1 },
+      { ic: '🎾', t: 'Play, then brunch', s: 'Book a court first — the bistro is right beside it.', href: '#courts' }],
+    made: [['☕', 'Slow breakfasts', 'Good coffee and healthy plates to start the day'], ['💼', 'Meetings', 'A calm, beautiful table to get things done'], ['🏆', 'Post-match', 'Celebrate the win (or the rematch)'], ['📺', 'Match days', 'Watch padel and football with a drink in hand']],
+    gallery: PHOTOS.bistro
+  }
+};
+const bg = (p, w) => 'background-image:url(\'' + ph(p, w) + '\')';
+const xact = a => '<a class="x-act' + (a.primary ? ' primary' : '') + '" href="' + esc(a.href) + '"' + (a.ext ? ' target="_blank" rel="noopener"' : '') + '><span class="ic">' + a.ic + '</span><b>' + esc(a.t) + '</b><small>' + esc(a.s) + '</small><span class="go">' + (a.ext ? 'Message us on WhatsApp →' : 'Let’s go →') + '</span></a>';
+const pesoX = n => n == null ? '—' : '₱' + Number(n).toLocaleString('en-PH');
+function priceTable(p) {
+  return '<div class="card x-pcard"><div class="row between" style="align-items:baseline"><b style="font-size:18px">' + esc(p.h) + '</b>' + (p.u ? '<span class="small muted">' + esc(p.u) + '</span>' : '') + '</div>' +
+    '<table class="x-price"><thead><tr><th></th>' + (p.single ? '<th>Price</th>' : '<th>Regular</th><th>Member</th>') + '</tr></thead><tbody>' +
+    p.rows.map(r => '<tr><td>' + esc(r[0]) + (r[1] ? '<small>' + esc(r[1]) + '</small>' : '') + '</td><td>' + pesoX(r[2]) + '</td>' + (p.single ? '' : '<td class="m">' + pesoX(r[3]) + '</td>') + '</tr>').join('') + '</tbody></table>' +
+    (p.note ? '<div class="small muted" style="margin-top:8px">' + esc(p.note) + '</div>' : '') + '</div>';
+}
+const galHTML = (list, cls) => '<div class="' + (cls || 'x-strip') + '">' + list.map(p => '<div role="button" aria-label="Open photo" data-act="zoom" data-v="' + esc(ph(p, 2500)) + '" style="' + bg(p, 1000) + '"></div>').join('') + '</div>';
+const ctaBand = () => '<section class="x-sec tight"><div class="wrap"><div class="x-band"><div><div class="x-kick">Membership</div><div class="x-h" style="color:var(--cream)">Play more, pay less.</div><p style="opacity:.85;margin:0 0 18px;max-width:460px">₱2,000 covers you plus up to two family members for six months — with member rates on every court hour, session and rental.</p>' +
+  (S.user ? '<a class="btn b-gold" href="#account">Become a member</a>' : '<a class="btn b-gold" href="#signin" data-act="regtab">Create a free account</a>') + '</div>' +
+  '<ul><li>Member rates on courts, coaching & rentals</li><li>Covers your partner and kids</li><li>Book and pay online in seconds</li><li>Invite friends to your games</li></ul></div></div></section>';
+
+async function viewVenue(key) {
+  const V = VENUES[key]; let live = '';
+  if (V.sport) {
+    const t = manilaToday(); const [sess, mine] = await Promise.all([sessionsBetween(t, addDays(t, 13)), myBookings()]);
+    mineBySession = {}; mine.filter(b => b.status !== 'cancelled' && b.session_id).forEach(b => (mineBySession[b.session_id] = mineBySession[b.session_id] || []).push(b));
+    S._sess = S._sess || {}; sess.forEach(s => S._sess[s.id] = s);
+    const now = manilaNowMins(), list = sess.filter(s => s.sport === V.sport && s.status === 'open' && !(s.date === t && mins(s.start_time) <= now)).slice(0, 5);
+    live = '<section class="x-sec tight"><div class="wrap"><div class="row between" style="align-items:flex-end;flex-wrap:wrap;gap:10px"><div><div class="x-kick">Coming up</div><div class="x-h">Book your spot</div></div><a class="btn b-ghost" href="#schedule/' + V.sport + '">Full schedule →</a></div>' +
+      (list.length ? list.map(s => '<div class="x-when">' + esc(fmtDay(s.date)) + '</div>' + sessCard(s, '', '')).join('') : '<div class="card muted">No sessions scheduled in the next two weeks — check back soon, or book a court.</div>') + '</div></section>';
+  }
+  return '<section class="x-hero sub" style="' + bg(V.hero, 2500) + '"><div class="wrap"><div class="x-kick">' + esc(V.kick) + '</div><h1>' + V.title + '</h1><p>' + esc(V.lead) + '</p><div class="x-chips">' + V.chips.map(c => '<span>' + esc(c) + '</span>').join('') + '</div></div></section>' +
+    '<section class="x-sec tight x-pull"><div class="wrap"><div class="x-acts">' + V.acts.map(xact).join('') + '</div></div></section>' + live +
+    (V.made ? '<section class="x-sec tight"><div class="wrap"><div class="x-kick">Made for</div><div class="x-h">Every part of your day</div><div class="x-made">' + V.made.map(m => '<div><span>' + m[0] + '</span><b>' + esc(m[1]) + '</b><small>' + esc(m[2]) + '</small></div>').join('') + '</div></div></section>' : '') +
+    (V.prices ? '<section class="x-sec tight"><div class="wrap"><div class="x-kick">Rates</div><div class="x-h">Simple, clear pricing</div><p class="x-lead">Members save on every booking. Prices in Philippine pesos.</p><div class="x-cols">' + V.prices.map(priceTable).join('') +
+      (V.weekly ? '<div class="card x-pcard"><b style="font-size:18px">Every week</b><div style="margin-top:6px">' + V.weekly.map(w => '<div class="x-wk"><span>' + w[0] + '</span><div><b>' + esc(w[1]) + '</b><small>' + esc(w[2]) + '</small></div></div>').join('') + '</div><a class="btn b-green b-full" style="margin-top:12px" href="#schedule/' + (V.sport || '') + '">See dates & book</a></div>' : '') + '</div></div></section>' : '') +
+    '<section class="x-sec tight"><div class="wrap"><div class="x-cols"><div class="card x-pcard"><b style="font-size:18px">Good to know</b><ul class="x-rules">' + (V.rules || []).map(r => '<li>' + esc(r) + '</li>').join('') + '</ul>' + (V.extra ? '<p class="small" style="margin:10px 0 0">' + esc(V.extra) + '</p>' : '') + '</div>' +
+    '<div class="card x-pcard"><b style="font-size:18px">Questions?</b><p class="muted" style="margin:6px 0 14px">We’re happy to help — message us any time between 7 AM and 10 PM.</p><div class="btns"><a class="btn b-green" target="_blank" rel="noopener" href="' + WA('Hi UZU! I have a question about ' + V.name + '.') + '">WhatsApp us</a><a class="btn b-ghost" href="tel:' + CLUB.tel + '">Call ' + CLUB.phone + '</a></div></div></div></div></section>' +
+    '<section class="x-sec tight"><div class="wrap"><div class="x-kick">Gallery</div><div class="x-h" style="margin-bottom:16px">A look around</div>' + galHTML(V.gallery) + '</div></section>' + ctaBand();
+}
+
 async function viewHome() {
-  const t = manilaToday();
-  const days = Array.from({ length: 7 }, (_, i) => addDays(t, i));
-  const [sess, mine] = await Promise.all([sessionsBetween(t, days[6]), myBookings()]);
+  const t = manilaToday(), days = Array.from({ length: 7 }, (_, i) => addDays(t, i));
+  const [sess, mine] = await Promise.all([sessionsBetween(t, addDays(t, 13)), myBookings()]);
   mineBySession = {}; mine.filter(b => b.status !== 'cancelled' && b.session_id).forEach(b => (mineBySession[b.session_id] = mineBySession[b.session_id] || []).push(b));
   S._sess = S._sess || {}; sess.forEach(s => S._sess[s.id] = s);
-  return '<section class="hero"><div class="wrap">' + (ASSETS.logo ? '<img class="logo-big" src="' + ASSETS.logo + '" alt="UZU Club">' : '') + '<div class="pillars">PADEL + BISTRO &amp; BAR + FOOTBALL + RECOVERY</div><h1>One of Asia’s most <i>beautiful</i> social clubs.</h1><p>El Nido, Palawan, Philippines. Book Americanos, clinics, football and any of our three padel courts in a few taps — confirmations come straight to your email.</p><div class="btns"><a class="btn b-gold" href="#schedule">See this week’s sessions</a><a class="btn b-ghostl" href="#courts">Book a court</a><a class="btn b-ghostl" href="#play">Create a Group Play</a></div></div></section>' +
-        '<section class="sec"><div class="wrap" style="display:grid;grid-template-columns:minmax(0,1fr) 300px;gap:22px;align-items:start" id="homegrid">' +
-    '<div>' + highlightHTML(sess) + '<h2>This week at UZU</h2><p class="sub">Today first, then the days ahead. Tap Book to grab a spot.</p>' + feedHTML(sess, days, t) +
-    '<a class="btn b-ghost b-full" href="#schedule" style="margin-top:14px">See the next two weeks</a></div>' +
-    '<div class="side">' + '<div class="card" style="margin-top:0"><b>Become a member</b><div class="serif" style="font-size:30px;font-weight:600;line-height:1.1;margin:4px 0">₱2,000 <span style="font-size:18px">for 6 months</span></div><div class="muted small" style="margin:0 0 10px">Covers you plus up to 2 family members (spouse/partner or child). Members save ₱100 on every session and court hour. Register, tick “I want to become a member”, then pay at the club or by GCash — our staff will activate it.</div>' + (S.user ? '<a class="btn b-ghost b-sm" href="#account">My bookings</a>' : '<a class="btn b-gold b-sm" href="#signin" data-act="regtab">Create an account</a>') + '</div>' +
-    '<div class="card" style="margin-top:14px"><b>For bookings</b><div class="small" style="margin-top:4px">0917 125 5048<br>info@uzuclub.com<br>@uzu.club</div></div></div>' +
-    '</div></section>';
+  const now = manilaNowMins();
+  const week = days.map(d => { const dd = parseD(d), list = sess.filter(s => s.date === d && !s.is_private && s.status === 'open' && !(d === t && mins(s.end_time) <= now));
+    return '<div class="x-day' + (d === t ? ' today' : '') + '"><h4>' + (d === t ? 'TODAY' : DOW[dd.getDay()].slice(0, 3).toUpperCase()) + ' <span>' + dd.getDate() + '</span></h4>' +
+      (list.length ? list.map(s => { const left = s.capacity - s.booked; return '<a href="#s/' + s.id + '"><i class="dot ' + (s.sport === 'football' ? 'f' : 'p') + '"></i>' + esc(s.title) + '<small>' + esc(fmtT(s.start_time)) + ' · ' + (left > 0 ? left + ' spot' + (left > 1 ? 's' : '') + ' left' : 'Full — waitlist') + '</small></a>'; }).join('')
+        : '<div class="free">No sessions — courts are open for booking.</div>') + '</div>'; }).join('');
+  const quick = [['🎾', 'Book a court', 'Padel · 3 covered courts', '#courts'], ['📅', 'Join a session', 'Americanos, academy, football', '#schedule'], ['👥', 'Group Play', 'Play with friends', '#play'], ['🍽️', 'Bistro table', 'Brunch to cocktails', WA('Hi UZU! I’d like to reserve a table at the Bistro. Date: … Time: … Guests: …')]];
+  return '<section class="x-hero home" style="' + bg(PHOTOS.home, 2500) + '"><div class="wrap"><div class="x-kick">El Nido · Palawan · Philippines</div><h1>One of Asia’s most beautiful <i>padel & social clubs.</i></h1>' +
+    '<p>Padel, football, recovery and an all-day bistro — all in one tropical club. Book your game in a few taps.</p><div class="btns"><button class="btn b-gold btn-lg" data-act="booknow">Book now</button><a class="btn b-ghostl btn-lg" href="#schedule">See what’s on</a></div>' +
+    '<div class="x-chips"><span>🕖 Open daily 7 AM – 10 PM</span><span>🌧️ Covered courts — play rain or shine</span></div></div></section>' +
+    '<section class="x-quick"><div class="wrap"><div class="grid">' + quick.map(q => '<a href="' + esc(q[3]) + '"' + (/^http/.test(q[3]) ? ' target="_blank" rel="noopener"' : '') + '><span class="ic">' + q[0] + '</span><span><b>' + q[1] + '</b><small>' + q[2] + '</small></span></a>').join('') + '</div></div></section>' +
+    '<section class="x-sec tight"><div class="wrap">' + highlightHTML(sess) + '<div class="row between" style="align-items:flex-end;flex-wrap:wrap;gap:10px;margin-top:8px"><div><div class="x-kick">What’s on</div><div class="x-h">This week at UZU</div></div><a class="btn b-ghost" href="#schedule">Full schedule →</a></div>' +
+    '<p class="x-lead" style="margin-bottom:16px">Tap any session to see who’s playing and book your spot.</p><div class="x-week">' + week + '</div></div></section>' +
+    '<section class="x-sec"><div class="wrap"><div class="x-kick">The club</div><div class="x-h">Everything in one place</div><p class="x-lead">Three covered padel courts, a real-grass football pitch, a recovery area with ice bath and sauna, and the bistro at the heart of it all — plus showers, changing rooms and lockers.</p>' +
+    '<div class="x-venues">' + ['padel', 'football', 'recovery', 'bistro'].map(k => { const V = VENUES[k]; return '<a class="x-venue" href="#' + k + '" style="' + bg(V.card, 1000) + '"><div><h3>' + esc(V.name) + '</h3><p>' + esc(V.blurb) + '</p><span>Explore →</span></div></a>'; }).join('') + '</div></div></section>' +
+    ctaBand() +
+    '<section class="x-sec"><div class="wrap"><div class="row between" style="align-items:flex-end;flex-wrap:wrap;gap:10px"><div><div class="x-kick">Life at UZU</div><div class="x-h">Come see for yourself</div></div><a class="btn b-ghost" href="' + CLUB.ig + '" target="_blank" rel="noopener">Follow us on Instagram →</a></div>' +
+    galHTML([PHOTOS.padel[2], PHOTOS.bistro[7], PHOTOS.football[1], PHOTOS.recovery[2], PHOTOS.bistro[2], PHOTOS.padel[5], PHOTOS.recovery[4], PHOTOS.football[3]], 'x-gal') + '</div></section>' +
+    visitHTML();
+}
+function visitHTML() {
+  return '<section class="x-sec" id="visit"><div class="wrap"><div class="x-kick">Visit us</div><div class="x-h" style="margin-bottom:18px">Find UZU in El Nido</div><div class="x-visit"><div class="card x-pcard">' +
+    [['📍', 'Address', esc(CLUB.addr) + '<br><a href="' + CLUB.maps + '" target="_blank" rel="noopener">Get directions →</a>'], ['🕖', 'Hours', 'Open every day, 7:00 AM – 10:00 PM'], ['💬', 'WhatsApp & phone', '<a href="' + WA('Hi UZU!') + '" target="_blank" rel="noopener">' + CLUB.phone + '</a>'], ['✉️', 'Email', '<a href="mailto:' + CLUB.email + '">' + CLUB.email + '</a>'],
+      ['📷', 'Follow along', '<a href="' + CLUB.ig + '" target="_blank" rel="noopener">Instagram</a> · <a href="' + CLUB.fb + '" target="_blank" rel="noopener">Facebook</a>']].map(x => '<div class="x-info"><span class="ic">' + x[0] + '</span><div><b>' + x[1] + '</b><div class="muted">' + x[2] + '</div></div></div>').join('') +
+    '<div class="btns" style="margin-top:14px"><button class="btn b-gold" data-act="booknow">Book now</button><a class="btn b-ghost" href="' + WA('Hi UZU!') + '" target="_blank" rel="noopener">Message us</a></div></div>' +
+    '<iframe title="Map to UZU Club" loading="lazy" src="' + CLUB.embed + '"></iframe></div></div></section>';
+}
+function viewVisit() { return '<div style="padding-top:10px"></div>' + visitHTML(); }
+function openBookChooser() {
+  const o = [['🎾', 'Book a padel court', 'Choose your court and time', '#courts'], ['📅', 'Join a session', 'Americanos, kids academy, open football', '#schedule'], ['👥', 'Start a Group Play', 'Play with friends or find players', '#play'],
+    ['🏟️', 'Rent the football field', 'Private matches · min. 2 hours', WA('Hi UZU! I’d like to rent the football field. Date: … Time: … Hours: …')],
+    ['🧊', 'Recovery session', 'Ice bath, sauna & red light', WA('Hi UZU! I’d like to book a recovery session. Date: … Time: … People: …')],
+    ['🍽️', 'Reserve a bistro table', 'Brunch, dinner, drinks', WA('Hi UZU! I’d like to reserve a table at the Bistro. Date: … Time: … Guests: …')]];
+  openModal('<button class="x" data-act="close">✕</button><h3 style="margin-bottom:4px">What would you like to book?</h3><p class="muted small" style="margin:0 0 14px">Tap one to get started.</p>' +
+    o.map(x => { const ext = /^http/.test(x[3]); return '<a class="x-pick" href="' + esc(x[3]) + '" data-act="close"' + (ext ? ' target="_blank" rel="noopener"' : '') + '><span class="ic">' + x[0] + '</span><span style="flex:1"><b>' + x[1] + '</b><small>' + x[2] + (ext ? ' · via WhatsApp' : '') + '</small></span><span class="chev">›</span></a>'; }).join(''));
 }
 
 /* ---------- SCHEDULE ---------- */
@@ -567,6 +806,7 @@ function sessCard(s, state, tag) {
     '<div class="act">' + act + '</div></div>';
 }
 async function viewSchedule() {
+  if (S.arg === 'padel' || S.arg === 'football') { S.sport = S.arg; S.arg = ''; }
   const t = manilaToday(), end = addDays(t, 13);
   const [sess, mine] = await Promise.all([sessionsBetween(t, end), myBookings()]);
   mineBySession = {}; mine.filter(b => b.status !== 'cancelled' && b.session_id).forEach(b => (mineBySession[b.session_id] = mineBySession[b.session_id] || []).push(b));
@@ -1299,12 +1539,16 @@ const must = r => { if (r.error) throw r.error; return r.data; };
 const num = v => v === '' || v == null ? null : Number(v);
 
 document.addEventListener('click', async ev => {
+  if (!ev.target.closest('#acct')) { const am = document.getElementById('acct'); if (am) am.classList.remove('open'); }
   const b = ev.target.closest('[data-act]'); if (!b) return;
   const a = b.dataset.act, id = b.dataset.id, v = b.dataset.v;
   if (a === 'bg' && ev.target !== b) return;
   if (b.tagName === 'A' && (a === 'signout' || a === 'mode' || b.getAttribute('href') === '#')) ev.preventDefault();
   switch (a) {
     case 'mode': setMode(v); break;
+    case 'booknow': openBookChooser(); break;
+    case 'acctmenu': $('acct').classList.toggle('open'); break;
+    case 'zoom': { const lb = document.createElement('div'); lb.className = 'lightbox'; lb.innerHTML = '<img alt="" src="' + v + '">'; lb.onclick = () => lb.remove(); document.body.appendChild(lb); break; }
     case 'fr': { const fn = { connect: ['uzu_connect', 'Request sent — they’ll get an email'], accept: ['uzu_respond_connection', 'You’re now connected 🎾'], decline: ['uzu_respond_connection', 'Request removed'], cancel: ['uzu_remove_connection', 'Request cancelled'], remove: ['uzu_remove_connection', 'Removed from your friends'] }[v];
       if (v === 'remove' && !confirmTwice(b)) return;
       run(async () => { const args = v === 'accept' || v === 'decline' ? { p_user: id, p_accept: v === 'accept' } : { p_user: id }; const r = must(await sb.rpc(fn[0], args));
