@@ -386,6 +386,19 @@ footer.x-foot{padding:56px 0 30px;margin-top:0}
 .x-rank th:nth-child(2),.x-rank td:nth-child(2),.x-rt th:nth-child(2),.x-rt td:nth-child(2){text-align:left!important;white-space:normal}.x-rank td:first-child,.x-rank th:first-child{text-align:left;width:34px}
 .x-rank td small{display:block;font-weight:500;color:var(--muted);font-size:12px}
 details summary{cursor:pointer;color:var(--green);font-weight:700;margin-top:6px}
+.b-google{background:#fff;color:#1f1f1f;border:1.5px solid #dadce0;display:flex;align-items:center;justify-content:center;gap:10px;font-weight:700}
+.b-google:hover{background:#f7f8f8}.b-google svg{width:20px;height:20px;flex:none}
+.or{display:flex;align-items:center;gap:10px;color:var(--muted);font-size:13px;margin:16px 0 12px}.or:before,.or:after{content:'';flex:1;border-top:1px solid var(--line)}
+.stiles{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:8px;margin:6px 0 10px}
+.stiles button{position:relative;display:flex;flex-direction:column;align-items:center;gap:3px;padding:13px 6px 11px;border-radius:16px;border:1.5px solid var(--line);background:#fff;font-weight:800;font-size:13.5px;color:var(--ink)}
+.stiles button .ic{font-size:23px;line-height:1}.stiles button.on{background:var(--green);color:var(--cream);border-color:var(--green)}
+.stiles .nbadge{position:absolute;top:6px;right:8px;margin:0}
+@media(max-width:760px){.stiles{grid-template-columns:repeat(3,minmax(0,1fr))}}
+.smore{display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin:0 0 20px}.smore>span{font-size:11px;font-weight:800;color:var(--muted);letter-spacing:.14em;margin-right:2px}
+.smore button{border:1px solid var(--line);background:transparent;border-radius:999px;padding:6px 12px;font-weight:700;font-size:13px;color:var(--muted)}.smore button.on{background:var(--green);color:var(--cream);border-color:var(--green)}
+.invrow{display:flex;gap:12px;align-items:center;padding:10px 0;border-top:1px solid var(--line);flex-wrap:wrap}.invrow:first-of-type{border-top:0}.invrow .who{flex:1;min-width:180px}.invrow .who small{display:block;color:var(--muted)}
+.rolepick{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px}.rolepick button{text-align:left;border:1.5px solid var(--line);background:var(--paper);border-radius:14px;padding:12px 14px;color:var(--ink)}
+.rolepick button b{display:block;font-size:16px}.rolepick button small{color:var(--muted);font-size:13px}.rolepick button.on{border-color:var(--green);background:#eef5ee;box-shadow:0 0 0 1px var(--green) inset}
 </style>
 </head>
 <body>
@@ -411,7 +424,7 @@ details summary{cursor:pointer;color:var(--green);font-weight:700;margin-top:6px
 'use strict';
 const SB_URL = 'https://etlbiheeumhrmzwcvene.supabase.co';
 const SB_KEY = 'sb_publishable_boyoxlapZQQQFtUz6EjjoA_zlczwKQC';
-const sb = window.supabase.createClient(SB_URL, SB_KEY, { auth: { persistSession: true, autoRefreshToken: true } });
+const sb = window.supabase.createClient(SB_URL, SB_KEY, { auth: { persistSession: true, autoRefreshToken: true, flowType: 'pkce', detectSessionInUrl: true } });
 const ASSETS = window.UZU_ASSETS || {};
 const SITE = 'https://migquesada.github.io/uzu/';
 const LOGO = ASSETS.logo ? '<img src="' + ASSETS.logo + '" alt="UZU Club">' : '<b>UZU</b><small>CLUB</small>';
@@ -538,6 +551,7 @@ function renderNav() {
       '<a href="#staff" data-act="stafftab" data-v="sheet" class="' + (r === 'staff' && S.staffTab === 'sheet' ? 'on' : '') + '">Court sheet</a>' +
       '<a href="#staff" data-act="stafftab" data-v="people" class="' + (r === 'staff' && S.staffTab === 'people' ? 'on' : '') + '">Players</a>' +
       '<a href="#staff" data-act="stafftab" data-v="bookings" class="' + (r === 'staff' && S.staffTab === 'bookings' ? 'on' : '') + '">Bookings</a>' +
+      '<a href="#" data-act="invitenew">✉️ Invite</a>' +
       '<a href="#" data-act="mode" data-v="player">Switch to player view</a><a href="#" data-act="signout">Sign out</a></div></div></div>' +
       '<div class="staffbar"><div class="wrap">Signed in as staff · <b>' + esc(S.user.email) + '</b><span class="muted">Want to book for yourself? <a href="#" data-act="mode" data-v="player">Switch to player view</a>.</span></div></div>';
     return;
@@ -550,10 +564,11 @@ function renderNav() {
     '<a href="#" class="book" data-act="booknow">Book now</a>' +
     (S.user ? '<div class="acct" id="acct"><button data-act="acctmenu" aria-label="My account">' + avatar({ id: S.user.id, name: meName }) + esc(meName) + bdg + ' ▾</button><div class="menu">' +
       L('account', 'My bookings') + L('courts', 'Book a court') + L('play', 'Group Play') + L('friends', 'Friends' + bdg) + L('wallet', 'Credits' + (S.wallet ? ' · ' + peso(S.wallet.balance) : '')) +
-      (S.isStaff ? '<a href="#" data-act="mode" data-v="staff">Staff mode</a>' : '') + '<hr><a href="#" data-act="signout">Sign out</a></div></div>' : L('signin', 'Sign in')) + '</div></div></div>' +
+      (S.isStaff ? '<a href="#" data-act="mode" data-v="staff">🛡️ Staff dashboard</a>' : '') + '<hr><a href="#" data-act="signout">Sign out</a></div></div>' : L('signin', 'Sign in')) + '</div></div></div>' +
     (S.isStaff ? '<div class="staffbar"><div class="wrap">Player view · bookings you make here are in your own name (' + esc(S.user.email) + '). <a href="#" data-act="mode" data-v="staff">Back to staff mode</a></div></div>' : '') +
     (S.social && r !== 'friends' && (S.social.invites || []).length ? '<div class="staffbar"><div class="wrap">🎾 <b>' + esc(S.social.invites[0].from) + '</b> invited you to <b>' + esc(S.social.invites[0].title) + '</b> · ' + esc(S.social.invites[0].date) + (S.social.invites.length > 1 ? ' (+' + (S.social.invites.length - 1) + ' more)' : '') + ' <a href="#friends">See invite</a></div></div>'
       : S.social && r !== 'friends' && (S.social.incoming || []).length ? '<div class="staffbar"><div class="wrap">👋 <b>' + esc(S.social.incoming[0].name) + '</b>' + (S.social.incoming.length > 1 ? ' and ' + (S.social.incoming.length - 1) + ' other' + (S.social.incoming.length > 2 ? 's' : '') : '') + ' want' + (S.social.incoming.length > 1 ? '' : 's') + ' to connect with you. <a href="#friends">See request</a></div></div>' : '') +
+    (S.user && S.profile && !S.staff && !S.profile.phone && r !== 'account' ? '<div class="staffbar"><div class="wrap">📱 Add your mobile number so the club can reach you about your bookings. <a href="#account">Add it now</a></div></div>' : '') +
     (S.user && S.profile && !S.profile.email_verified ? '<div class="staffbar"><div class="wrap">Please confirm your email to start booking — we sent a link to <b>' + esc(S.user.email) + '</b>. <button class="btn b-ghost b-sm" data-act="resendverify">Resend link</button></div></div>' : '');
 }
 
@@ -563,7 +578,7 @@ async function route() {
   S._lastRender = Date.now();
   const h = (location.hash || '').replace('#', ''); const [h0, arg] = h.split('/');
   if (h0 === 'staff' && S.isStaff && !S.staff) { try { localStorage.setItem('uzu_mode', 'staff'); } catch (e) {} S.staff = true; S.wallet = null; renderNav(); }
-  S.route = ['schedule', 'courts', 'account', 'signin', 'staff', 'verify', 'pay', 'play', 'wallet', 'reset', 's', 'friends', 'padel', 'football', 'recovery', 'bistro', 'visit', 'news', 'results'].includes(h0) ? h0 : 'home'; S.arg = arg || '';
+  S.route = ['schedule', 'courts', 'account', 'signin', 'staff', 'verify', 'pay', 'play', 'wallet', 'reset', 's', 'friends', 'padel', 'football', 'recovery', 'bistro', 'visit', 'news', 'results', 'join'].includes(h0) ? h0 : 'home'; S.arg = arg || '';
   renderNav(); closeModal();
   const app = $('app');
   try {
@@ -581,6 +596,7 @@ async function route() {
     else if (VENUES[S.route]) app.innerHTML = await viewVenue(S.route);
     else if (S.route === 'visit') app.innerHTML = viewVisit();
     else if (S.route === 'news') app.innerHTML = await viewNews();
+    else if (S.route === 'join') app.innerHTML = await viewJoin();
     else if (S.route === 'results') app.innerHTML = await viewResults();
     else if (S.route === 'play') app.innerHTML = await viewPlay();
     else if (S.route === 'wallet') app.innerHTML = await viewWallet();
@@ -1283,7 +1299,8 @@ function viewSignin() {
   }
   if (signTab === 'sent') { signTab = 'in'; return '<section class="sec"><div class="wrap" style="max-width:520px"><div class="card" style="text-align:center;padding:28px"><div style="font-size:40px">✉️</div><h2 style="margin:6px 0">Check your inbox</h2><p class="muted">We sent a confirmation link to <b>' + esc(S._sentTo || '') + '</b>. Tap it to activate your account — then you can book sessions and courts.</p><p class="small muted">Nothing after a few minutes? Check spam, or resend it from <a href="#account">My account</a>.</p><a class="btn b-green" href="#schedule">See the schedule</a></div></div></section>'; }
   if (S.user) { setTimeout(() => go(S.staff ? 'staff' : (S.after || 'account')), 0); return '<div class="loader">Signed in…</div>'; }
-  return '<section class="sec"><div class="wrap" style="max-width:460px"><div class="card"><div class="seg" style="margin-bottom:16px"><button data-act="stab" data-v="in" class="' + (signTab === 'in' ? 'on' : '') + '">Sign in</button><button data-act="stab" data-v="up" class="' + (signTab === 'up' ? 'on' : '') + '">Create account</button></div>' +
+  const gBtn = S.googleOn ? '<button class="btn b-google b-full" data-act="google"><svg viewBox="0 0 48 48" aria-hidden="true"><path fill="#FFC107" d="M43.6 20.5H42V20H24v8h11.3C33.7 32.7 29.2 36 24 36c-6.6 0-12-5.4-12-12s5.4-12 12-12c3.1 0 5.8 1.2 7.9 3.1l5.7-5.7C34 6.1 29.3 4 24 4 12.9 4 4 12.9 4 24s8.9 20 20 20 20-8.9 20-20c0-1.3-.1-2.4-.4-3.5z"/><path fill="#FF3D00" d="M6.3 14.7l6.6 4.8C14.7 15.1 19 12 24 12c3.1 0 5.8 1.2 7.9 3.1l5.7-5.7C34 6.1 29.3 4 24 4 16.3 4 9.7 8.3 6.3 14.7z"/><path fill="#4CAF50" d="M24 44c5.2 0 9.9-2 13.4-5.2l-6.2-5.2C29.2 35.1 26.7 36 24 36c-5.2 0-9.6-3.3-11.3-8l-6.5 5C9.5 39.6 16.2 44 24 44z"/><path fill="#1976D2" d="M43.6 20.5H42V20H24v8h11.3c-.8 2.2-2.2 4.2-4.1 5.6l6.2 5.2C37 39.2 44 34 44 24c0-1.3-.1-2.4-.4-3.5z"/></svg>' + (signTab === 'up' ? 'Sign up with Google' : 'Continue with Google') + '</button><div class="or">or with your email</div>' : '';
+  return '<section class="sec"><div class="wrap" style="max-width:460px"><div class="card"><div class="seg" style="margin-bottom:16px"><button data-act="stab" data-v="in" class="' + (signTab === 'in' ? 'on' : '') + '">Sign in</button><button data-act="stab" data-v="up" class="' + (signTab === 'up' ? 'on' : '') + '">Create account</button></div>' + gBtn +
     (signTab === 'up' ? '<label class="field"><span>FULL NAME</span><input id="su-name" class="inp" autocomplete="name"></label><label class="field"><span>NICKNAME</span><input id="su-nick" class="inp" maxlength="24" placeholder="Shown on public booking lists"></label><label class="field"><span>MOBILE</span><input id="su-phone" class="inp" inputmode="tel" autocomplete="tel" placeholder="09xx xxx xxxx"></label>' : '') +
     '<label class="field"><span>EMAIL</span><input id="su-email" class="inp" type="email" autocomplete="email"></label><label class="field"><span>PASSWORD</span><input id="su-pass" class="inp" type="password" autocomplete="' + (signTab === 'up' ? 'new-password' : 'current-password') + '" placeholder="' + (signTab === 'up' ? 'At least 8 characters' : '') + '"></label>' +
     (signTab === 'up' ? '<div class="card" style="background:#fff;margin:4px 0 14px"><label class="row" style="gap:8px;font-weight:700"><input type="checkbox" id="su-member">I want to become a member — ₱2,000 for 6 months</label><div class="small muted" style="margin:4px 0 8px">Includes up to 2 family members (spouse/partner or child). Our staff will send you an invitation to pay and upload your proof of payment.</div></div><div class="card" style="background:#fff;margin:0 0 14px"><b>Your household (optional)</b><div class="small muted">Add your partner and kids so you can book for them.</div>' + householdFields([]) + '</div>' : '') +
@@ -1328,15 +1345,17 @@ async function viewPay() {
 }
 
 /* ---------- STAFF ---------- */
+const STAFF_MAIN = [['people', '👥', 'Players'], ['today', '📋', 'Today'], ['bookings', '📅', 'Bookings'], ['sheet', '🎾', 'Court sheet'], ['sessions', '🗓️', 'Sessions'], ['news', '📣', 'Club board']];
 const STAFF_TABS = [['sheet', 'Court sheet'], ['people', 'Players'], ['today', 'Day sheet'], ['bookings', 'Bookings'], ['sessions', 'Sessions'], ['weekly', 'Weekly schedule'], ['courts', 'Courts'], ['groups', 'Group Play'], ['news', 'Club board'], ['results', 'Results'], ['credits', 'Credits'], ['extras', 'Trainers & rentals'], ['emails', 'Emails'], ['team', 'Staff']];
 async function viewStaff() {
   if (!S.user) { S.after = 'staff'; return viewSignin(); }
   if (!S.staff) return '<section class="sec"><div class="wrap"><div class="card">This area is for UZU staff. Ask a manager to add your account.</div></div></section>';
   const [{ data: st }, { data: al }, ppl] = await Promise.all([sb.rpc('uzu_staff_stats'), sb.rpc('uzu_staff_alerts'), peopleData(true)]);
   const s = st || {}; S._bal = {}; (ppl.accounts || []).forEach(p => { if (+p.credits > 0) S._bal[p.id] = +p.credits; });
-  let h = '<section class="sec" style="padding-top:26px"><div class="wrap"><div class="row between wrapx"><h2>Staff dashboard</h2><span class="muted small">' + esc(fmtDay(manilaToday())) + '</span></div>' +
-    staffBrief(al || {}, s) +
-    '<div class="tabs">' + STAFF_TABS.map(t => '<button data-act="stafftab" data-v="' + t[0] + '" class="' + (S.staffTab === t[0] ? 'on' : '') + '">' + t[1] + (t[0] === 'bookings' && s.pending ? ' (' + s.pending + ')' : '') + (t[0] === 'people' && (s.to_review || s.requests) ? ' (' + ((s.to_review || 0) + (s.requests || 0)) + ')' : '') + (t[0] === 'groups' && s.groups ? ' (' + s.groups + ')' : '') + (t[0] === 'credits' && s.topups ? ' (' + s.topups + ')' : '') + '</button>').join('') + '</div><div id="stafftab">';
+  let h = '<section class="sec" style="padding-top:26px"><div class="wrap"><div class="row between wrapx" style="gap:10px"><div><h2 style="margin-bottom:2px">Staff dashboard</h2><span class="muted small">' + esc(fmtDay(manilaToday())) + '</span></div><button class="btn b-gold" data-act="invitenew">✉️ Invite someone</button></div>' +
+    (() => { const cnt = { bookings: s.pending, people: (s.to_review || 0) + (s.requests || 0), groups: s.groups, credits: s.topups }, b = k => cnt[k] ? '<span class="nbadge">' + cnt[k] + '</span>' : '';
+      return '<div class="stiles">' + STAFF_MAIN.map(t => '<button data-act="stafftab" data-v="' + t[0] + '" class="' + (S.staffTab === t[0] ? 'on' : '') + '"><span class="ic">' + t[1] + '</span>' + t[2] + b(t[0]) + '</button>').join('') + '</div>' +
+        '<div class="smore"><span>MORE</span>' + STAFF_TABS.filter(t => !STAFF_MAIN.some(m => m[0] === t[0])).map(t => '<button data-act="stafftab" data-v="' + t[0] + '" class="' + (S.staffTab === t[0] ? 'on' : '') + '">' + (t[0] === 'team' ? 'Staff team' : t[1]) + (cnt[t[0]] ? ' (' + cnt[t[0]] + ')' : '') + '</button>').join('') + '</div>'; })() + staffBrief(al || {}, s) + '<div id="stafftab">';
   const fn = { news: stNews, results: stResults, sheet: stSheet, today: stToday, bookings: stBookings, sessions: stSessions, weekly: stWeekly, courts: stCourts, groups: stGroups, credits: stCredits, extras: stExtras, people: stPeople, members: stPeople, emails: () => stEmails(s), team: () => stTeam(s) }[S.staffTab];
   h += await fn();
   return h + '</div></div></section>';
@@ -1435,7 +1454,7 @@ function personType(p) {
   return ['Registrant', 'p-warn'];
 }
 async function stPeople() {
-  const d = await peopleData(true); const T = manilaToday(); const wk = Date.now() - 7 * 864e5;
+  const [d, iv] = await Promise.all([peopleData(true), sb.rpc('uzu_staff_invitations')]); S._invites = iv.data || []; const T = manilaToday(); const wk = Date.now() - 7 * 864e5;
   const byId = {}; d.accounts.forEach(p => byId[p.id] = p);
   const rows = d.accounts.map(p => ({ kind: 'acct', p, t: personType(p), name: p.full_name || p.email, when: p.created_at, action: p.to_review > 0 || p.membership_requested }))
     .concat(d.guests.map(g => ({ kind: 'guest', g, t: ['Guest', 'p-mute'], name: g.name || g.email, when: g.first_seen, action: !!g.match_id })));
@@ -1453,10 +1472,47 @@ async function stPeople() {
     const flags = [p.to_review ? '<span class="pill p-warn">Payment to review</span>' : '', p.membership_requested ? '<span class="pill p-warn">Wants membership</span>' : '', p.invite_status === 'sent' ? '<span class="pill p-mute">Invite sent</span>' : ''].filter(Boolean).join(' ');
     return '<tr class="click" data-act="mmanage" data-id="' + p.id + '"><td><b>' + esc(p.full_name || '—') + '</b>' + (p.nickname ? ' <span class="small muted">“' + esc(p.nickname) + '”</span>' : '') + (p.is_staff ? ' <span class="pill p-gp">Staff</span>' : '') + (+p.credits > 0 ? ' <span class="cr">💳 ' + esc(peso(p.credits)) + '</span>' : '') + (flags ? '<div style="margin-top:4px">' + flags + '</div>' : '') + '</td><td><span class="pill ' + r.t[1] + '">' + r.t[0] + '</span></td><td class="small">' + esc(p.email) + '<br>' + esc(p.phone || '') + '</td><td class="small">' + p.bookings + (p.last_date ? ' · last ' + esc(fmtShort(p.last_date)) : '') + '</td><td class="small">' + (p.active ? (p.family_of && !p.is_member ? 'Family of ' + esc(p.family_of) : 'Until ' + (p.member_until ? esc(fmtShort(p.member_until)) : '—')) : 'Joined ' + esc(String(p.created_at).slice(0, 10))) + '</td><td><span class="btn b-ghost b-sm">Open</span></td></tr>';
   };
-  return '<div class="chips2">' + chip('all', 'Everyone') + chip('action', 'Needs action') + chip('new', 'New this week') + chip('registrants', 'Registrants') + chip('members', 'Members') + chip('credits', '💳 Has credits') + chip('staff', 'Staff') + chip('guests', 'Guests') + '</div>' +
+  const pend = (S._invites || []).filter(i => i.status === 'pending');
+  return '<div class="row between wrapx" style="gap:10px;margin-bottom:12px"><div><h3 style="margin:0">Players & registrants</h3><div class="small muted">' + d.accounts.length + ' accounts · ' + d.guests.length + ' guests' + (pend.length ? ' · ' + pend.length + ' invited' : '') + '</div></div><button class="btn b-gold" data-act="invitenew" data-v="player">✉️ Invite a player</button></div>' +
+    invitesHTML(pend, 'Invitations waiting for sign-up') +
+    '<div class="chips2">' + chip('all', 'Everyone') + chip('action', 'Needs action') + chip('new', 'New this week') + chip('registrants', 'Registrants') + chip('members', 'Members') + chip('credits', '💳 Has credits') + chip('staff', 'Staff') + chip('guests', 'Guests') + '</div>' +
     '<input class="inp" style="max-width:360px;margin-bottom:12px" placeholder="Search name, nickname, email or mobile" id="mq" value="' + esc(S.memberQ || '') + '" data-chg="mq">' +
     '<div class="card scroll"><table class="tbl"><tr><th>Name</th><th>Type</th><th>Contact</th><th>Bookings</th><th>Membership</th><th></th></tr>' + list.map(row).join('') + '</table>' + (list.length ? '' : '<div class="muted small" style="padding:10px">Nobody here yet.</div>') + '</div>' +
     '<p class="small muted" style="margin-top:10px">Registrants, members and guests are matched by email, full name or nickname. Guests booked by staff (or from the WhatsApp list) are merged into an account automatically when someone registers with the same email; name matches show a <b>Merge</b> button for you to confirm.</p>';
+}
+function inviteShareText(i) {
+  return 'Hi' + (i.name ? ' ' + i.name.split(' ')[0] : '') + '! ' + (i.role === 'staff' ? 'You’re invited to join the UZU Club staff team. Create your staff account here:' : 'You’re invited to join UZU Club in El Nido — book courts, join Americanos and invite friends. Create your account here:') + '\n' + i.link;
+}
+function invitesHTML(list, title) {
+  if (!list.length) return '';
+  return '<div class="card x-pcard" style="margin:0 0 14px"><b>' + esc(title) + ' (' + list.length + ')</b>' + list.map(i => '<div class="invrow"><div class="who"><b>' + esc(i.name || i.email) + '</b> <span class="pill ' + (i.role === 'staff' ? 'p-gp' : 'p-mute') + '">' + (i.role === 'staff' ? 'Staff' : 'Player') + '</span><small>' + esc(i.email) + ' · sent ' + esc(ago(i.sent_at)) + (i.by ? ' by ' + esc(i.by) : '') + '</small></div>' +
+    '<div class="btns"><a class="btn b-ghost b-sm" target="_blank" rel="noopener" href="https://wa.me/?text=' + encodeURIComponent(inviteShareText(i)) + '">💬 WhatsApp</a><button class="btn b-ghost b-sm" data-act="invcopy" data-v="' + esc(i.link) + '">Copy link</button><button class="btn b-ghost b-sm" data-act="invact" data-v="resend" data-id="' + i.id + '">Resend</button><button class="btn b-ghost b-sm" data-act="invact" data-v="cancel" data-id="' + i.id + '">Cancel</button></div></div>').join('') + '</div>';
+}
+function openInviteForm(role) {
+  S._invRole = role || 'player';
+  openModal('<button class="x" data-act="close">✕</button><h3 style="margin-bottom:4px">Invite someone to UZU</h3><p class="muted small" style="margin:0 0 14px">They’ll get an email with a link to create their account. You can also send the link on WhatsApp.</p>' +
+    '<div class="rolepick" id="inv-role"><button data-act="invrole" data-v="player" class="' + (S._invRole === 'player' ? 'on' : '') + '"><b>🎾 Player</b><small>Can book courts, join sessions and invite friends</small></button><button data-act="invrole" data-v="staff" class="' + (S._invRole === 'staff' ? 'on' : '') + '"><b>🛡️ Staff</b><small>Can manage bookings, players, payments and the club board</small></button></div>' +
+    '<label class="field"><span>NAME</span><input class="inp" id="iv-name" placeholder="e.g. Ana Reyes" autocomplete="off"></label>' +
+    '<label class="field"><span>EMAIL</span><input class="inp" id="iv-email" type="email" placeholder="name@example.com" autocomplete="off"></label>' +
+    '<label class="field"><span>PERSONAL NOTE (optional)</span><textarea class="inp" id="iv-msg" rows="3" placeholder="e.g. See you at Friday’s Americano!"></textarea></label>' +
+    '<div class="note small" id="iv-staffnote" style="margin-bottom:12px;' + (S._invRole === 'staff' ? '' : 'display:none') + '">Staff can see every player’s details and bookings. Only invite people who work at the club.</div>' +
+    '<button class="btn b-gold b-full" data-act="invsend" id="iv-go">' + (S._invRole === 'staff' ? 'Send staff invitation' : 'Send invitation') + '</button>');
+  setTimeout(() => { const n = $('iv-name'); if (n) n.focus(); }, 50);
+}
+async function viewJoin() {
+  const { data: i } = await sb.rpc('uzu_invite_info', { p_token: S.arg });
+  const box = x => '<section class="sec"><div class="wrap" style="max-width:520px">' + x + '</div></section>';
+  if (!i || i.status === 'missing' || i.status === 'cancelled') return box('<div class="card"><h2 style="margin:0 0 6px">This invitation isn’t active</h2><p class="muted">Ask the club to send you a new one, or create an account yourself.</p><a class="btn b-gold" href="#signin" data-act="stab" data-v="up">Create an account</a></div>');
+  if (S.user) return box('<div class="card" style="text-align:center"><div style="font-size:40px">🎾</div><h2 style="margin:6px 0">You’re in!</h2><p class="muted">You’re signed in as <b>' + esc(S.user.email) + '</b>.' + (i.role === 'staff' && S.isStaff ? ' Your staff dashboard is ready.' : '') + '</p><a class="btn b-gold" href="#' + (i.role === 'staff' && S.isStaff ? 'staff' : 'account') + '">' + (i.role === 'staff' && S.isStaff ? 'Open the staff dashboard' : 'Go to my account') + '</a></div>');
+  if (i.status === 'accepted' || i.has_account) { signTab = 'in'; S.after = i.role === 'staff' ? 'staff' : 'account'; setTimeout(() => { const e = $('su-email'); if (e) e.value = i.email; }, 0);
+    return '<section class="sec" style="padding-bottom:0"><div class="wrap" style="max-width:460px"><div class="okbox">You already have an account with <b>' + esc(i.email) + '</b> — sign in below.' + (i.role === 'staff' ? ' Your staff access is ready.' : '') + '</div></div></section>' + viewSignin(); }
+  signTab = 'up'; S.after = i.role === 'staff' ? 'staff' : 'account';
+  setTimeout(() => { const e = $('su-email'), n = $('su-name'); if (e) e.value = i.email; if (n && i.name && !n.value) n.value = i.name;
+    if (i.role === 'staff') { const m = $('su-member'); if (m) m.closest('.card').style.display = 'none'; const hh = [...document.querySelectorAll('#app .card .card')].find(c => /household/i.test(c.textContent)); if (hh) hh.style.display = 'none'; }
+    document.querySelectorAll('#app p.small.muted').forEach(x => { if (/email you a link to confirm/.test(x.textContent)) x.textContent = 'No confirmation email needed — your invitation already confirms your address.'; }); }, 0);
+  return '<section class="sec" style="padding-bottom:0"><div class="wrap" style="max-width:460px"><div class="card" style="background:var(--green);color:var(--cream);border:0"><div class="x-kick" style="color:var(--gold)">' + (i.role === 'staff' ? 'Staff invitation' : 'You’re invited') + '</div>' +
+    '<h2 style="margin:6px 0 6px;color:var(--cream)">' + esc(i.from) + ' invited you to join UZU Club' + (i.role === 'staff' ? ' as staff' : '') + '</h2>' + (i.message ? '<p style="margin:0 0 8px;opacity:.9">“' + esc(i.message) + '”</p>' : '') +
+    '<p class="small" style="margin:0;opacity:.85">Create your account below with <b>' + esc(i.email) + '</b>' + (i.role === 'staff' ? ' — it opens your staff dashboard straight away.' : ' to book courts, join Americanos and invite friends.') + ' Using Google? Choose the same email.</p></div></div></section>' + viewSignin();
 }
 async function stMembers() {
   const { data } = await sb.from('uzu_profiles').select('*').order('created_at', { ascending: false }).limit(1000);
@@ -1473,8 +1529,8 @@ async function stEmails(s) {
     '<div class="card scroll"><table class="tbl"><tr><th>When</th><th>To</th><th>Email</th><th>Status</th><th></th></tr>' + (data || []).map(o => '<tr><td class="small" style="white-space:nowrap">' + esc(new Date(o.created_at).toLocaleString()) + '</td><td class="small">' + esc(o.to_email) + '</td><td>' + esc(K[o.kind] || o.kind) + (o.payload && o.payload.title ? '<div class="small muted">' + esc(o.payload.title) + '</div>' : '') + '</td><td>' + '<span class="pill ' + ({ sent: 'p-ok', failed: 'p-bad', pending: 'p-warn', sending: 'p-warn' }[o.status]) + '">' + esc(o.status) + '</span>' + (o.error ? '<div class="small" style="color:var(--bad)">' + esc(o.error) + '</div>' : '') + '</td><td>' + (o.status === 'failed' ? '<button class="btn b-ghost b-sm" data-act="retry" data-id="' + o.id + '">Retry</button>' : '') + '</td></tr>').join('') + '</table></div>';
 }
 async function stTeam(s) {
-  const { data } = await sb.from('uzu_staff').select('*').order('added_at');
-  return '<div class="grid g2" style="align-items:start"><div class="card"><b>Staff accounts</b><table class="tbl" style="margin-top:8px">' + (data || []).map(x => '<tr><td><b>' + esc(x.name || '') + '</b><div class="small muted">' + esc(x.email) + '</div></td><td style="text-align:right">' + (x.user_id === S.user.id ? '<span class="small muted">You</span>' : '<button class="btn b-danger b-sm" data-act="rmstaff" data-id="' + x.user_id + '">Remove</button>') + '</td></tr>').join('') + '</table><div class="row" style="margin-top:12px"><input class="mini" id="new-staff" placeholder="Email of a registered player"><button class="btn b-green b-sm" data-act="addstaff">Add</button></div><p class="small muted">They need to create an account on the site first.</p></div>' +
+  const [{ data }, iv] = await Promise.all([sb.from('uzu_staff').select('*').order('added_at'), sb.rpc('uzu_staff_invitations')]); S._invites = iv.data || [];
+  return '<div class="grid g2" style="align-items:start"><div class="card"><b>Staff accounts</b><table class="tbl" style="margin-top:8px">' + (data || []).map(x => '<tr><td><b>' + esc(x.name || '') + '</b><div class="small muted">' + esc(x.email) + '</div></td><td style="text-align:right">' + (x.user_id === S.user.id ? '<span class="small muted">You</span>' : '<button class="btn b-danger b-sm" data-act="rmstaff" data-id="' + x.user_id + '">Remove</button>') + '</td></tr>').join('') + '</table><button class="btn b-gold" style="margin-top:12px" data-act="invitenew" data-v="staff">✉️ Invite a staff member</button><p class="small muted">Works for anyone: if they already play at UZU they become staff right away, otherwise they get an email to create their staff account.</p>' + invitesHTML((S._invites || []).filter(i => i.role === 'staff' && i.status === 'pending'), 'Staff invitations waiting') + '</div>' +
     '<div class="card"><b>New-booking alerts</b><p class="small muted">Every new booking is emailed to this inbox.</p><div class="row"><input class="mini" id="inbox" value="' + esc(s.staff_inbox || '') + '"><button class="btn b-green b-sm" data-act="saveinbox">Save</button></div></div></div>';
 }
 
@@ -1698,6 +1754,23 @@ document.addEventListener('click', async ev => {
   switch (a) {
     case 'mode': setMode(v); break;
     case 'booknow': openBookChooser(); break;
+    case 'invitenew': openInviteForm(v || 'player'); break;
+    case 'invrole': S._invRole = v; document.querySelectorAll('#inv-role button').forEach(x => x.classList.toggle('on', x.dataset.v === v)); $('iv-staffnote').style.display = v === 'staff' ? '' : 'none'; $('iv-go').textContent = v === 'staff' ? 'Send staff invitation' : 'Send invitation'; break;
+    case 'invsend': run(async () => {
+      const name = $('iv-name').value.trim(), email = $('iv-email').value.trim(), role = S._invRole || 'player';
+      if (!email) throw new Error('Add their email address');
+      const r = must(await sb.rpc('uzu_staff_send_invite', { p_email: email, p_name: name, p_role: role, p_message: $('iv-msg').value }));
+      if (r.status !== 'invited') { closeModal(); toast(r.status === 'made_staff' ? (r.name || email) + ' already had an account — they’re now staff' : (r.name || email) + ' is already staff'); if (S.route === 'staff') await route(); return; }
+      const inv = { name, email, role, link: r.link };
+      if (S.route === 'staff') await route();
+      openModal('<button class="x" data-act="close">✕</button><div style="text-align:center"><div style="font-size:42px">✉️</div><h3 style="margin:6px 0">Invitation sent</h3><p class="muted">We emailed <b>' + esc(email) + '</b> a link to create ' + (role === 'staff' ? 'their staff account' : 'their account') + '. Want to send it on WhatsApp too?</p></div>' +
+        '<div class="btns" style="justify-content:center"><a class="btn b-green" target="_blank" rel="noopener" href="https://wa.me/?text=' + encodeURIComponent(inviteShareText(inv)) + '">💬 Send on WhatsApp</a><button class="btn b-ghost" data-act="invcopy" data-v="' + esc(r.link) + '">Copy link</button></div>' +
+        '<p class="small muted" style="text-align:center;margin:14px 0 0"><a href="#" data-act="invitenew" data-v="' + role + '">Invite someone else</a></p>');
+      }); break;
+    case 'invcopy': try { await navigator.clipboard.writeText(v); toast('Link copied'); } catch (e) { prompt('Copy this link', v); } break;
+    case 'invact': if (v === 'cancel' && !confirmTwice(b)) return; run(async () => { must(await sb.rpc('uzu_staff_invite_action', { p_id: id, p_action: v })); await route(); }, v === 'resend' ? 'Invitation sent again' : 'Invitation cancelled'); break;
+    case 'google': run(async () => { try { localStorage.setItem('uzu_after', S.after || 'account'); } catch (e) {}
+      must(await sb.auth.signInWithOAuth({ provider: 'google', options: { redirectTo: location.origin + location.pathname, queryParams: { prompt: 'select_account' } } })); }); break;
     case 'share': { const ss = (S._sess || {})[id]; if (ss) window.open('https://wa.me/?text=' + encodeURIComponent(shareText(ss)), '_blank', 'noopener'); break; }
     case 'newsf': S.newsKind = v; route(); break;
     case 'resfrom': S.resFrom = v; route(); break;
@@ -1940,7 +2013,16 @@ window.addEventListener('hashchange', () => { route(); window.scrollTo(0, 0); })
 /* ---------- boot ---------- */
 (async () => {
   sb.rpc('uzu_ensure_sessions', { p_weeks: 6 }).then(() => {}, () => {});
-  await loadUser(); route();
+  fetch(SB_URL + '/auth/v1/settings', { headers: { apikey: SB_KEY } }).then(r => r.json()).then(j => { S.googleOn = !!(j.external && j.external.google); if (S.route === 'signin') route(); }, () => {});
+  const qs = new URLSearchParams(location.search), oauth = qs.has('code') || qs.has('error_description');
+  await loadUser();
+  if (oauth) {
+    let after = 'account'; try { after = localStorage.getItem('uzu_after') || 'account'; localStorage.removeItem('uzu_after'); } catch (e) {}
+    history.replaceState(null, '', location.pathname + '#' + (S.user ? (S.staff ? 'staff' : after) : 'signin'));
+    if (!S.user && qs.get('error_description')) setTimeout(() => toast('Google sign-in didn’t finish: ' + qs.get('error_description')), 300);
+    else if (S.user && S.profile && !S.profile.phone) setTimeout(() => toast('Welcome to UZU, ' + ((S.profile.full_name || '').split(' ')[0] || 'player') + '! Add your mobile number in My details.'), 300);
+  }
+  route();
 })();
 })();
 </script>
